@@ -1,4 +1,5 @@
 #include "Libs.h"
+#include "Texture.h"
 #include "Entity.h"
 #include <vector>
 #include <array>
@@ -6,9 +7,9 @@ namespace ge{
     typedef std::chrono::high_resolution_clock::time_point  ge_time_point;
     struct Time{
         ge_time_point init_time;
-        std::chrono::milliseconds running;
+        float running_ms;
         ge_time_point last_frame;
-        std::chrono::milliseconds delta_time;
+        float delta_time_ms;
     };
     inline glm::u32 genId(){
         static glm::u32 current_id = 0;
@@ -16,7 +17,7 @@ namespace ge{
         current_id += 1;
         return id;
     }
-    enum GameEngineState{
+    enum class GameEngineState{
         Init,
         Running,
         Stop,
@@ -29,12 +30,18 @@ namespace ge{
             void stop();
             ~Renderer();
         private:
+            void initTextures();
             void renderFrame();
             void handleKeys();
+            void populateTextureAtlas();
             std::vector<ECS::IEntity*> entities;//main memory space
             std::vector<ECS::IKeyEntity*> key_entities;//main memory space
             GameEngineState state = GameEngineState::Init;
             std::array<bool, 249> keys = {false};
             Time time;
+            glm::ivec2 screen_size;
+            ECS::TextureAtlas textureAtlas;
+            Camera2D camera;
+            Music backgroundMusic;
     };
 }
