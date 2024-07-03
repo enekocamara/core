@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -16,20 +8,12 @@
     <Filter Include="doc">
       <UniqueIdentifier>{84d8fd28-71a2-4eb8-aabb-471b9903a63c}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Filter Include="src">
+      <UniqueIdentifier>{faf6c162-172a-4b3f-8504-961452fe4c1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ecs">
+      <UniqueIdentifier>{17d54426-0632-4d4e-8f97-d31e529a447c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -37,24 +21,74 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Libs.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Libs.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Renderer.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\resource.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Texture.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="trial\trial.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Entity.h">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Behaviours.h">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Bush.h">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\EntityComponentSystem.h">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Ground.h">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Mushroom.h">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Player.h">
+      <Filter>src\ecs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ex0.rc">
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\Entity.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\Bush.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\EntityComponentSystem.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\Ground.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\Mushroom.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\Player.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\..\..\OneDrive\Escritorio\ex0.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
