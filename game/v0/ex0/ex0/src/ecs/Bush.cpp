@@ -1,10 +1,10 @@
 #include "Bush.h"
 
 namespace ECS {
-    Bush::Bush(glm::vec2 pos, glm::u32 id) : pos(pos), id(id), texture_key(PrimaryKeys::Bush){
+    Bush::Bush(glm::vec2 pos, glm::u32 id) : pos(pos), id(id), texture(Bush::getTextureBundleDefault()){
 	}
-    void Bush::run_tick(float delta_ms){
-        this->behaviours.run_tick(delta_ms, *this);
+    void Bush::run_tick(engine_time::Time time){
+        this->behaviours.run_tick(time, *this);
     }
     IEntityTick<Bush>& Bush::pushTickBehaviour(tick_function<Bush> fn){
         this->behaviours.pushTickBehaviour(fn);
@@ -14,5 +14,10 @@ namespace ECS {
         this->behaviours.insertTickBehaviour(fns);
         return *this;
 
+    }
+    TextureBundle Bush::getTextureBundleDefault(){
+        std::cout << "TODO\n";
+        exit(1);
+        return ECS::TextureBundle{};
     }
 }

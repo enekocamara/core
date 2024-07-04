@@ -2,6 +2,7 @@
 #include "ecs/Bush.h"
 #include "ecs/Ground.h"
 #include "ecs/Mushroom.h"
+#include "ecs/Player.h"
 namespace ge {
 
     template<glm::u32 x, glm::u32 y>
@@ -20,9 +21,10 @@ namespace ge {
         this->time.init_time = std::chrono::high_resolution_clock::now(),
         InitWindow(0,0, "example");
         this->screen_size = {GetScreenWidth(), GetScreenHeight()};
+        this->textureAtlas.init();
         //player
         ECS::MovementKeys player_keys = {KEY_W, KEY_S, KEY_A, KEY_D};
-        ECS::Player* player = new ECS::Player({0,0}, genId(), player_keys);
+        ECS::Player* player = new ECS::Player({0,0}, genId(), player_keys, ECS::Player::getTextureBundleDefault());
         this->entityECS.setPlayerId(player->getId());
         this->entityECS.pushEntity(player, ECS::EntityHeightFlag::Surface);
         this->entityECS.pushKeyEntity(player);
@@ -38,16 +40,15 @@ namespace ge {
         };
         this->generateGround();
         //textures
-        this->populateTextureAtlas();
         //audio
         InitAudioDevice();
         this->backgroundMusic = LoadMusicStream("sound/music/Kokia-Fukurou.mp3");
         //camera
         glm::vec2 player_pos = {0,0};
-        ECS::TextureInfo info =  this->textureAtlas.getTexture(ECS::PrimaryKeys::Player);
+        ECS::TextureBundle player_texture =  this->entityECS.getPlayer()->getTextureBundle();
         this->camera = Camera2D{
             .offset =  {this->screen_size.x / 2.0f, this->screen_size.y / 2.0f},
-            .target = {player_pos.x - info.dimmensions.dst_width / 2.0f, player_pos.y - info.dimmensions.dst_height / 2.0f},
+            .target = {player_pos.x - player_texture.size.x / 2.0f, player_pos.y - player_texture.size.y / 2.0f},
             .rotation = 0,
             .zoom = 1
         };
@@ -76,7 +77,7 @@ namespace ge {
     void Renderer::logic(){
         this->handleKeys();
         for (auto entity : this->entityECS.getRunTickEntities()){
-            entity->run_tick(this->time.delta_time_ms);
+            entity->run_tick(this->time);
         }
         
     }
@@ -89,24 +90,33 @@ namespace ge {
         ClearBackground(RAYWHITE);
 
         auto player = this->entityECS.getPlayer();
-        ECS::TextureInfo player_texture_info = this->textureAtlas.getTexture(player->getTextureKey());
+        ECS::TextureBundle player_texture = this->entityECS.getPlayer()->getTextureBundle();
         glm::vec2 player_pos = player->getPos();
         
-        this->camera.target = {player_pos.x + player_texture_info.dimmensions.dst_width / 2.0f, player_pos.y + player_texture_info.dimmensions.dst_height / 2.0f};
+        this->camera.target = {player_pos.x + player_texture.size.x / 2.0f, player_pos.y + player_texture.size.y / 2.0f};
         BeginMode2D(this->camera);
+        std::cout << "rendering: " <<  player_texture.src.rect.x <<" " << player_texture.src.rect.width << "\n";
+        constexpr bool render_debug = false;
         for(auto entities : this->entityECS.getEntities()){
             for (auto entity : entities){
-                auto info = this->textureAtlas.getTexture(entity->getTextureKey());
+                Texture texture = this->textureAtlas.getTexture(entity->getTextureKey());
+                if (texture.id == 0){
+                    std::cout << "texture uninitialized\n";
+                    exit(1);
+                }
+                ECS::TextureBundle bundle = entity->getTextureBundle();
                 DrawTexturePro(
-                        info.texture,
-                        info.dimmensions.src_rect,
+                        texture,
+                        bundle.src.rect,
                         Rectangle{
                         .x = entity->getPos().x,
                         .y = entity->getPos().y,
-                        .width = info.dimmensions.dst_width,
-                        .height = info.dimmensions.dst_height,
-                        },{0,0},0,RAYWHITE
+                        .width = bundle.size.x,
+                        .height = bundle.size.y,
+                        },{0,0},0,bundle.color
                         );
+                if constexpr (render_debug)
+                    DrawRectangle(entity->getPos().x + 10, entity->getPos().y + 10, bundle.size.x - 20, bundle.size.y - 20, RED);
             }
         }
         EndMode2D();
@@ -123,53 +133,6 @@ namespace ge {
         for (auto key_entity : this->entityECS.getKeyEntities()){
             key_entity->handleKeys(keys, this->time.delta_time_ms);
         }
-    }
-    void Renderer::populateTextureAtlas(){
-        Texture2D texture_grass = LoadTexture("textures/sprites/Tilesets/Grass.png");
-        Texture2D texture_player = LoadTexture("textures/sprites/characters/BasicCharakterSpritesheet.png");
-        Texture2D texture_bush = LoadTexture("textures/sprites/Objects/Basic_Grass_Biom_things.png");
-        ECS::TextureInfo player_texture_info = ECS::TextureInfo{
-            .dimmensions = ECS::TextureDimmensions{
-                .src_rect = Rectangle{
-                    .x = 0,
-                    .y = 0,
-                    .width = 48,
-                    .height = 48
-                },
-                .dst_width = 144,
-                .dst_height = 144,
-            },
-            .texture = texture_player
-        };
-        ECS::TextureInfo grass_texture_info = ECS::TextureInfo{
-            .dimmensions = ECS::TextureDimmensions{
-                .src_rect = Rectangle{
-                    .x = config::tile_size,
-                    .y = config::tile_size * 5,
-                    .width = config::tile_size,
-                    .height = config::tile_size,
-                },
-                .dst_width = config::render_tile_size,
-                .dst_height = config::render_tile_size,
-            },
-            .texture = texture_grass
-        };
-        ECS::TextureInfo bush_texture_info = ECS::TextureInfo{
-            .dimmensions = ECS::TextureDimmensions{
-                .src_rect = Rectangle{
-                    .x = 16,
-                    .y = 16,
-                    .width = 16,
-                    .height = 16,               
-                },
-                .dst_width = 100,
-                .dst_height = 100,
-            },
-            .texture = texture_bush
-        };
-        this->textureAtlas.pushTexture(ECS::PrimaryKeys::Player, player_texture_info)
-            .pushTexture(ECS::PrimaryKeys::Bush, bush_texture_info)
-            .pushTexture(ECS::PrimaryKeys::Grass, grass_texture_info);
     }
     void Renderer::generateGround(){
         glm::vec2 origin = {this->map_config.num_tiles_x * config::render_tile_size / -2.0f,this->map_config.num_tiles_y * config::render_tile_size / -2.0f};

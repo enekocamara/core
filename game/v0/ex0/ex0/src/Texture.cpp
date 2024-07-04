@@ -1,29 +1,27 @@
 #include "Texture.h"
 namespace ECS {
     TextureAtlas::TextureAtlas(){
-    
     }
     TextureAtlas::~TextureAtlas(){
     
     }
-    TextureAtlas& TextureAtlas::pushTexture(PrimaryKeys key, TextureInfo info){
-        size_t texture_index = -1;
-        for (size_t i = 0; i < this->textures.size(); i++){
-            if (this->textures[i].id == info.texture.id){
-                texture_index = i;
-                break;
-            }
+    void TextureAtlas::init(){
+        Texture2D texture_grass = LoadTexture("textures/sprites/Tilesets/Grass.png");
+        Texture2D texture_player = LoadTexture("textures/sprites/characters/BasicCharakterSpritesheet.png");
+        if (texture_player.id == 0 || texture_grass.id == 0){
+            std::cerr << "failed to load texturs\n";
+            exit(1);
         }
-        if (texture_index == -1){
-            texture_index = this->textures.size();
-            this->textures.push_back(info.texture);
-        }
-        this->keyToTexture[static_cast<size_t>(key)] = texture_index;
-        this->dimmensions[static_cast<size_t>(key)] = info.dimmensions;
-        return *this;
+        this->textures[static_cast<size_t>(TextureKeys::Player)] = texture_player;    
+        this->textures[static_cast<size_t>(TextureKeys::Grass)] = texture_grass;
+
     }
 
-    TextureInfo TextureAtlas::getTexture(PrimaryKeys key) const{
-        return {this->dimmensions[static_cast<size_t>(key)], this->textures[this->keyToTexture[static_cast<size_t>(key)]] };
+    Texture TextureAtlas::getTexture(TextureKeys key) const{
+        if (key != TextureKeys::Player && key != TextureKeys::Grass){
+            std::cerr << "incorrect key" << static_cast<int>(key) << '\n';
+            exit(1);
+        }
+        return this->textures[static_cast<size_t>(key)];
     }
 }

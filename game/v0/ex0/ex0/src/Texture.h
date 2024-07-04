@@ -6,10 +6,28 @@
 class IEntityTexture;
 namespace ECS {
     //group textures by items
+
+    namespace textures {
+        static constexpr glm::fvec2 src_player_size = {48.f, 48.f};
+        static constexpr Rectangle player_forward_default = {
+            .x = 0,
+            .y = 0,
+            .width = src_player_size.x,
+            .height = src_player_size.y
+        };
+        static constexpr Rectangle player_forward_idle0 = {
+            .x = src_player_size.x,
+            .y = 0,
+            .width = src_player_size.x,
+            .height = src_player_size.y
+        };
+    }
+
     enum class TextureKeys : size_t{
         Player,
         Grass,
         Ground,
+        Bush,
         Max
     };
 
@@ -20,45 +38,15 @@ namespace ECS {
         Max,
     };
     
-    enum class TextureTypes : size_t{
-        D16x16,
-        D16x32,
-        D32x16,
-        D32x32,
-        Max
-    };
-
-    /*
-    struct TextureRect{
-        glm::vec2 src_top_left;
-        glm::vec2 src_size;
-        
-        Rectangle getSrcRectangle(){
-            return Rectangle{src_top_left.x, src_top_left.y, src_size.x, src_size.y};
-        }
-    };
-    struct TextureDimmensions{
-        Rectangle src_rect;
-        float dst_width;
-        float dst_height;
-    };
-
-    struct TextureInfo{
-        TextureDimmensions dimmensions;
-        Texture texture;
-    };*/
-
-    struct SrcTexture{
+    struct TextureSrc{
         TextureKeys key;
-        TextureTypes src_texture_type;
-        glm::uvec2 src_top_left;
-
+        Rectangle rect;
     };
 
     struct TextureBundle{
-        SrcTexture src;
-        glm::uvec2 size;
-        glm::uvec4 color;
+        TextureSrc src;
+        glm::fvec2 size;
+        Color color;
         float rotation;
     };
 
@@ -86,16 +74,10 @@ namespace ECS {
             TextureAtlas();
             ~TextureAtlas();
             Texture getTexture(TextureKeys) const;
+            void init();
         private:
             std::array<std::deque<IEntityTexture*>, static_cast<size_t>(TextureLayers::Max)> layers;
-            std::array<size_t, static_cast<size_t>(TextureLayers::Max)> keyToTexture;
             std::array<Texture, static_cast<size_t>(TextureKeys::Max)> textures;
-            static constexpr std::array<glm::uvec2, static_cast<size_t>(TextureTypes::Max)> dimmensions = {
-                glm::uvec2{16,16},
-                glm::uvec2{16,32},
-                glm::uvec2{32,16},
-                glm::uvec2{32,32}
-            };
 
     };
 

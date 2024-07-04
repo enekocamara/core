@@ -2,7 +2,7 @@
 #include "Behaviours.h"
 namespace ECS {
 
-    Player::Player(glm::vec2 pos, glm::u32 id, MovementKeys keys) : pos(pos), id(id), texture_key(PrimaryKeys::Player), keys(keys){
+    Player::Player(glm::vec2 pos, glm::u32 id, MovementKeys keys, TextureBundle textureBundle) : pos(pos), id(id), texture(textureBundle),keys(keys){
         this->behaviours.pushTickBehaviour(behaviours::move<Player>);
 	}
 
@@ -26,8 +26,8 @@ namespace ECS {
             this->dir.x = 0;
     }
 
-    void Player::run_tick(float delta_ms){
-        this->behaviours.run_tick(delta_ms, *this);
+    void Player::run_tick(engine_time::Time time){
+        this->behaviours.run_tick(time, *this);
     }
     IEntityTick<Player>& Player::pushTickBehaviour(tick_function<Player> fn){
         this->behaviours.pushTickBehaviour(fn);
@@ -37,5 +37,16 @@ namespace ECS {
         this->behaviours.insertTickBehaviour(fns);
         return *this;
 
+    }
+    TextureBundle Player::getTextureBundleDefault(){
+        return ECS::TextureBundle{
+            .src = ECS::TextureSrc{
+                .key = ECS::TextureKeys::Player,
+                .rect = textures::player_forward_default
+            },
+            .size = {144, 144},
+            .color = RAYWHITE,
+            .rotation = 0
+        };
     }
 }

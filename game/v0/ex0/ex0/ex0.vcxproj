@@ -132,6 +132,7 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineTime.h" />
     <ClInclude Include="src\ecs\Behaviours.h" />
     <ClInclude Include="src\ecs\Bush.h" />
     <ClInclude Include="src\ecs\Entity.h" />

@@ -9,8 +9,8 @@ namespace ECS {
             t.speed;
         };
         template<Movement T>
-        static void move(float delta_time_ms, T& data){
-            data.pos += data.dir * data.speed * delta_time_ms;
+        static void move(engine_time::Time time, T& data){
+            data.pos += data.dir * data.speed * time.delta_time_ms;
         }
     }
 

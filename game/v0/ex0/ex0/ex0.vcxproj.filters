@@ -57,6 +57,9 @@
     <ClInclude Include="src\ecs\Player.h">
       <Filter>src\ecs</Filter>
     </ClInclude>
+    <ClInclude Include="EngineTime.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

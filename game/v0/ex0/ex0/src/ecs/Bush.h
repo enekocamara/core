@@ -8,14 +8,16 @@ namespace ECS {
 
             glm::u32 getId() const override {return this->id;}
             glm::vec2 getPos() const override {return this->pos;}
-            TextureKeys getTextureKey()  const override {return this->texture_key;}
-            void run_tick(float delta_ms) override;
+            TextureKeys getTextureKey()  const override {return this->texture.src.key;}
+            TextureBundle getTextureBundle() const override  {return this->texture;}
+            static TextureBundle getTextureBundleDefault();
+            void run_tick(engine_time::Time time) override;
             IEntityTick<Bush>& pushTickBehaviour(tick_function<Bush> fn) override;
             IEntityTick<Bush>& insertTickBehaviour(std::span<tick_function<Bush>> fns) override;
         private:
             TickBehaviour<Bush> behaviours;
             glm::vec2 pos;
             glm::u32 id;
-            TextureKeys texture_key;
+            TextureBundle texture;
     };
 }

@@ -4,13 +4,6 @@
 #include "ecs/EntityComponentSystem.h"
 #include <array>
 namespace ge{
-    typedef std::chrono::high_resolution_clock::time_point  ge_time_point;
-    struct Time{
-        ge_time_point init_time;
-        float running_ms;
-        ge_time_point last_frame;
-        float delta_time_ms;
-    };
 
     struct MapConfig{
         size_t num_tiles_x;
@@ -46,7 +39,7 @@ namespace ge{
             ECS::EntityComponentSystem entityECS;
             GameEngineState state = GameEngineState::Init;
             std::array<bool, 249> keys = {false};
-            Time time;
+            engine_time::Time time;
             glm::ivec2 screen_size;
             ECS::TextureAtlas textureAtlas;
             Camera2D camera;

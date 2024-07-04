@@ -3,7 +3,7 @@
 #include <array>
 #include "../Texture.h"
 #include <functional>
-
+#include "../EngineTime.h"
 namespace ECS {
     enum class EntityHeightFlag{
         Floor,
@@ -12,7 +12,7 @@ namespace ECS {
     };
 
     template<typename T>
-    using tick_function = std::function<void(float delta_time_ms, T& data)>;
+    using tick_function = std::function<void(engine_time::Time time, T& data)>;
 
     static constexpr glm::u32 player_id_undefined = std::numeric_limits<glm::u32>::max();
 
@@ -28,7 +28,7 @@ namespace ECS {
             IRunTickBehaviour(){};
             virtual ~IRunTickBehaviour() = default;
             virtual glm::u32 getId() const = 0;
-            virtual void run_tick(float delta_time_ms) = 0;
+            virtual void run_tick(engine_time::Time time) = 0;
     };
 
     template<typename T>
@@ -61,6 +61,7 @@ namespace ECS {
 
             virtual glm::vec2 getPos() const = 0;
             virtual TextureKeys getTextureKey() const = 0;
+            virtual TextureBundle getTextureBundle() const = 0;
     };
 
     class IEntityKey: public IEntity{
@@ -78,7 +79,7 @@ namespace ECS {
             ~TickBehaviour(){}
             void pushTickBehaviour(tick_function<T> fn);
             void insertTickBehaviour(std::span<tick_function<T>> fns);
-            void run_tick(float delta_time_ms, T& data);
+            void run_tick(engine_time::Time time, T& data);
         private:
             std::vector<tick_function<T>> functions;
     };
@@ -91,9 +92,9 @@ namespace ECS {
         this->functions.insert(this->functions.end(), fns.begin(), fns.end());
     }
     template<typename T>
-    void TickBehaviour<T>::run_tick(float delta_time_ms, T& data){
+    void TickBehaviour<T>::run_tick(engine_time::Time time, T& data){
         for (auto function : this->functions){
-            function(delta_time_ms, data);
+            function(time, data);
         }
     }
 
