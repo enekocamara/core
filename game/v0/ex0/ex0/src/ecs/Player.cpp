@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "Behaviours.h"
 namespace ECS {
-
+/*
     Player::Player(glm::vec2 pos, glm::u32 id, MovementKeys keys, TextureBundle textureBundle) : pos(pos), id(id), texture(textureBundle),keys(keys){
         this->behaviours.pushTickBehaviour(behaviours::move<Player>);
 	}
@@ -49,4 +49,5 @@ namespace ECS {
             .rotation = 0
         };
     }
+    */
 }

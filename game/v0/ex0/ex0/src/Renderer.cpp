@@ -1,51 +1,28 @@
 #include "Renderer.h"
-#include "ecs/Bush.h"
-#include "ecs/Ground.h"
-#include "ecs/Mushroom.h"
 #include "ecs/Player.h"
+#include "ecs/Mushroom.h"
+#include "world_generator/world_generator.hpp"
 namespace ge {
-
-    template<glm::u32 x, glm::u32 y>
-    std::array<ECS::IEntity *, x * y> make_bushes(glm::vec2 top_left, float padding){
-        std::array<ECS::IEntity *, x * y> bushes;
-        for (glm::u32 j = 0; j < y; j++){
-            for (glm::u32 i = 0; i < x; i++){
-                bushes[j * y + i] = new ECS::Bush({i * padding + top_left.x, j * padding + top_left.y}, genId());
-            }
-        }
-        return bushes;
-    }
-
     Renderer::Renderer(){
         //window
         this->time.init_time = std::chrono::high_resolution_clock::now(),
         InitWindow(0,0, "example");
-        this->screen_size = {GetScreenWidth(), GetScreenHeight()};
+        this->screen_size = {GetScreenWidth() - 400, GetScreenHeight() - 400};
+        SetWindowSize(this->screen_size.x, this->screen_size.y);
         this->textureAtlas.init();
         //player
-        ECS::MovementKeys player_keys = {KEY_W, KEY_S, KEY_A, KEY_D};
-        ECS::Player* player = new ECS::Player({0,0}, genId(), player_keys, ECS::Player::getTextureBundleDefault());
-        this->entityECS.setPlayerId(player->getId());
-        this->entityECS.pushEntity(player, ECS::EntityHeightFlag::Surface);
-        this->entityECS.pushKeyEntity(player);
-        this->entityECS.pushRunTickEntity(player);
+        ecs::MovementKeys player_keys = {KEY_W, KEY_S, KEY_A, KEY_D};
+        this->player =  ecs::Player::newPlayer({0,0}, player_keys, ecs::Player::defaultTextureBundle(), this->ecs_registry);
 
-        //bushes
-        //auto bushes = make_bushes<10, 10>({0,0}, 100);
-        //this->entities.insert(this->entities.end(),bushes.begin(), bushes.end());
-        //generate ground
-        this->map_config = MapConfig{
-            .num_tiles_x = 100,
-            .num_tiles_y = 100
-        };
-        this->generateGround();
-        //textures
+        world_generator::generateGround<this->map_config>(this->ecs_registry);
+        
         //audio
         InitAudioDevice();
         this->backgroundMusic = LoadMusicStream("sound/music/Kokia-Fukurou.mp3");
+
         //camera
-        glm::vec2 player_pos = {0,0};
-        ECS::TextureBundle player_texture =  this->entityECS.getPlayer()->getTextureBundle();
+        ecs::TextureBundle player_texture = this->ecs_registry.get<ecs::CTexture>(this->player).texture;
+        glm::vec2 player_pos = this->ecs_registry.get<ecs::CPosition>(this->player).pos;
         this->camera = Camera2D{
             .offset =  {this->screen_size.x / 2.0f, this->screen_size.y / 2.0f},
             .target = {player_pos.x - player_texture.size.x / 2.0f, player_pos.y - player_texture.size.y / 2.0f},
@@ -60,6 +37,9 @@ namespace ge {
         CloseWindow();
     }
     void Renderer::run(){
+        std::cout << "player pos " << this->ecs_registry.get<ecs::CPosition>(this->player).pos;
+        std::cout << "player dir " << this->ecs_registry.get<ecs::CDir>(this->player).value;
+        std::cout << "player speed " << this->ecs_registry.get<ecs::CSpeed>(this->player).value;
         this->time.last_frame = std::chrono::high_resolution_clock::now();
         this->state = GameEngineState::Running;
         PlayMusicStream(this->backgroundMusic);
@@ -76,10 +56,46 @@ namespace ge {
     }
     void Renderer::logic(){
         this->handleKeys();
-        for (auto entity : this->entityECS.getRunTickEntities()){
-            entity->run_tick(this->time);
+        auto key_group = this->ecs_registry.group<ecs::CKeyBinded>(entt::get<ecs::CDir, ecs::CSpeed>);
+        for (auto entity : key_group){
+            auto[cKeyBinded, cDir, cSpeed] = key_group.get<ecs::CKeyBinded, ecs::CDir, ecs::CSpeed>(entity); 
+            auto previous = cDir.value;
+            cSpeed.value = 0;
+            cDir.value = {0.f,0.f};
+            if (this->keys[cKeyBinded.keys.up]){
+                cDir.value.y = -1;
+                cSpeed.value = 1;
+            }
+            else if (keys[cKeyBinded.keys.down]){
+                cDir.value.y = 1;
+                cSpeed.value = 1;
+            }
+            else if (keys[cKeyBinded.keys.right]){
+                cDir.value.x = 1;
+                cSpeed.value = 1;
+            }
+            else if (keys[cKeyBinded.keys.left]){
+                cDir.value.x = -1;
+                cSpeed.value = 1;
+            }
+
+            if (cDir.value.x + cDir.value.y == 0)
+                cDir.value = previous; 
+            else
+                cDir.value = glm::normalize(cDir.value);
+            cSpeed.value *= (float)config::render_tile_size * 3;
         }
-        
+                
+        auto movement_group = this->ecs_registry.group<ecs::CPosition>(entt::get<ecs::CSpeed, ecs::CDir>);
+        for (auto entity : movement_group){
+            auto[cPosition, cSpeed, cDir] = movement_group.get<ecs::CPosition, ecs::CSpeed, ecs::CDir>(entity); 
+            cPosition.pos += cDir.value * (cSpeed.value * this->time.delta_time_ms / 1000.f);
+        } 
+        auto animated_group = this->ecs_registry.group<ecs::CAnimated>(entt::get<ecs::CTexture>);
+        for (auto entity : animated_group){
+            auto[cAnimated, cTexture] = animated_group.get<ecs::CAnimated, ecs::CTexture>(entity); 
+            cAnimated.animate(this->ecs_registry, entity, this->time, cTexture.texture);
+        } 
     }
     void Renderer::stop(){
         std::cout << "game stopped\n";
@@ -89,35 +105,34 @@ namespace ge {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        auto player = this->entityECS.getPlayer();
-        ECS::TextureBundle player_texture = this->entityECS.getPlayer()->getTextureBundle();
-        glm::vec2 player_pos = player->getPos();
-        
+        ecs::TextureBundle player_texture = this->ecs_registry.get<ecs::CTexture>(this->player).texture;
+        glm::vec2 player_pos = this->ecs_registry.get<ecs::CPosition>(this->player).pos;
+
         this->camera.target = {player_pos.x + player_texture.size.x / 2.0f, player_pos.y + player_texture.size.y / 2.0f};
         BeginMode2D(this->camera);
-        std::cout << "rendering: " <<  player_texture.src.rect.x <<" " << player_texture.src.rect.width << "\n";
         constexpr bool render_debug = false;
-        for(auto entities : this->entityECS.getEntities()){
-            for (auto entity : entities){
-                Texture texture = this->textureAtlas.getTexture(entity->getTextureKey());
-                if (texture.id == 0){
-                    std::cout << "texture uninitialized\n";
-                    exit(1);
-                }
-                ECS::TextureBundle bundle = entity->getTextureBundle();
-                DrawTexturePro(
-                        texture,
-                        bundle.src.rect,
-                        Rectangle{
-                        .x = entity->getPos().x,
-                        .y = entity->getPos().y,
-                        .width = bundle.size.x,
-                        .height = bundle.size.y,
-                        },{0,0},0,bundle.color
-                        );
-                if constexpr (render_debug)
-                    DrawRectangle(entity->getPos().x + 10, entity->getPos().y + 10, bundle.size.x - 20, bundle.size.y - 20, RED);
+
+        auto render_group = this->ecs_registry.group<ecs::CTexture>(entt::get<ecs::CPosition>);
+        for (auto entity : render_group){
+            auto[cTexture, cPosition] = render_group.get<ecs::CTexture, ecs::CPosition>(entity);
+            Texture texture = this->textureAtlas.getTexture(cTexture.texture.src.key);
+            if (texture.id == 0){
+                std::cout << "texture uninitialized\n";
+                exit(1);
             }
+            DrawTexturePro(
+                    texture,
+                    cTexture.texture.src.rect,
+                    Rectangle{
+                    .x = cPosition.pos.x,
+                    .y = cPosition.pos.y,
+                    .width = cTexture.texture.size.x,
+                    .height = cTexture.texture.size.y,
+                    },{0,0},0,cTexture.texture.color
+                    );
+            if constexpr (render_debug)
+                DrawRectangle(cPosition.pos.x + 10, cPosition.pos.y + 10, cTexture.texture.size.x - 20, cTexture.texture.size.y - 20, RED);
+
         }
         EndMode2D();
         DrawFPS(0, 0);
@@ -125,23 +140,11 @@ namespace ge {
     }
     void Renderer::handleKeys(){   
         for (int i = 1; i < MAX_NUMBER_KEYS; i++){
-            if (IsKeyPressed(i))
-                this->keys[i] = true;
-            if (IsKeyReleased(i))
-                this->keys[i] = false;
+            this->keys[i] = IsKeyDown(i);
         }
-        for (auto key_entity : this->entityECS.getKeyEntities()){
+    /*    for (auto key_entity : this->entityECS.getKeyEntities()){
             key_entity->handleKeys(keys, this->time.delta_time_ms);
         }
-    }
-    void Renderer::generateGround(){
-        glm::vec2 origin = {this->map_config.num_tiles_x * config::render_tile_size / -2.0f,this->map_config.num_tiles_y * config::render_tile_size / -2.0f};
-        std::cout << "origin: " << origin << '\n';
-        for (size_t y = 0; y < this->map_config.num_tiles_y; y++){
-            for (size_t x = 0; x < this->map_config.num_tiles_x; x++){
-                glm::vec2 pos = {origin + glm::vec2(x * config::render_tile_size, y * config::render_tile_size)};
-                this->entityECS.pushEntity(new ECS::Ground(pos, genId()), ECS::EntityHeightFlag::Floor);
-            }
-        }
-    }
+        */
+    } 
 }

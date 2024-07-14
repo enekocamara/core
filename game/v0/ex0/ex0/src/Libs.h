@@ -4,6 +4,7 @@
 #include "glm/glm.hpp"
 #include <chrono>
 #include <span>
+#include <entt.hpp>
 #define MAX_NUMBER_KEYS 249
 
 
@@ -18,4 +19,9 @@ inline std::ostream& operator<<(std::ostream &os, const glm::ivec2 &vec) {
 namespace config{
     static constexpr size_t tile_size = 16;
     static constexpr size_t render_tile_size = 64;
+    struct MapConfig{
+        size_t num_tiles_x;
+        size_t num_tiles_y;
+    };
+
 }

@@ -1,32 +1,56 @@
 #pragma once
-#include "Entity.h"
+#include "../Libs.h"
+#include "Components.h"
 #include "../EngineTime.h"
-#include <span>
-namespace ECS {
-    class Player : public IEntityTexture, public IEntityKey, public IEntityTick<Player> {
-        public:
-            Player(glm::vec2 pos, glm::u32 id, MovementKeys keys, TextureBundle textureBundle);
-            ~Player(){};
+#include <cmath>
 
-            glm::u32 getId() const override {return this->id;}
-            glm::vec2 getPos() const override {return this->pos;}
-            TextureKeys getTextureKey()  const override {return this->texture.src.key;}
-            static TextureBundle getTextureBundleDefault();
-            TextureBundle getTextureBundle() const override  {return this->texture;}
+namespace ecs {
+    namespace Player{
+        enum class AnimationDir{
+            Up,
+            Down,
+            Left,
+            Right
+        };
+        inline void animate(entt::registry& registry, entt::entity entity, engine_time::Time time, TextureBundle& texture){
+            auto[dir,speed] = registry.get<CDir, CSpeed>(entity);
+            bool iddle = speed.value == 0.f;
+            std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+            int index;
+            if (iddle)
+                index = (int)(std::chrono::duration<float, std::milli>(now - time.init_time).count() / 1000) % 2 == 0;
+            else
+                index = (int)(std::chrono::duration<float, std::milli>(now - time.init_time).count() / 250) % 2 == 0;
+            ecs::textures::Player::Dir animation_dir;
 
-            void run_tick(engine_time::Time time) override;
-            IEntityTick<Player>& pushTickBehaviour(tick_function<Player> fn) override;
-            IEntityTick<Player>& insertTickBehaviour(std::span<tick_function<Player>> fns) override;
-
-            glm::vec2 dir;//normalized
-            glm::vec2 pos;
-            float speed = 1;// unit/ms
-        private:
-            void handleKeys(std::array<bool, MAX_NUMBER_KEYS>& keys, float delta_ms) override;
-
-            glm::u32 id;
-            TextureBundle texture;
-            MovementKeys keys;
-            TickBehaviour<Player> behaviours;
-    };
+            if (std::abs(dir.value.x) > std::abs(dir.value.y))
+                animation_dir = (dir.value.x >= 0) ? ecs::textures::Player::Dir::Right : ecs::textures::Player::Dir::Left;
+            else{
+                animation_dir = (dir.value.y > 0) ? ecs::textures::Player::Dir::Down : ecs::textures::Player::Dir::Up;
+            }
+            texture.src.rect = ecs::textures::Player::getPlayerTextureRectangle(animation_dir, iddle,index);
+        }
+        inline entt::entity newPlayer(glm::vec2 pos, MovementKeys keys, TextureBundle textureBundle, entt::registry& registry){
+            entt::entity entity = registry.create();
+            registry.emplace<CPosition>(entity, pos);
+            registry.emplace<CTexture>(entity, textureBundle);
+            registry.emplace<CKeyBinded>(entity, keys);
+            registry.emplace<CSpeed>(entity, 0.f);
+            registry.emplace<CDir>(entity, glm::vec2(0.f,-1.f));
+            registry.emplace<CAnimated>(entity, animate);
+            return entity;
+        }
+        inline TextureBundle defaultTextureBundle(){
+            return TextureBundle{
+                .src = TextureSrc{
+                    .key = TextureKeys::Player,
+                        .rect = ecs::textures::Player::getPlayerTextureRectangle(ecs::textures::Player::Dir::Down, true, 0)
+                },
+                    .size = {144, 144},
+                    .color = RAYWHITE,
+                    .rotation = 0
+            };
+        }
+        
+    }
 }

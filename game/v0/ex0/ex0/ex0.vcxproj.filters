@@ -48,7 +48,7 @@
     <ClInclude Include="src\ecs\EntityComponentSystem.h">
       <Filter>src\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\Ground.h">
+    <ClInclude Include="src\ecs\Tile.h">
       <Filter>src\ecs</Filter>
     </ClInclude>
     <ClInclude Include="src\ecs\Mushroom.h">
@@ -60,6 +60,8 @@
     <ClInclude Include="EngineTime.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\ecs\Components.h" />
+    <ClInclude Include="src\EngineTime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -78,9 +80,6 @@
       <Filter>src\ecs</Filter>
     </ClCompile>
     <ClCompile Include="src\ecs\EntityComponentSystem.cpp">
-      <Filter>src\ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\Ground.cpp">
       <Filter>src\ecs</Filter>
     </ClCompile>
     <ClCompile Include="src\ecs\Mushroom.cpp">

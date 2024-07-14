@@ -4,22 +4,48 @@
 #include <deque>
 
 class IEntityTexture;
-namespace ECS {
+namespace ecs {
     //group textures by items
 
     namespace textures {
+        static constexpr glm::fvec2 default_tyle_size = {16.f, 16.f};
         static constexpr glm::fvec2 src_player_size = {48.f, 48.f};
-        static constexpr Rectangle player_forward_default = {
+
+        struct Player{
+            enum class Dir : int{
+                Down,
+                Up,
+                Left,
+                Right
+            };
+            static constexpr Rectangle getPlayerTextureRectangle(Dir dir, bool idle, int index){
+                int layer = static_cast<int>(dir);
+                int column = !(int)idle * 2 + index;
+                return Rectangle{
+                    .x = src_player_size.x * column,
+                        .y = src_player_size.y * layer,
+                        .width = src_player_size.x,
+                        .height = src_player_size.y
+                };
+            }
+        };
+        static constexpr Rectangle grass_0 = {
+            .x = default_tyle_size.x,
+            .y = default_tyle_size.y,
+            .width = default_tyle_size.x,
+            .height = default_tyle_size.y
+        };
+        static constexpr Rectangle bush_0 = {
+            .x = 0,
+            .y = default_tyle_size.y * 3,
+            .width = default_tyle_size.x,
+            .height = default_tyle_size.y
+        };
+        static constexpr Rectangle water_0 = {
             .x = 0,
             .y = 0,
-            .width = src_player_size.x,
-            .height = src_player_size.y
-        };
-        static constexpr Rectangle player_forward_idle0 = {
-            .x = src_player_size.x,
-            .y = 0,
-            .width = src_player_size.x,
-            .height = src_player_size.y
+            .width = default_tyle_size.x,
+            .height = default_tyle_size.y
         };
     }
 
@@ -28,6 +54,7 @@ namespace ECS {
         Grass,
         Ground,
         Bush,
+        Water,
         Max
     };
 

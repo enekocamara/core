@@ -4,6 +4,11 @@
 #include <array>
 namespace ge{
 
+    struct MapConfig{
+        size_t num_tiles_x;
+        size_t num_tiles_y;
+    };
+
     inline glm::u32 genId(){
         static glm::u32 current_id = 0;
         glm::u32 id = current_id;
@@ -28,6 +33,7 @@ namespace ge{
             void logic();
             void handleKeys();
             void populateTextureAtlas();
+            void generateGround();
 
             entt::registry ecs_registry;
             entt::entity player;
@@ -38,9 +44,6 @@ namespace ge{
             ecs::TextureAtlas textureAtlas;
             Camera2D camera;
             Music backgroundMusic;
-            static constexpr config::MapConfig map_config = config::MapConfig{
-                .num_tiles_x = 100,
-                .num_tiles_y = 100
-            };
+            MapConfig map_config;
     };
 }

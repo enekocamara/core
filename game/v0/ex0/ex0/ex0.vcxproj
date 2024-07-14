@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\v0\ex0\ex0\vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +121,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\v0\ex0\ex0\vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,11 +137,13 @@
     <ClInclude Include="EngineTime.h" />
     <ClInclude Include="src\ecs\Behaviours.h" />
     <ClInclude Include="src\ecs\Bush.h" />
+    <ClInclude Include="src\ecs\Components.h" />
     <ClInclude Include="src\ecs\Entity.h" />
     <ClInclude Include="src\ecs\EntityComponentSystem.h" />
-    <ClInclude Include="src\ecs\Ground.h" />
+    <ClInclude Include="src\ecs\Tile.h" />
     <ClInclude Include="src\ecs\Mushroom.h" />
     <ClInclude Include="src\ecs\Player.h" />
+    <ClInclude Include="src\EngineTime.h" />
     <ClInclude Include="src\Libs.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\resource.h" />
@@ -150,7 +154,6 @@
     <ClCompile Include="src\ecs\Bush.cpp" />
     <ClCompile Include="src\ecs\Entity.cpp" />
     <ClCompile Include="src\ecs\EntityComponentSystem.cpp" />
-    <ClCompile Include="src\ecs\Ground.cpp" />
     <ClCompile Include="src\ecs\Mushroom.cpp" />
     <ClCompile Include="src\ecs\Player.cpp" />
     <ClCompile Include="src\main.cpp" />

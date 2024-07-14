@@ -1,23 +1,27 @@
-#include "Entity.h"
+#pragma  once
 
-namespace ECS {
-    class Bush : public IEntityTexture, public IEntityTick<Bush> {
-        public:
-            Bush(glm::vec2 pos, glm::u32 id);
-            ~Bush(){};
+#include "../Libs.h"
+#include "Components.h"
+#include <entt.hpp>
 
-            glm::u32 getId() const override {return this->id;}
-            glm::vec2 getPos() const override {return this->pos;}
-            TextureKeys getTextureKey()  const override {return this->texture.src.key;}
-            TextureBundle getTextureBundle() const override  {return this->texture;}
-            static TextureBundle getTextureBundleDefault();
-            void run_tick(engine_time::Time time) override;
-            IEntityTick<Bush>& pushTickBehaviour(tick_function<Bush> fn) override;
-            IEntityTick<Bush>& insertTickBehaviour(std::span<tick_function<Bush>> fns) override;
-        private:
-            TickBehaviour<Bush> behaviours;
-            glm::vec2 pos;
-            glm::u32 id;
-            TextureBundle texture;
+namespace ecs {
+    namespace Bush{
+        inline entt::entity newBush(glm::vec2 pos, TextureBundle texture,entt::registry& registry){
+            entt::entity bush = registry.create();
+            registry.emplace<ecs::CPosition>(bush, pos);
+            registry.emplace<ecs::CTexture>(bush, texture);
+            return bush;
+        }
+        inline TextureBundle defaultTextureBundle(){
+            return TextureBundle{
+                .src = TextureSrc{
+                    .key = TextureKeys::Bush,
+                        .rect = textures::bush_0
+                },
+                    .size = {(float)config::render_tile_size, (float)config::render_tile_size},
+                    .color = RAYWHITE,
+                    .rotation = 0
+            };
+        }
     };
 }

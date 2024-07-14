@@ -4,7 +4,7 @@
 #include "../Texture.h"
 #include <functional>
 #include "../EngineTime.h"
-namespace ECS {
+namespace ecs {
     enum class EntityHeightFlag{
         Floor,
         Surface,
