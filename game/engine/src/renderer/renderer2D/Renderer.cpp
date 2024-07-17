@@ -1,9 +1,7 @@
 #include "Renderer.h"
-#include "../ecs/Player.h"
-#include "../ecs/Mushroom.h"
-#include "../world_generator/world_generator.hpp"
+#include "../../ecs/Components.h"
 namespace ge {
-    Renderer::Renderer(){
+    Renderer2D::Renderer2D(scene::Scene& scene, entt::registry& registry) : m_registry(registry),scene(scene){
         //window
         this->time.init_time = std::chrono::high_resolution_clock::now(),
         ///InitWindow(0,0, "example");
@@ -12,9 +10,8 @@ namespace ge {
         this->textureAtlas.init();
         //player
         ///ecs::MovementKeys player_keys = {KEY_W, KEY_S, KEY_A, KEY_D};
-        ///this->player =  ecs::Player::newPlayer({0,0}, player_keys, ecs::Player::defaultTextureBundle(), this->ecs_registry);
+        ///this->player =  ecs::Player::newPlayer({0,0}, player_keys, ecs::Player::defaultTextureBundle(), this->m_registry);
 
-        world_generator::generateGround<this->map_config>(this->ecs_registry);
         
         //audio
         ///InitAudioDevice();
@@ -22,8 +19,8 @@ namespace ge {
         ///this->backgroundMusic = LoadMusicStream("sound/music/Kokia-Fukurou.mp3");
 
         //camera
-        ///ecs::TextureBundle player_texture = this->ecs_registry.get<ecs::CTexture>(this->player).texture;
-        glm::vec2 player_pos = this->ecs_registry.get<ecs::CPosition>(this->player).pos;
+        ///ecs::TextureBundle player_texture = this->m_registry.get<ecs::CTexture>(this->player).texture;
+  //      glm::vec2 player_pos = this->m_registry.get<ecs::CPosition>(this->player).pos;
         /***this->camera = Camera2D{
             .offset =  {this->screen_size.x / 2.0f, this->screen_size.y / 2.0f},
             .target = {player_pos.x - player_texture.size.x / 2.0f, player_pos.y - player_texture.size.y / 2.0f},
@@ -31,38 +28,20 @@ namespace ge {
             .zoom = 1.f
         };***/
     }
-    Renderer::~Renderer(){
+    Renderer2D::~Renderer2D(){
         this->state = GameEngineState::WindowClosed;
         /***UnloadMusicStream(this->backgroundMusic);
         CloseAudioDevice();
         CloseWindow();***/
     }
-    void Renderer::run(){
-        std::cout << "player pos " << this->ecs_registry.get<ecs::CPosition>(this->player).pos;
-        std::cout << "player dir " << this->ecs_registry.get<ecs::CDir>(this->player).value;
-        std::cout << "player speed " << this->ecs_registry.get<ecs::CSpeed>(this->player).value;
-        this->time.last_frame = std::chrono::high_resolution_clock::now();
-        this->state = GameEngineState::Running;
-        ///PlayMusicStream(this->backgroundMusic);
-        /****while (!WindowShouldClose()) {
-            UpdateMusicStream(this->backgroundMusic);
-            std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
-            this->time.delta_time_ms = std::chrono::duration<float, std::milli>(now - time.last_frame).count();
-            if (this->state != GameEngineState::Running)
-                break;
-            this->logic();
-            this->renderFrame();
-            this->time.last_frame = now;
-        }***/
-    }
-    void Renderer::logic(){
+    void Renderer2D::logic(){
         this->handle_tick();
         this->handle_interactable();
         this->handleKeys();
         /***if (this->interactable != std::nullopt && IsKeyDown(KEY_Q)){
-            this->ecs_registry.get<ecs::CInteractable>(this->interactable.value()).interact(this->ecs_registry, this->interactable.value());
+            this->m_registry.get<ecs::CInteractable>(this->interactable.value()).interact(this->m_registry, this->interactable.value());
         }****/
-        auto key_group = this->ecs_registry.group<ecs::CKeyBinded>(entt::get<ecs::CDir, ecs::CSpeed>);
+        auto key_group = this->m_registry.group<ecs::CKeyBinded>(entt::get<ecs::CDir, ecs::CSpeed>);
         for (auto entity : key_group){
             auto[cKeyBinded, cDir, cSpeed] = key_group.get<ecs::CKeyBinded, ecs::CDir, ecs::CSpeed>(entity); 
             auto previous = cDir.value;
@@ -92,34 +71,30 @@ namespace ge {
             cSpeed.value *= (float)config::render_tile_size * 3;
         }
                 
-        auto movement_group = this->ecs_registry.group<ecs::CPosition>(entt::get<ecs::CSpeed, ecs::CDir>);
+        auto movement_group = this->m_registry.group<ecs::CPosition>(entt::get<ecs::CSpeed, ecs::CDir>);
         for (auto entity : movement_group){
             auto[cPosition, cSpeed, cDir] = movement_group.get<ecs::CPosition, ecs::CSpeed, ecs::CDir>(entity); 
             cPosition.pos += cDir.value * (cSpeed.value * this->time.delta_time_ms / 1000.f);
         } 
-        auto animated_group = this->ecs_registry.group<ecs::CAnimated>(entt::get<ecs::CTexture>);
+        auto animated_group = this->m_registry.group<ecs::CAnimated>(entt::get<ecs::CTexture>);
         for (auto entity : animated_group){
             auto[cAnimated, cTexture] = animated_group.get<ecs::CAnimated, ecs::CTexture>(entity); 
-            cAnimated.animate(this->ecs_registry, entity, this->time, cTexture.texture);
+            cAnimated.animate(this->m_registry, entity, this->time, cTexture.texture);
         } 
     }
-    void Renderer::stop(){
-        std::cout << "game stopped\n";
-        this->state = GameEngineState::Stop;
-    }
-    void Renderer::renderFrame(){
+    void Renderer2D::renderFrame(){
         /***BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        ecs::TextureBundle player_texture = this->ecs_registry.get<ecs::CTexture>(this->player).texture;
-        glm::vec2 player_pos = this->ecs_registry.get<ecs::CPosition>(this->player).pos;
+        ecs::TextureBundle player_texture = this->m_registry.get<ecs::CTexture>(this->player).texture;
+        glm::vec2 player_pos = this->m_registry.get<ecs::CPosition>(this->player).pos;
 
         this->camera.target = {player_pos.x + player_texture.size.x / 2.0f, player_pos.y + player_texture.size.y / 2.0f};
         BeginMode2D(this->camera);
 
-        auto render_group = this->ecs_registry.group<>(entt::get<ecs::CTexture, ecs::CPosition, ecs::CTile>);
+        auto render_group = this->m_registry.group<>(entt::get<ecs::CTexture, ecs::CPosition, ecs::CTile>);
         this->draw_group<true>(render_group);
-        auto render_group2 = this->ecs_registry.group<>(entt::get<ecs::CTexture, ecs::CPosition>, entt::exclude<ecs::CTile>);
+        auto render_group2 = this->m_registry.group<>(entt::get<ecs::CTexture, ecs::CPosition>, entt::exclude<ecs::CTile>);
         // render_group2.sort();
         render_group2.sort<ecs::CPosition, ecs::CTexture>([](const auto lhs, const auto rhs) {
                 const auto& [lhs_pos, lhs_tex] = lhs;
@@ -134,13 +109,13 @@ namespace ge {
         DrawFPS(0, 0);
         EndDrawing();***/
     }
-    void Renderer::draw_interact(){
+    void Renderer2D::draw_interact(){
         if (this->interactable != std::nullopt){
-///            DrawText(std::format("{} (q)", this->ecs_registry.get<ecs::CInteractable>(this->interactable.value()).message).c_str(), this->screen_size.x / 2 - 50,this->screen_size.y / 5 * 4, 20, WHITE);
+///            DrawText(std::format("{} (q)", this->m_registry.get<ecs::CInteractable>(this->interactable.value()).message).c_str(), this->screen_size.x / 2 - 50,this->screen_size.y / 5 * 4, 20, WHITE);
         }
     }
     template<bool debug, typename T>
-    void Renderer::draw_group(T& render_group){/***
+    void Renderer2D::draw_group(T& render_group){/***
         constexpr bool render_debug = false;
         for (auto entity : render_group){
             auto[cTexture, cPosition] = render_group.get<ecs::CTexture, ecs::CPosition>(entity);
@@ -162,9 +137,9 @@ namespace ge {
         }
         ***/
     }
-    void Renderer::handle_interactable(){
-        auto interact_group = this->ecs_registry.group<>(entt::get<ecs::CInteractable, ecs::CPosition>);
-        glm::vec2 player_pos = this->ecs_registry.get<ecs::CPosition>(this->player).pos;
+    void Renderer2D::handle_interactable(){
+        auto interact_group = this->m_registry.group<>(entt::get<ecs::CInteractable, ecs::CPosition>);
+        glm::vec2 player_pos;/// = this->m_registry.get<ecs::CPosition>(this->player).pos;
 
         float min_distace;
         entt::entity min_entity;
@@ -174,7 +149,7 @@ namespace ge {
             float distance = glm::distance(player_pos, pos);
             if ((first || distance < min_distace) && distance < 16){
                 ecs::CInteractable interactable = interact_group.get<ecs::CInteractable>(entity);
-                if (interactable.can_interact(this->ecs_registry, entity)){
+                if (interactable.can_interact(this->m_registry, entity)){
                     min_distace = distance;
                     min_entity = entity;
                     first = false;
@@ -190,14 +165,14 @@ namespace ge {
         }
  
     }
-    void Renderer::handle_tick(){
-        auto tick_group = this->ecs_registry.group<>(entt::get<ecs::CTick>);
+    void Renderer2D::handle_tick(){
+        auto tick_group = this->m_registry.group<>(entt::get<ecs::CTick>);
 
         for (auto entity : tick_group){
-            tick_group.get<ecs::CTick>(entity).tick(this->ecs_registry, entity, this->time);
+            tick_group.get<ecs::CTick>(entity).tick(this->m_registry, entity, this->time);
         }
     }
-    void Renderer::handleKeys(){/***
+    void Renderer2D::handleKeys(){/***
         for (int i = 1; i < MAX_NUMBER_KEYS; i++){
             this->keys[i] = IsKeyDown(i);
         }

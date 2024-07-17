@@ -25,6 +25,7 @@ class Window{
         void init();
         void shutDown();
         void onUpdate();
+        int shouldWindowClose(){return glfwWindowShouldClose(m_window);}
     private:
         GLFWwindow *m_window;
         WindowBundle m_info;

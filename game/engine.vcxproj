@@ -152,8 +152,10 @@
     <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_glfw.h" />
     <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_opengl3.h" />
     <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="engine\src\renderer\Renderer.h" />
+    <ClInclude Include="engine\src\renderer\Shader.hpp" />
     <ClInclude Include="engine\src\renderer\Texture.h" />
+    <ClInclude Include="engine\src\renderer\renderer2D\Renderer.h" />
+    <ClInclude Include="engine\src\scene\Scene.hpp" />
     <ClInclude Include="engine\src\utils\noise\PerlinNoise.hpp" />
     <ClInclude Include="engine\src\world_generator\world_generator.hpp" />
   </ItemGroup>
@@ -168,8 +170,10 @@
     <ClCompile Include="engine\src\main.cpp" />
     <ClCompile Include="engine\src\platform\OpenGl\imgui_impl_glfw.cpp" />
     <ClCompile Include="engine\src\platform\OpenGl\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="engine\src\renderer\Renderer.cpp" />
+    <ClCompile Include="engine\src\renderer\Shader.cpp" />
     <ClCompile Include="engine\src\renderer\Texture.cpp" />
+    <ClCompile Include="engine\src\renderer\renderer2D\Renderer.cpp" />
+    <ClCompile Include="engine\src\scene\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="engine\vendor\GLFW\GLFW.vcxproj">

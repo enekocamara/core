@@ -16,6 +16,12 @@
     <Filter Include="renderer">
       <UniqueIdentifier>{9C6AA017-8837-FB22-B150-E9CA9D7C30B1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="renderer\renderer2D">
+      <UniqueIdentifier>{18015474-8462-3182-0DD0-773479306841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{D3075810-3F1C-80C1-089E-232174717CF2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="utils">
       <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
@@ -75,11 +81,17 @@
     <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_opengl3_loader.h">
       <Filter>platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\renderer\Renderer.h">
+    <ClInclude Include="engine\src\renderer\Shader.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\renderer\Texture.h">
       <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\renderer\renderer2D\Renderer.h">
+      <Filter>renderer\renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\scene\Scene.hpp">
+      <Filter>scene</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\utils\noise\PerlinNoise.hpp">
       <Filter>utils\noise</Filter>
@@ -117,11 +129,17 @@
     <ClCompile Include="engine\src\platform\OpenGl\imgui_impl_opengl3.cpp">
       <Filter>platform\OpenGl</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\renderer\Renderer.cpp">
+    <ClCompile Include="engine\src\renderer\Shader.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\renderer\Texture.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\renderer\renderer2D\Renderer.cpp">
+      <Filter>renderer\renderer2D</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\scene\Scene.cpp">
+      <Filter>scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

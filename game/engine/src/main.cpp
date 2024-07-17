@@ -10,7 +10,14 @@ int main()
         .name = std::string("hola"),
         .vSync = true,
     };
-    app::App app(info);
+    entt::registry registry;
+    app::AppBundle bundle = app::AppBundle{
+        .vertex_shader_path = "../shaders/vertexShader.glsl",
+        .fragment_shader_path = "../shaders/fragmentShader.glsl",
+        .window_bundle = info,
+        .registry = registry,
+    };
+    app::App app(bundle);
     app.run();
  //   ge::Renderer renderer = ge::Renderer();
  //   renderer.run();
