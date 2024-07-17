@@ -1,3 +1,6 @@
 [submodule "game/engine/vendor/GLFW"]
 	path = game/engine/vendor/GLFW
 	url = git@github.com:TheCherno/glfw.git
+[submodule "game/engine/vendor/imgui"]
+	path = game/engine/vendor/imgui
+	url = git@github.com:ocornut/imgui.git

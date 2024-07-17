@@ -66,7 +66,13 @@
     <ClInclude Include="engine\src\ecs\Tile.h">
       <Filter>ecs</Filter>
     </ClInclude>
+    <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_glfw.h">
+      <Filter>platform\OpenGl</Filter>
+    </ClInclude>
     <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_opengl3.h">
+      <Filter>platform\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_opengl3_loader.h">
       <Filter>platform\OpenGl</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\renderer\Renderer.h">
@@ -81,8 +87,6 @@
     <ClInclude Include="engine\src\world_generator\world_generator.hpp">
       <Filter>world_generator</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="engine\src\platform\OpenGl\imgui_impl_glfw.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\src\app\App.cpp">
@@ -107,6 +111,9 @@
       <Filter>ecs</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\main.cpp" />
+    <ClCompile Include="engine\src\platform\OpenGl\imgui_impl_glfw.cpp">
+      <Filter>platform\OpenGl</Filter>
+    </ClCompile>
     <ClCompile Include="engine\src\platform\OpenGl\imgui_impl_opengl3.cpp">
       <Filter>platform\OpenGl</Filter>
     </ClCompile>
@@ -116,6 +123,5 @@
     <ClCompile Include="engine\src\renderer\Texture.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\platform\OpenGl\imgui_impl_glfw.cpp" />
   </ItemGroup>
 </Project>
