@@ -1,5 +1,11 @@
+IncludeDir = {}
+IncludeDir["GLFW"] = "%{wks.location}/Syris/vendor/GLFW/include"
+IncludeDir["Glad"] = "%{wks.location}/Syris/vendor/Glad/include"
+IncludeDir["ImGui"] = "%{wks.location}/Syris/vendor/imgui"
+
 workspace "game"
     architecture "x64"
+    startproject "Sandbox"
 
     configurations
     {
@@ -7,69 +13,18 @@ workspace "game"
         "Release",
         "Dist"
     }
+    flags
+	{
+		"MultiProcessorCompile"
+	}
+
+
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+group "Core"
+	include "Syris"
+group ""
 
-IncludeDir = {}
-IncludeDir["GLFW"] = "engine/vendor/GLFW/include"
-IncludeDir["Glad"] = "engine/vendor/Glad/include"
-IncludeDir["ImGui"] = "engine/vendor/imgui"
-
-include "engine/vendor/GLFW"
-include "engine/vendor/Glad"
-include "engine/vendor/ImGui"
-
-project "engine"
-    kind "ConsoleApp"
-    language "C++"
-    targetdir ("bin/" .. outputdir .. "/%{prj.name")
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name")
-
-    files
-    {
-        "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp",
-        "%{prj.name}/src/**.hpp"
-    }
-
-    includedirs
-    {
-        "%{prj.name}/vendor/entt",
-        "%{prj.name}/vendor/fastNoise",
-        "%{prj.name}/vendor/glm",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Glad}",
-        "%{IncludeDir.ImGui}",
-    }
-
-    links
-    {
-        "GLFW",
-        "opengl32.lib",
-        "Glad",
-        "ImGui"
-    }
-
-    filter "system:windows"
-        cppdialect "C++20"
-        systemversion "latest"
-
-        defines
-        {
-            "PLATFORM_WINDOWS",
-            "GLFW_INCLUDE_NONE"
-        }
-
-
-    filter "configurations:Debug"
-        defines "GAME_DEBUG"
-        symbols "On"
-
-    filter "configurations:Release"
-        defines "GAME_RELEASE"
-        optimize "On"
-
-    filter "configurations:Dist"
-        defines "GAME_Dist"
-        optimize "On"
-
+group "Misc"
+	include "Sandbox"
+group ""
