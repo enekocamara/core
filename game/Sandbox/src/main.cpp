@@ -11,9 +11,10 @@ int main(){
     };
     entt::registry registry;
     float ratio = 1920.f / 1080.f;
-    SandboxApp::CreateInfo app_info = SandboxApp::CreateInfo{
+    Sandbox::SandboxApp::CreateInfo app_info = Sandbox::SandboxApp::CreateInfo{
         .vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl",
         .fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl",
+        .atlas_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\textures\\sprites\\atlas\\spritesheet.png",
         .window_bundle = info,
         .registry = registry,
         /*.cameraCreateInfo = Syris::CameraOrthographic::CreateInfo{
@@ -30,7 +31,7 @@ int main(){
             .bottom = -10.f
         }
     };
-    SandboxApp app(app_info);
+    Sandbox::SandboxApp app(app_info);
     app.run();
     return 0;
 }

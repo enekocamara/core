@@ -4,7 +4,7 @@
 #include "../../Libs.h"
 #include "../Texture.h"
 #include "../../EngineTime.h"
-namespace ge{
+namespace Syris::renderer{
     enum class GameEngineState{
         Init,
         Running,
@@ -32,7 +32,7 @@ namespace ge{
             ~Renderer2D();
 
             //render api
-            void render_quad(int program, Quad2D quad, glm::mat4 model,glm::mat4 projection_view, ecs::Texture2D texture, ecs::textures::Rectangle src, glm::vec3 color);
+            void render_quad(int program, Quad2D quad, glm::mat4 model,glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color);
             void clear_window(glm::vec3 color);
         private:
             entt::registry& m_registry;
@@ -42,6 +42,5 @@ namespace ge{
             std::array<bool, 249> keys = {false};
             engine_time::Time time;
             glm::ivec2 screen_size;
-            ecs::TextureAtlas textureAtlas;
     };
 }

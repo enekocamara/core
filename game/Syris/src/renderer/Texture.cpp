@@ -3,82 +3,67 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-namespace ecs {
-TextureAtlas::TextureAtlas() {}
-TextureAtlas::~TextureAtlas() {}
-void TextureAtlas::init() {
- //   Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR);
-    Texture2DCreateBundle bundle  = Texture2DCreateBundle{
-        .internal_format = GL_RGBA,
-        .image_format = GL_RGBA,
-        .wrap_s = GL_REPEAT,
-        .wrap_t = GL_REPEAT,
-        .filter_min = GL_LINEAR,
-        .filter_max = GL_LINEAR
-    };
-    Texture2D texture_grass = Texture2D("textures/sprites/Tilesets/Grass.png", bundle);
-    Texture2D texture_water = Texture2D("textures/sprites/Tilesets/Water.png", bundle);
-    Texture2D texture_player = Texture2D("textures/sprites/characters/BasicCharakterSpritesheet.png", bundle);
-    Texture2D texture_bush = Texture2D("textures/sprites/objects/Basic_Grass_Biom_things.png", bundle);
-    this->textures[static_cast<size_t>(TextureKeys::Player)] = texture_player;
-    this->textures[static_cast<size_t>(TextureKeys::Grass)] = texture_grass;
-    this->textures[static_cast<size_t>(TextureKeys::Bush)] = texture_bush;
-    this->textures[static_cast<size_t>(TextureKeys::Water)] = texture_water;
-}
-
-Texture2D::Texture2D(std::string path, Texture2DCreateBundle create_bundle) : m_bundle(create_bundle) {
-    m_id = std::numeric_limits<GLuint>::max();
-    stbi_uc* pixels = stbi_load(path.c_str(), &m_width, &m_height, &m_tex_channels, STBI_rgb_alpha);
-    if (!pixels){
-        std::cerr << "failed to read texture\n";
-        exit(1);
-    }
-    if (m_tex_channels != 4){
-        std::cerr << "error reading texture channels" << m_tex_channels << '\n';
-        exit(1);
-    }
-    int rowStride = m_width * 4; // 4 bytes per pixel (RGBA)
-    std::vector<stbi_uc> flippedPixels(rowStride * m_height);
-
-    for (int y = 0; y < m_height; ++y) {
-        memcpy(
-            flippedPixels.data() + (m_height - 1 - y) * rowStride,
-            pixels + y * rowStride,
-            rowStride
-        );
+namespace Syris::texture{
+    TextureAtlas::TextureAtlas(const char* path) : m_path(path) {}
+    TextureAtlas::~TextureAtlas() {}
+    void TextureAtlas::init() {
+        //   Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR);
+        Texture2DCreateBundle bundle  = Texture2DCreateBundle{
+            .internal_format = GL_RGBA,
+                .image_format = GL_RGBA,
+                .wrap_s = GL_REPEAT,
+                .wrap_t = GL_REPEAT,
+                .filter_min = GL_LINEAR,
+                .filter_max = GL_LINEAR
+        };
+        m_texture = Texture2D(m_path, bundle);
     }
 
-    glad_glGenTextures(1, &this->m_id);
-    glBindTexture(GL_TEXTURE_2D, this->m_id);
-    // set Texture wrap and filter modes
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, create_bundle.wrap_s);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, create_bundle.wrap_t);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, create_bundle.filter_min);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, create_bundle.filter_max);
+    Texture2D::Texture2D(std::string path, Texture2DCreateBundle create_bundle) : m_bundle(create_bundle) {
+        m_id = std::numeric_limits<GLuint>::max();
+        stbi_uc* pixels = stbi_load(path.c_str(), &m_width, &m_height, &m_tex_channels, STBI_rgb_alpha);
+        if (!pixels){
+            std::cerr << "failed to read texture\n";
+            exit(1);
+        }
+        if (m_tex_channels != 4){
+            std::cerr << "error reading texture channels" << m_tex_channels << '\n';
+            exit(1);
+        }
+        int rowStride = m_width * 4; // 4 bytes per pixel (RGBA)
+        std::vector<stbi_uc> flippedPixels(rowStride * m_height);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, create_bundle.internal_format, m_width,
-            m_height, 0, create_bundle.image_format, GL_UNSIGNED_BYTE, flippedPixels.data());
+        for (int y = 0; y < m_height; ++y) {
+            memcpy(
+                    flippedPixels.data() + (m_height - 1 - y) * rowStride,
+                    pixels + y * rowStride,
+                    rowStride
+                  );
+        }
+
+        glad_glGenTextures(1, &this->m_id);
+        glBindTexture(GL_TEXTURE_2D, this->m_id);
+        // set Texture wrap and filter modes
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, create_bundle.wrap_s);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, create_bundle.wrap_t);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, create_bundle.filter_min);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, create_bundle.filter_max);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, create_bundle.internal_format, m_width,
+                m_height, 0, create_bundle.image_format, GL_UNSIGNED_BYTE, flippedPixels.data());
 
 
-    // unbind texture
-    glBindTexture(GL_TEXTURE_2D, 0);
-    if (m_id == std::numeric_limits<GLuint>::max()){
-        std::cerr << "failed to create texture\n";
-        exit(1);
+        // unbind texture
+        glBindTexture(GL_TEXTURE_2D, 0);
+        if (m_id == std::numeric_limits<GLuint>::max()){
+            std::cerr << "failed to create texture\n";
+            exit(1);
+        }
+        std::cout << "texture id: " << m_id << '\n';
     }
-    std::cout << "texture id: " << m_id << '\n';
-}
-Texture2D::~Texture2D(){
-}
-void Texture2D::bind(){
-    glBindTexture(GL_TEXTURE_2D, this->m_id);
-}
-Texture2D TextureAtlas::getTexture(TextureKeys key) const {
-    Texture2D texture = this->textures[static_cast<size_t>(key)];
-    if (texture.m_id == std::numeric_limits<GLuint>::max()){
-        std::cerr << "texture " << static_cast<int>(key) << " not initialized\n";
-        exit(1);
+    Texture2D::~Texture2D(){
     }
-    return this->textures[static_cast<size_t>(key)];
+    void Texture2D::bind(){
+        glBindTexture(GL_TEXTURE_2D, this->m_id);
+    }
 }
-} // namespace ecs

@@ -4,9 +4,6 @@
     <Filter Include="app">
       <UniqueIdentifier>{665E880B-D267-887C-5BE3-9E7CC7EB937C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ecs">
-      <UniqueIdentifier>{C06D880B-2C77-887C-B5F2-9E7C21FB937C}</UniqueIdentifier>
-    </Filter>
     <Filter Include="platform">
       <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
     </Filter>
@@ -37,49 +34,13 @@
     <Filter Include="utils\noise">
       <UniqueIdentifier>{837D7330-EF32-EC25-7827-E6FCE4DBE229}</UniqueIdentifier>
     </Filter>
-    <Filter Include="world_generator">
-      <UniqueIdentifier>{F329C2E2-5FB5-2FA7-68C6-B29BD4D08BA7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ECSSettings.h" />
     <ClInclude Include="src\EngineTime.h" />
     <ClInclude Include="src\Libs.h" />
-    <ClInclude Include="src\app\App.h">
-      <Filter>app</Filter>
-    </ClInclude>
     <ClInclude Include="src\app\Window.h">
       <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Behaviours.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Bush.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Components.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\EcsSettings.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Entity.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\EntityComponentSystem.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Mushroom.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Player.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Signatures.h">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\Tile.h">
-      <Filter>ecs</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\OpenGl\imgui_impl_glfw.h">
       <Filter>platform\OpenGl</Filter>
@@ -117,31 +78,10 @@
     <ClInclude Include="src\utils\noise\PerlinNoise.hpp">
       <Filter>utils\noise</Filter>
     </ClInclude>
-    <ClInclude Include="src\world_generator\world_generator.hpp">
-      <Filter>world_generator</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app\App.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
     <ClCompile Include="src\app\Window.cpp">
       <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\Bush.cpp">
-      <Filter>ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\Entity.cpp">
-      <Filter>ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\EntityComponentSystem.cpp">
-      <Filter>ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\Mushroom.cpp">
-      <Filter>ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\Player.cpp">
-      <Filter>ecs</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\OpenGl\imgui_impl_glfw.cpp">
       <Filter>platform\OpenGl</Filter>

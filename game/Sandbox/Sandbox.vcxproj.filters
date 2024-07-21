@@ -4,16 +4,46 @@
     <Filter Include="app">
       <UniqueIdentifier>{665E880B-D267-887C-5BE3-9E7CC7EB937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ecs">
+      <UniqueIdentifier>{C06D880B-2C77-887C-B5F2-9E7C21FB937C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="scene">
       <UniqueIdentifier>{D3075810-3F1C-80C1-089E-232174717CF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="texture">
+      <UniqueIdentifier>{964579D9-0225-F874-0B3D-834B779B5ED6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="world_generator">
+      <UniqueIdentifier>{F329C2E2-5FB5-2FA7-68C6-B29BD4D08BA7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\app\SandboxApp.hpp">
       <Filter>app</Filter>
     </ClInclude>
+    <ClInclude Include="src\ecs\Bush.h">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Components.h">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Mushroom.h">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Player.h">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Tile.h">
+      <Filter>ecs</Filter>
+    </ClInclude>
     <ClInclude Include="src\scene\SandboxScene.hpp">
       <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\SandboxTexture.hpp">
+      <Filter>texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world_generator\world_generator.hpp">
+      <Filter>world_generator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -21,7 +51,7 @@
       <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\scene\Scene.cpp">
+    <ClCompile Include="src\scene\SandboxScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
   </ItemGroup>

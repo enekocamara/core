@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace renderAPI{
+namespace Syris::renderAPI{
     static void set_uniform_value(int program, glm::mat4 value, const char* name){
         glUniformMatrix4fv(glGetUniformLocation(program, name), 1, false, glm::value_ptr(value));
     }
@@ -12,26 +12,22 @@ namespace renderAPI{
         glUniform3f(glGetUniformLocation(program, name),value.x, value.y, value.z);
     }
 
-    static void draw_quad2D(int program, GLuint quad_vao, GLuint quad_vbo, glm::mat4 model, glm::mat4 projection_view, ecs::Texture2D texture, ecs::textures::Rectangle src, glm::vec3 color){
+    static void draw_quad2D(int program, GLuint quad_vao, GLuint quad_vbo, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
         if (!glIsTexture(texture.m_id)) {
             std::cerr << "Invalid texture ID! " << texture.m_id << std::endl;
             exit(1);
         }
 
-        float tex_x_min = src.orig.x / texture.m_width;
-        float tex_y_min = src.orig.y / texture.m_height;
-        float tex_x_max = (src.orig.x + src.size.x) / texture.m_width;
-        float tex_y_max = (src.orig.y + src.size.y) / texture.m_height;
         // Update texture coordinates in the VBO
         float updated_vertices[] = { 
             // pos     //uv texture 
-            -1.0f,  1.0f,  tex_x_min, tex_y_max,  // top-left
-            1.0f,  1.0f,  tex_x_max, tex_y_max,  // top-right
-            1.0f, -1.0f,  tex_x_max, tex_y_min,  // bottom-right
+            -1.0f,  1.0f,  src.min.x, src.max.y,  // top-left
+            1.0f,  1.0f,  src.max.x, src.max.y,  // top-right
+            1.0f, -1.0f,  src.max.x, src.min.y,  // bottom-right
 
-            -1.0f,  1.0f,  tex_x_min, tex_y_max,  // top-left
-            1.0f, -1.0f,  tex_x_max, tex_y_min,  // bottom-right
-            -1.0f, -1.0f,  tex_x_min, tex_y_min   // bottom-left
+            -1.0f,  1.0f,  src.min.x, src.max.y,  // top-left
+            1.0f, -1.0f,  src.max.x, src.min.y,  // bottom-right
+            -1.0f, -1.0f,  src.min.x, src.min.y,   // bottom-left
         };
         /*float updated_vertices[] = {
             // positions   // texture coords

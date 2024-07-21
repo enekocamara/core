@@ -1,13 +1,16 @@
 #pragma once
-#include "EntityComponentSystem.h"
-#include "../renderer/Texture.h"
-#include "Entity.h"
+#include "EngineTime.h"
+#include "renderer/Texture.h"
 #include <functional>
-namespace ecs {
+namespace Sandbox::ecs {
+    struct MovementKeys{
+        int up;
+        int down;
+        int left;
+        int right;
+    };
     struct CTexture{
-        Texture2DBundle texture;
-        CTexture(Texture2DBundle bundle): texture(bundle){}
-        CTexture(const CTexture& ref): texture(ref.texture){}
+        Syris::texture::Rectangle2D rect;
     };
 
     struct CKeyBinded{
@@ -34,7 +37,7 @@ namespace ecs {
     };
 
     struct CAnimated{
-        std::function<void(entt::registry&, entt::entity, engine_time::Time time, Texture2DBundle& texture)> animate; 
+        std::function<void(entt::registry&, entt::entity, Syris::engine_time::Time time, Syris::texture::Texture2DBundle& texture)> animate; 
     };
     struct CInteractable{
         enum class InteractionType{
@@ -51,7 +54,7 @@ namespace ecs {
         }
     };
     struct CTick{
-        std::function<void(entt::registry&, entt::entity, engine_time::Time time)> tick;
+        std::function<void(entt::registry&, entt::entity, Syris::engine_time::Time time)> tick;
     };
     struct CComposition{
         float life_matter;

@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 
-namespace engine_time{
+namespace Syris::engine_time{
     typedef std::chrono::high_resolution_clock::time_point  ge_time_point;
     struct Time{
         ge_time_point init_time;

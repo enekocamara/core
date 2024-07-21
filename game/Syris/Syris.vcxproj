@@ -147,18 +147,7 @@
     <ClInclude Include="src\ECSSettings.h" />
     <ClInclude Include="src\EngineTime.h" />
     <ClInclude Include="src\Libs.h" />
-    <ClInclude Include="src\app\App.h" />
     <ClInclude Include="src\app\Window.h" />
-    <ClInclude Include="src\ecs\Behaviours.h" />
-    <ClInclude Include="src\ecs\Bush.h" />
-    <ClInclude Include="src\ecs\Components.h" />
-    <ClInclude Include="src\ecs\EcsSettings.h" />
-    <ClInclude Include="src\ecs\Entity.h" />
-    <ClInclude Include="src\ecs\EntityComponentSystem.h" />
-    <ClInclude Include="src\ecs\Mushroom.h" />
-    <ClInclude Include="src\ecs\Player.h" />
-    <ClInclude Include="src\ecs\Signatures.h" />
-    <ClInclude Include="src\ecs\Tile.h" />
     <ClInclude Include="src\platform\OpenGl\imgui_impl_glfw.h" />
     <ClInclude Include="src\platform\OpenGl\imgui_impl_opengl3.h" />
     <ClInclude Include="src\platform\OpenGl\imgui_impl_opengl3_loader.h" />
@@ -171,16 +160,9 @@
     <ClInclude Include="src\scene\Scene.hpp" />
     <ClInclude Include="src\utils\file\readfile.h" />
     <ClInclude Include="src\utils\noise\PerlinNoise.hpp" />
-    <ClInclude Include="src\world_generator\world_generator.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app\App.cpp" />
     <ClCompile Include="src\app\Window.cpp" />
-    <ClCompile Include="src\ecs\Bush.cpp" />
-    <ClCompile Include="src\ecs\Entity.cpp" />
-    <ClCompile Include="src\ecs\EntityComponentSystem.cpp" />
-    <ClCompile Include="src\ecs\Mushroom.cpp" />
-    <ClCompile Include="src\ecs\Player.cpp" />
     <ClCompile Include="src\platform\OpenGl\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\platform\OpenGl\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\renderer\Camera.cpp" />

@@ -139,12 +139,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\app\SandboxApp.hpp" />
+    <ClInclude Include="src\ecs\Bush.h" />
+    <ClInclude Include="src\ecs\Components.h" />
+    <ClInclude Include="src\ecs\Mushroom.h" />
+    <ClInclude Include="src\ecs\Player.h" />
+    <ClInclude Include="src\ecs\Tile.h" />
     <ClInclude Include="src\scene\SandboxScene.hpp" />
+    <ClInclude Include="src\texture\SandboxTexture.hpp" />
+    <ClInclude Include="src\world_generator\world_generator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\app\SandboxApp.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\scene\Scene.cpp" />
+    <ClCompile Include="src\scene\SandboxScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Syris\Syris.vcxproj">

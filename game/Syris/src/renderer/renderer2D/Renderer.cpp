@@ -1,13 +1,12 @@
 #include "Renderer.h"
-#include "../../ecs/Components.h"
+#include "renderer/Texture.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "renderAPI/renderApi.h"
-namespace ge {
-    Renderer2D::Renderer2D(entt::registry& registry) : m_registry(registry){
-        this->time.init_time = std::chrono::high_resolution_clock::now(),
-        this->textureAtlas.init();
 
+namespace Syris::renderer {
+    Renderer2D::Renderer2D(entt::registry& registry) : m_registry(registry){
+        this->time.init_time = std::chrono::high_resolution_clock::now();
     }
     Renderer2D::~Renderer2D(){
         this->state = GameEngineState::WindowClosed;
@@ -61,7 +60,7 @@ namespace ge {
             cAnimated.animate(this->m_registry, entity, this->time, cTexture.texture);
         } 
     }*/
-    void Renderer2D::render_quad(int program, Quad2D quad, glm::mat4 model, glm::mat4 projection_view, ecs::Texture2D texture, ecs::textures::Rectangle src, glm::vec3 color){
+    void Renderer2D::render_quad(int program, Quad2D quad, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
         renderAPI::draw_quad2D(program, quad.m_vertex_array, quad.m_vertex_buffer, model, projection_view, texture, src, color); 
     }
     /*

@@ -1,10 +1,10 @@
 #pragma once
-#include "../Libs.h"
+#include "Libs.h"
 #include "../ecs/Bush.h"
 #include "../ecs/Tile.h"
 #include <FastNoiseLite.h>
 
-namespace world_generator { 
+namespace Sandbox::world_generator { 
     template<glm::u32 x, glm::u32 y>
     std::array<entt::entity, x * y> make_bushes(glm::vec2 top_left, float padding, entt::registry& registry){
         auto texture = ecs::Bush::defaultTextureBundle();
@@ -64,12 +64,10 @@ namespace world_generator {
                     std::cerr << "noise value error: " << noise_value << '\n';
                 }
                 if (noise_value < 0.f){
-                    texture.src.key = ecs::TextureKeys::Water;
-                    texture.src.rect = ecs::textures::water_0;
+                    texture.src = texture::water_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Water);
                 }else{
-                    texture.src.key = ecs::TextureKeys::Grass;
-                    texture.src.rect = ecs::textures::grass_0;
+                    texture.src = texture::grass_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Grass);
                 }
             }
