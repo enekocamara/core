@@ -1,5 +1,5 @@
 #pragma once
-#include "Libs.h"
+#include "Syris/Libs.h"
 #include "Components.h"
 #include "../texture/SandboxTexture.hpp"
 #include <cmath>

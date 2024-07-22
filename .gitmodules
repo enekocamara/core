@@ -4,3 +4,6 @@
 [submodule "game/engine/vendor/imgui"]
 	path = game/Syris/vendor/imgui
 	url = git@github.com:ocornut/imgui.git
+[submodule "game/Syris/vendor/spdlog"]
+	path = game/Syris/vendor/spdlog
+	url = git@github.com:gabime/spdlog.git

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Libs.h"
+#include "Syris/Libs.h"
 #include "glad/glad.h"
 
 namespace shader{

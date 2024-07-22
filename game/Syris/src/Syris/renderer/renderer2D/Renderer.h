@@ -1,9 +1,12 @@
 #pragma once
 #include <array>
 
-#include "../../Libs.h"
-#include "../Texture.h"
-#include "../../EngineTime.h"
+#include "Syris/Libs.h"
+#include "Syris/renderer/Texture.h"
+#include "Syris/EngineTime.h"
+#include "Syris/renderer/VertexBuffer.hpp"
+#include "Syris/renderAPI/renderApi.h"
+
 namespace Syris::renderer{
     enum class GameEngineState{
         Init,
@@ -12,27 +15,13 @@ namespace Syris::renderer{
         WindowClosed
     };
 
-    struct Quad2D{
-        Quad2D();
-        ~Quad2D();
-        GLuint m_vertex_array;
-        GLuint m_vertex_buffer;
-        
-    };
-    struct Triangle2D{
-        Triangle2D();
-        ~Triangle2D();
-        GLuint m_vertex_array;
-        GLuint m_vertex_buffer;
-    };
-
     class Renderer2D{
         public:
             Renderer2D(entt::registry& registry);
             ~Renderer2D();
 
             //render api
-            void render_quad(int program, Quad2D quad, glm::mat4 model,glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color);
+            void draw_quad(int program, renderAPI::Quad2D* quad, glm::mat4 model,glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color);
             void clear_window(glm::vec3 color);
         private:
             entt::registry& m_registry;

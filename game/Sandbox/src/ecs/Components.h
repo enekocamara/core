@@ -1,6 +1,6 @@
 #pragma once
-#include "EngineTime.h"
-#include "renderer/Texture.h"
+#include "Syris/EngineTime.h"
+#include "Syris/renderer/Texture.h"
 #include <functional>
 namespace Sandbox::ecs {
     struct MovementKeys{

@@ -1,5 +1,5 @@
 #pragma once
-#include "Libs.h"
+#include "Syris/Libs.h"
 #include "../ecs/Bush.h"
 #include "../ecs/Tile.h"
 #include <FastNoiseLite.h>
@@ -64,10 +64,10 @@ namespace Sandbox::world_generator {
                     std::cerr << "noise value error: " << noise_value << '\n';
                 }
                 if (noise_value < 0.f){
-                    texture.src = texture::water_0;
+                    texture.src = texture::atlas::dirt_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Water);
                 }else{
-                    texture.src = texture::grass_0;
+                    texture.src = texture::atlas::grass_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Grass);
                 }
             }

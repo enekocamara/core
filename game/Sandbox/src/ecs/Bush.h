@@ -1,6 +1,6 @@
 #pragma  once
 
-#include "Libs.h"
+#include "Syris/Libs.h"
 #include "Components.h"
 #include "../texture/SandboxTexture.hpp"
 #include <entt.hpp>
@@ -16,7 +16,7 @@ namespace Sandbox::ecs::Bush {
     }
     static void interact(entt::registry& registry, entt::entity bush){
         auto [cHasBerries, cTexture] = registry.get<CHasBerrys, CTexture>(bush);
-        cTexture.rect = texture::bush_no_berries;
+        cTexture.rect = texture::atlas::bush_no_berries;
         cHasBerries.time_collected = std::chrono::high_resolution_clock::now();
         cHasBerries.value = false;
     }
@@ -33,7 +33,7 @@ namespace Sandbox::ecs::Bush {
         }
         if (time_since_berries_collected_ms > 3000){
             c_has_berries.value = true;
-            c_texture.rect = texture::bush_with_berries;
+            c_texture.rect = texture::atlas::bush_with_berries;
         }
     }
     inline entt::entity newBush(glm::vec2 pos, Syris::texture::Texture2DBundle texture,entt::registry& registry, entt::entity source){
@@ -48,7 +48,7 @@ namespace Sandbox::ecs::Bush {
     }
     inline Syris::texture::Texture2DBundle defaultTextureBundle(){
         return Syris::texture::Texture2DBundle{
-            .src = texture::bush_with_berries,
+            .src = texture::atlas::bush_with_berries,
             .size = {
                 (float)config::render_tile_size,
                 (float)config::render_tile_size

@@ -1,10 +1,12 @@
 #include "app/SandboxApp.hpp"
+#include "texture/SandboxTexture.hpp"
 #include "scene/SandboxScene.hpp"
-#include "renderer/Texture.h"
+#include "Syris/renderer/Texture.h"
+#include "Syris/log/Log.h"
 
 int main(){
-
-    Window::WindowBundle info = Window::WindowBundle{
+    //Syris::Logger::client_trace(std::format("{},{}", Sandbox::texture::atlas::grass_0.min, Sandbox::texture::atlas::grass_0.max).c_str());
+    Syris::Window::WindowBundle info = Syris::Window::WindowBundle{
         .dimmensions = glm::ivec2(1920, 1080),
         .name = std::string("hola"),
         .vSync = true,
@@ -24,14 +26,14 @@ int main(){
             .bottom = -1.0f
 
         }*/
-        .cameraCreateInfo = Syris::CameraOrthographic::CreateInfo{
-            .left =  -10.f * ratio,
-            .right = 10.0f * ratio,
-            .top = 10.f,
-            .bottom = -10.f
+        .cameraCreateInfo = Syris::OrthographicCameraController::CreateInfo{
+            .aspec_ratio = ratio,
+            .zoom_level = 10.f,
         }
     };
+
     Sandbox::SandboxApp app(app_info);
+    CHECK_GL_ERROR();
     app.run();
     return 0;
 }

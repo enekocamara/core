@@ -1,13 +1,15 @@
-#include "Texture.h"
-#include "../utils/file/readfile.h"
+#include <format>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#include "Syris/renderer/Texture.h"
+#include "Syris/log/Log.h"
 
 namespace Syris::texture{
     TextureAtlas::TextureAtlas(const char* path) : m_path(path) {}
     TextureAtlas::~TextureAtlas() {}
+
     void TextureAtlas::init() {
-        //   Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR);
         Texture2DCreateBundle bundle  = Texture2DCreateBundle{
             .internal_format = GL_RGBA,
                 .image_format = GL_RGBA,
@@ -23,8 +25,9 @@ namespace Syris::texture{
         m_id = std::numeric_limits<GLuint>::max();
         stbi_uc* pixels = stbi_load(path.c_str(), &m_width, &m_height, &m_tex_channels, STBI_rgb_alpha);
         if (!pixels){
-            std::cerr << "failed to read texture\n";
-            exit(1);
+            std::string error = std::format("Texture2D: failed to read image: path {}", path);
+            Logger::core_error(error.c_str());
+            throw std::runtime_error(error);
         }
         if (m_tex_channels != 4){
             std::cerr << "error reading texture channels" << m_tex_channels << '\n';
@@ -42,6 +45,11 @@ namespace Syris::texture{
         }
 
         glad_glGenTextures(1, &this->m_id);
+        if (m_id == std::numeric_limits<GLuint>::max()){
+            std::string error = std::format("Texture2D: failed to generate texture");
+            Logger::core_error(error.c_str());
+            throw std::runtime_error(error);
+        }
         glBindTexture(GL_TEXTURE_2D, this->m_id);
         // set Texture wrap and filter modes
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, create_bundle.wrap_s);
@@ -51,14 +59,8 @@ namespace Syris::texture{
 
         glTexImage2D(GL_TEXTURE_2D, 0, create_bundle.internal_format, m_width,
                 m_height, 0, create_bundle.image_format, GL_UNSIGNED_BYTE, flippedPixels.data());
-
-
         // unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
-        if (m_id == std::numeric_limits<GLuint>::max()){
-            std::cerr << "failed to create texture\n";
-            exit(1);
-        }
         std::cout << "texture id: " << m_id << '\n';
     }
     Texture2D::~Texture2D(){

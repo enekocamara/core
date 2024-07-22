@@ -20,6 +20,7 @@ project "Sandbox"
         "%{wks.location}/Syris/vendor/fastNoise",
         "%{wks.location}/Syris/vendor/glm",
         "%{wks.location}/Syris/vendor/stb",
+        "%{wks.location}/Syris/vendor/spdlog/include",
         "%{wks.location}/Syris/src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
@@ -38,7 +39,8 @@ project "Sandbox"
         defines
         {
             "PLATFORM_WINDOWS",
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "RENDER_API_OPENGL"
         }
 
 

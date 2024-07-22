@@ -1,5 +1,5 @@
 #include "Shader.hpp"
-#include "../utils/file/readfile.h"
+#include "Syris/utils/file/readfile.h"
 namespace shader{
     void checkCompileErrors(unsigned int shader_id){
         GLint result = GL_FALSE;

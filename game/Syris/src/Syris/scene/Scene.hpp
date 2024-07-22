@@ -1,6 +1,6 @@
 #pragma once
-#include "Libs.h"
-#include "renderer/renderer2D/Renderer.h"
+#include "Syris/Libs.h"
+#include "Syris/renderer/renderer2D/Renderer.h"
 namespace scene{
     class Scene{
         public:

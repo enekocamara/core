@@ -1,11 +1,12 @@
-#include "SandboxApp.hpp"
-#include "../scene/SandboxScene.hpp"
-#include "../ecs/Components.h"
-#include "renderer/Texture.h"
-#include "renderer/Shader.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "SandboxApp.hpp"
+#include "../scene/SandboxScene.hpp"
+#include "../ecs/Components.h"
+#include "Syris/renderer/Texture.h"
+#include "Syris/renderer/Shader.hpp"
+#include "Syris/input/Input.h"
 namespace Sandbox{
     SandboxApp::SandboxApp(SandboxApp::CreateInfo info) : m_window(info.window_bundle),
     m_texture_atlas(info.atlas_path),
@@ -17,20 +18,72 @@ namespace Sandbox{
         m_program = glCreateProgram();
         shader::compile_shader(m_program, info.vertex_shader_path, info.fragment_shader_path); 
         m_texture_atlas.init();
-    }
-    SandboxApp::~SandboxApp(){
+        m_time.init_time = std::chrono::high_resolution_clock::now();
+        Syris::Input::get(m_window.getWindow());
 
+        /*temp quad creation*/
+        float vertices[] = { 
+            // pos     //uv texture 
+            -1.0f,  1.0f,  0.0f, 1.0f,  // top-left
+            1.0f,  1.0f,  1.0f, 1.0f,  // top-right
+            1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
+
+            -1.0f,  1.0f,  0.0f, 1.0f,  // top-left
+            1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
+            -1.0f, -1.0f,  0.0f, 0.0f   // bottom-left
+        };
+
+        std::vector<Syris::VertexBuffer::AttributeLayout> layouts(2);
+        Syris::VertexBuffer::AttributeLayout layout_pos = {};
+        layout_pos.index_layout = 0;
+        layout_pos.values_count = 2;
+        layout_pos.normalize = false;
+        layout_pos.stride_count = 4;
+        layout_pos.skip_count = 0;
+        
+        Syris::VertexBuffer::AttributeLayout layout_tex = {};
+        layout_tex.index_layout = 1;
+        layout_tex.values_count = 2;
+        layout_tex.normalize = false;
+        layout_tex.stride_count = 4;
+        layout_tex.skip_count = 2;
+       
+        layouts[0] = layout_pos;
+        layouts[1] = layout_tex;
+
+        Syris::VertexBuffer::CreateInfo buffer_info = {};
+        buffer_info.data = vertices;
+        buffer_info.dynamic = true;
+        buffer_info.vertices_count = 6;
+        buffer_info.vertice_size = sizeof(float) * 4;
+        buffer_info.layouts = layouts.data();
+        buffer_info.layouts_count = layouts.size();
+
+        quad = new Syris::renderAPI::Quad2D(buffer_info);
+    }
+    
+    SandboxApp::~SandboxApp(){
+        delete quad;
     }
 
     void SandboxApp::run(){
+        m_time.last_frame = std::chrono::high_resolution_clock::now();
         while(!m_window.shouldWindowClose()){
+            CHECK_GL_ERROR();
+            std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();    
+            m_time.delta_time_ms = std::chrono::duration<float, std::milli>(now - m_time.last_frame).count();
+            glUseProgram(m_program);
             m_window.onUpdateStart();
+            m_camera.on_update(m_time);
             draw_frame();
             m_window.onUpdateEnd();
+            CHECK_GL_ERROR();
         }
     }
 
     void SandboxApp::draw_frame(){
+            CHECK_GL_ERROR();
+
         glUseProgram(m_program);
         /*glBindVertexArray(quad.m_vertex_array);
 
@@ -42,7 +95,9 @@ namespace Sandbox{
           */
 
         auto render_group = this->m_registry.group<>(entt::get<ecs::CTexture, ecs::CPosition, ecs::CTile>) ;
+        quad->buffer->unbind();
         draw_group(render_group);
+        CHECK_GL_ERROR();
 
     }
 
@@ -63,7 +118,8 @@ namespace Sandbox{
                    */
                 model = glm::scale(model, glm::vec3(0.5f,0.5f,1.0f)); // last scale
 
-                m_renderer.render_quad(m_program, quad, model, m_camera.get_view_projection_matrix(),texture, cTexture.rect ,glm::vec3(1.f));
+                CHECK_GL_ERROR();
+                m_renderer.draw_quad(m_program, quad, model, m_camera.getCamera().get_view_projection_matrix(),texture, cTexture.rect ,glm::vec3(1.f));
                 //std::cout << "position: " << cPosition.pos << '\n';
             }
             //exit(1);

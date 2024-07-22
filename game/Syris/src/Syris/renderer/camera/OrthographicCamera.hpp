@@ -15,6 +15,7 @@ namespace Syris{
 
             CameraOrthographic(CreateInfo createInfo);
 
+            void set_projection_matrix(CreateInfo info);
 
             void set_position(glm::vec3 position) {m_position = position;recalculate_view_matrix();}
             void set_rotation(float rotation) {m_rotation = rotation;recalculate_view_matrix();}
@@ -32,7 +33,8 @@ namespace Syris{
             glm::mat4 m_view_matrix;
             glm::mat4 m_view_projection_matrix;
 
-            glm::vec3 m_position = {0.0f, 0.f, 0.f};
-            float m_rotation = 0.f;
+            
+            glm::vec3 m_position = { 0.0f, 0.0f, 0.0f };
+            float m_rotation = 0.0f;
     };
 }

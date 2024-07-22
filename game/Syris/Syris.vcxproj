@@ -75,8 +75,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;vendor\spdlog\include;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -97,8 +97,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;vendor\spdlog\include;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -122,8 +122,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GAME_Dist;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_Dist;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;vendor\spdlog\include;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -144,32 +144,46 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\ECSSettings.h" />
-    <ClInclude Include="src\EngineTime.h" />
-    <ClInclude Include="src\Libs.h" />
-    <ClInclude Include="src\app\Window.h" />
-    <ClInclude Include="src\platform\OpenGl\imgui_impl_glfw.h" />
-    <ClInclude Include="src\platform\OpenGl\imgui_impl_opengl3.h" />
-    <ClInclude Include="src\platform\OpenGl\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="src\renderAPI\OpenGl\renderApi.h" />
-    <ClInclude Include="src\renderAPI\renderApi.h" />
-    <ClInclude Include="src\renderer\Camera.hpp" />
-    <ClInclude Include="src\renderer\Shader.hpp" />
-    <ClInclude Include="src\renderer\Texture.h" />
-    <ClInclude Include="src\renderer\renderer2D\Renderer.h" />
-    <ClInclude Include="src\scene\Scene.hpp" />
-    <ClInclude Include="src\utils\file\readfile.h" />
-    <ClInclude Include="src\utils\noise\PerlinNoise.hpp" />
+    <ClInclude Include="src\Syris\EngineTime.h" />
+    <ClInclude Include="src\Syris\Libs.h" />
+    <ClInclude Include="src\Syris\app\Window.h" />
+    <ClInclude Include="src\Syris\input\Input.h" />
+    <ClInclude Include="src\Syris\input\KeyCodes.h" />
+    <ClInclude Include="src\Syris\input\KeyCodesGLFW.h" />
+    <ClInclude Include="src\Syris\log\Log.h" />
+    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.hpp" />
+    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLVertexBuffer.hpp" />
+    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_glfw.h" />
+    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\Syris\renderAPI\OpenGl\renderApi.h" />
+    <ClInclude Include="src\Syris\renderAPI\renderApi.h" />
+    <ClInclude Include="src\Syris\renderer\IndexBuffer.hpp" />
+    <ClInclude Include="src\Syris\renderer\Shader.hpp" />
+    <ClInclude Include="src\Syris\renderer\Texture.h" />
+    <ClInclude Include="src\Syris\renderer\VertexBuffer.hpp" />
+    <ClInclude Include="src\Syris\renderer\camera\OrthographicCamera.hpp" />
+    <ClInclude Include="src\Syris\renderer\camera\OrthographicCameraController.hpp" />
+    <ClInclude Include="src\Syris\renderer\renderer2D\Renderer.h" />
+    <ClInclude Include="src\Syris\scene\Scene.hpp" />
+    <ClInclude Include="src\Syris\utils\file\readfile.h" />
+    <ClInclude Include="src\Syris\utils\noise\PerlinNoise.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app\Window.cpp" />
-    <ClCompile Include="src\platform\OpenGl\imgui_impl_glfw.cpp" />
-    <ClCompile Include="src\platform\OpenGl\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="src\renderer\Camera.cpp" />
-    <ClCompile Include="src\renderer\Shader.cpp" />
-    <ClCompile Include="src\renderer\Texture.cpp" />
-    <ClCompile Include="src\renderer\renderer2D\Renderer.cpp" />
-    <ClCompile Include="src\scene\Scene.cpp" />
+    <ClCompile Include="src\Syris\app\Window.cpp" />
+    <ClCompile Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\Syris\platform\OpenGl\OpenGlVertexBuffer.cpp" />
+    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\Syris\renderAPI\renderApi.cpp" />
+    <ClCompile Include="src\Syris\renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Syris\renderer\Shader.cpp" />
+    <ClCompile Include="src\Syris\renderer\Texture.cpp" />
+    <ClCompile Include="src\Syris\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Syris\renderer\camera\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Syris\renderer\camera\OrthographicCameraController.cpp" />
+    <ClCompile Include="src\Syris\renderer\renderer2D\Renderer.cpp" />
+    <ClCompile Include="src\Syris\scene\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

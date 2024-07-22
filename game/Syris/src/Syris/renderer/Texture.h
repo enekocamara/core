@@ -1,8 +1,7 @@
 #pragma once
-#include "../Libs.h"
-#include <array>
-#include <deque>
 #include <glad/glad.h>
+
+#include "Syris/Libs.h"
 
 class IEntityTexture;
 namespace Syris::texture {
@@ -29,9 +28,29 @@ namespace Syris::texture {
         unsigned int filter_max;
     };
 
+    /*
+     *@Brief 2D texture wrapper
+     *
+     * 2D texture wrapper, loads from path, binds with
+     * graphics API
+     */
     struct Texture2D {
-        Texture2D() { m_id = std::numeric_limits<GLuint>::max(); }
+        /**
+         * @Brief Loads a rgba image to a Texture2D
+         *
+         * Loads a rgba image to a Texture2D using stdbi library
+         * and binds it to opengl as a glTexImage2D
+         *
+         * @param path to the image
+         * @param Texture2DCreateBundle all the flags for opengl image
+         *
+         * @throws std::runtime_error if std_load fails to load
+         * or glad_glGenTextures fails
+         */ 
         Texture2D(std::string path, Texture2DCreateBundle createBundle);
+
+
+        Texture2D() { m_id = std::numeric_limits<GLuint>::max(); }
         void bind();
         Texture2D(const Texture2D& ref){
             *this = ref;
@@ -56,6 +75,12 @@ namespace Syris::texture {
             TextureAtlas(const char* path);
             ~TextureAtlas();
             Texture2D getTexture() const {return m_texture;}
+
+
+            /*
+            * @throws std::runtime_error if std_load fails to load
+            * or glad_glGenTextures fails
+            **/
             void init();
 
         private:

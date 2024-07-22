@@ -1,8 +1,9 @@
-#include "Renderer.h"
-#include "renderer/Texture.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "renderAPI/renderApi.h"
+
+#include "Renderer.h"
+#include "Syris/renderer/Texture.h"
+#include "Syris/renderAPI/renderApi.h"
 
 namespace Syris::renderer {
     Renderer2D::Renderer2D(entt::registry& registry) : m_registry(registry){
@@ -60,8 +61,8 @@ namespace Syris::renderer {
             cAnimated.animate(this->m_registry, entity, this->time, cTexture.texture);
         } 
     }*/
-    void Renderer2D::render_quad(int program, Quad2D quad, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
-        renderAPI::draw_quad2D(program, quad.m_vertex_array, quad.m_vertex_buffer, model, projection_view, texture, src, color); 
+    void Renderer2D::draw_quad(int program, renderAPI::Quad2D* quad, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
+        renderAPI::draw_quad(program, quad, model, projection_view, texture, src, color);
     }
     /*
     void Renderer2D::renderFrame(){
@@ -184,14 +185,31 @@ namespace Syris::renderer {
         }    
     } 
 */
-
-    Triangle2D::Triangle2D(){
+/*
+    Triangle2D::Triangle2D(VertexBuffer::CreateInfo info){
         float vertices[] = { 
             // pos      // tex
             -0.5f, -.5f,
             0.5f, -0.5f,
             0.0f, 0.5f,
         };
+
+        VertexBuffer::AttributeLayout layout = {};
+        layout.normalize = false;
+        layout.stride_number = 2;
+        layout.index_layout = 0;
+        layout.number_of_values = 2;
+
+        VertexBuffer::CreateInfo info = {};
+        info.data = vertices;
+        info.dynamic = true;
+        info.layouts = &layout;
+        info.number_of_layouts = 1;
+        info.num_of_vertices = 3;
+        info.size_of_vertice = sizeof(float) * 2;
+
+        buffer = VertexBuffer(info); 
+
         glGenVertexArrays(1, &m_vertex_array);
         glBindVertexArray(m_vertex_array);
         glGenBuffers(1, &m_vertex_buffer);
@@ -204,31 +222,5 @@ namespace Syris::renderer {
     Triangle2D::~Triangle2D(){
 
     }
-    Quad2D::Quad2D(){
-        float vertices[] = { 
-            // pos     //uv texture 
-            -1.0f,  1.0f,  0.0f, 1.0f,  // top-left
-            1.0f,  1.0f,  1.0f, 1.0f,  // top-right
-            1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
-
-            -1.0f,  1.0f,  0.0f, 1.0f,  // top-left
-            1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
-            -1.0f, -1.0f,  0.0f, 0.0f   // bottom-left
-        };
-        glGenVertexArrays(1, &m_vertex_array);
-        glBindVertexArray(m_vertex_array);
-
-        glGenBuffers(1, &m_vertex_buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
-        
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-    }
-    Quad2D::~Quad2D(){
-
-    }
+    */
 }

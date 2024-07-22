@@ -23,6 +23,7 @@ project "Syris"
         "vendor/fastNoise",
         "vendor/glm",
         "vendor/stb",
+        "vendor/spdlog/include",
         "src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
@@ -44,7 +45,8 @@ project "Syris"
         defines
         {
             "PLATFORM_WINDOWS",
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "RENDER_API_OPENGL"
         }
 
 

@@ -78,8 +78,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Syris\vendor\entt;..\Syris\vendor\fastNoise;..\Syris\vendor\glm;..\Syris\vendor\stb;..\Syris\src;..\Syris\vendor\GLFW\include;..\Syris\vendor\Glad\include;..\Syris\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Syris\vendor\entt;..\Syris\vendor\fastNoise;..\Syris\vendor\glm;..\Syris\vendor\stb;..\Syris\vendor\spdlog\include;..\Syris\src;..\Syris\vendor\GLFW\include;..\Syris\vendor\Glad\include;..\Syris\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -97,8 +97,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Syris\vendor\entt;..\Syris\vendor\fastNoise;..\Syris\vendor\glm;..\Syris\vendor\stb;..\Syris\src;..\Syris\vendor\GLFW\include;..\Syris\vendor\Glad\include;..\Syris\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Syris\vendor\entt;..\Syris\vendor\fastNoise;..\Syris\vendor\glm;..\Syris\vendor\stb;..\Syris\vendor\spdlog\include;..\Syris\src;..\Syris\vendor\GLFW\include;..\Syris\vendor\Glad\include;..\Syris\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -119,8 +119,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GAME_Dist;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Syris\vendor\entt;..\Syris\vendor\fastNoise;..\Syris\vendor\glm;..\Syris\vendor\stb;..\Syris\src;..\Syris\vendor\GLFW\include;..\Syris\vendor\Glad\include;..\Syris\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_Dist;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Syris\vendor\entt;..\Syris\vendor\fastNoise;..\Syris\vendor\glm;..\Syris\vendor\stb;..\Syris\vendor\spdlog\include;..\Syris\src;..\Syris\vendor\GLFW\include;..\Syris\vendor\Glad\include;..\Syris\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

@@ -4,6 +4,12 @@
     <Filter Include="app">
       <UniqueIdentifier>{665E880B-D267-887C-5BE3-9E7CC7EB937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{078D880B-7396-887C-FC11-9F7C681A947C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="platform">
       <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
     </Filter>
@@ -18,6 +24,9 @@
     </Filter>
     <Filter Include="renderer">
       <UniqueIdentifier>{9C6AA017-8837-FB22-B150-E9CA9D7C30B1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer\camera">
+      <UniqueIdentifier>{B48BDB8D-2017-4952-2928-CC469532A552}</UniqueIdentifier>
     </Filter>
     <Filter Include="renderer\renderer2D">
       <UniqueIdentifier>{18015474-8462-3182-0DD0-773479306841}</UniqueIdentifier>
@@ -36,72 +45,116 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ECSSettings.h" />
-    <ClInclude Include="src\EngineTime.h" />
-    <ClInclude Include="src\Libs.h" />
-    <ClInclude Include="src\app\Window.h">
+    <ClInclude Include="src\Syris\EngineTime.h" />
+    <ClInclude Include="src\Syris\Libs.h" />
+    <ClInclude Include="src\Syris\app\Window.h">
       <Filter>app</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform\OpenGl\imgui_impl_glfw.h">
+    <ClInclude Include="src\Syris\input\Input.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\input\KeyCodes.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\input\KeyCodesGLFW.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\log\Log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.hpp">
       <Filter>platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform\OpenGl\imgui_impl_opengl3.h">
+    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLVertexBuffer.hpp">
       <Filter>platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform\OpenGl\imgui_impl_opengl3_loader.h">
+    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_glfw.h">
       <Filter>platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderAPI\OpenGl\renderApi.h">
+    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.h">
+      <Filter>platform\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h">
+      <Filter>platform\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\renderAPI\OpenGl\renderApi.h">
       <Filter>renderAPI\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderAPI\renderApi.h">
+    <ClInclude Include="src\Syris\renderAPI\renderApi.h">
       <Filter>renderAPI</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Camera.hpp">
+    <ClInclude Include="src\Syris\renderer\IndexBuffer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Shader.hpp">
+    <ClInclude Include="src\Syris\renderer\Shader.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Texture.h">
+    <ClInclude Include="src\Syris\renderer\Texture.h">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\renderer2D\Renderer.h">
+    <ClInclude Include="src\Syris\renderer\VertexBuffer.hpp">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\renderer\camera\OrthographicCamera.hpp">
+      <Filter>renderer\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\renderer\camera\OrthographicCameraController.hpp">
+      <Filter>renderer\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\renderer\renderer2D\Renderer.h">
       <Filter>renderer\renderer2D</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\Scene.hpp">
+    <ClInclude Include="src\Syris\scene\Scene.hpp">
       <Filter>scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\file\readfile.h">
+    <ClInclude Include="src\Syris\utils\file\readfile.h">
       <Filter>utils\file</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\noise\PerlinNoise.hpp">
+    <ClInclude Include="src\Syris\utils\noise\PerlinNoise.hpp">
       <Filter>utils\noise</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app\Window.cpp">
+    <ClCompile Include="src\Syris\app\Window.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\OpenGl\imgui_impl_glfw.cpp">
+    <ClCompile Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.cpp">
       <Filter>platform\OpenGl</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\OpenGl\imgui_impl_opengl3.cpp">
+    <ClCompile Include="src\Syris\platform\OpenGl\OpenGlVertexBuffer.cpp">
       <Filter>platform\OpenGl</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\Camera.cpp">
+    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_glfw.cpp">
+      <Filter>platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp">
+      <Filter>platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\renderAPI\renderApi.cpp">
+      <Filter>renderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\renderer\IndexBuffer.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\Shader.cpp">
+    <ClCompile Include="src\Syris\renderer\Shader.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\Texture.cpp">
+    <ClCompile Include="src\Syris\renderer\Texture.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\renderer2D\Renderer.cpp">
+    <ClCompile Include="src\Syris\renderer\VertexBuffer.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\renderer\camera\OrthographicCamera.cpp">
+      <Filter>renderer\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\renderer\camera\OrthographicCameraController.cpp">
+      <Filter>renderer\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\renderer\renderer2D\Renderer.cpp">
       <Filter>renderer\renderer2D</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\Scene.cpp">
+    <ClCompile Include="src\Syris\scene\Scene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
   </ItemGroup>

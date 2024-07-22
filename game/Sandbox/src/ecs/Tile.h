@@ -1,10 +1,11 @@
 #pragma once
-#include "Libs.h"
 #include <entt.hpp>
-#include "Components.h"
-#include "Bush.h"
 #include <cstdlib>
 #include <ctime>
+
+#include "Syris/Libs.h"
+#include "Components.h"
+#include "Bush.h"
 namespace Sandbox::ecs::Tile {
     static void tick(entt::registry& registry, entt::entity entity, Syris::engine_time::Time time){
         auto[c_composition, c_position, c_tile] = registry.get<CComposition, CPosition, CTile>(entity);
@@ -26,7 +27,7 @@ namespace Sandbox::ecs::Tile {
     }
     inline Syris::texture::Texture2DBundle defaultTextureBundle(){
         return Syris::texture::Texture2DBundle{
-            .src = texture::grass_0,
+            .src = texture::atlas::grass_0,
             .size = {(float)config::render_tile_size, (float)config::render_tile_size},
                 ///       .color = RAYWHITE,
                 ///       .rotation = 0

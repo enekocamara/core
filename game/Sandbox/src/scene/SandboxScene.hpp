@@ -1,6 +1,6 @@
 #pragma once
-#include "scene/Scene.hpp"
-#include "Libs.h"
+#include "Syris/scene/Scene.hpp"
+#include "Syris/Libs.h"
 
 namespace Sandbox{
     class SandboxScene : public scene::Scene{

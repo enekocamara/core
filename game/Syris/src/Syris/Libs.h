@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
-//#include "raylib.h"
+#include <glad/glad.h>
+
 #include "glm/glm.hpp"
 #include <chrono>
 #include <span>
@@ -20,6 +21,7 @@ inline std::ostream& operator<<(std::ostream &os, const glm::ivec2 &vec) {
     os << vec.x << ',' << vec.y;
     return os;
 }
+
 namespace config{
     static constexpr size_t tile_size = 16;
     static constexpr size_t render_tile_size = 64;
@@ -29,3 +31,12 @@ namespace config{
     };
 
 }
+
+#define CHECK_GL_ERROR() \
+    { \
+        GLenum err = glGetError(); \
+        if (err != GL_NO_ERROR) \
+        { \
+            std::cerr << "OpenGL Error: " << err << " (" << __FILE__ << ":" << __LINE__ << ")" << std::endl; \
+        } \
+    }
