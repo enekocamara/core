@@ -15,7 +15,7 @@ namespace Syris{
 
     }
     void OpenGLIndexBuffer::bind(){
-
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,m_buffer);
     }
     void OpenGLIndexBuffer::unbind(){
 

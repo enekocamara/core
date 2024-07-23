@@ -76,6 +76,7 @@ namespace Syris{
         glfwPollEvents();
 
         int display_w, display_h;
+
         glfwGetFramebufferSize(m_window, &display_w, &display_h);
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(display_w, display_h);
@@ -90,6 +91,7 @@ namespace Syris{
 
         // Rendering
         ImGui::Render();
+
         glfwGetFramebufferSize(m_window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -102,7 +104,7 @@ namespace Syris{
     void Window::onUpdateEnd(){
         int display_w, display_h;
         glfwGetFramebufferSize(m_window, &display_w, &display_h);
-        
+
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(display_w, display_h);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -112,7 +114,6 @@ namespace Syris{
             exit(1);
         }
         glfwMakeContextCurrent(backup_current_context);
-        
         // Update and Render additional Platform Windows
         // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
         //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)

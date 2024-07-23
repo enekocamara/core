@@ -83,13 +83,22 @@
     <ClInclude Include="src\Syris\renderAPI\renderApi.h">
       <Filter>renderAPI</Filter>
     </ClInclude>
+    <ClInclude Include="src\Syris\renderer\AttributeLayoutList.hpp">
+      <Filter>renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Syris\renderer\IndexBuffer.hpp">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\renderer\RenderBuffer.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Syris\renderer\Shader.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Syris\renderer\Texture.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Syris\renderer\VertexArray.hpp">
       <Filter>renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Syris\renderer\VertexBuffer.hpp">
@@ -133,7 +142,13 @@
     <ClCompile Include="src\Syris\renderAPI\renderApi.cpp">
       <Filter>renderAPI</Filter>
     </ClCompile>
+    <ClCompile Include="src\Syris\renderer\AttributeLayoutList.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Syris\renderer\IndexBuffer.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Syris\renderer\RenderBuffer.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Syris\renderer\Shader.cpp">

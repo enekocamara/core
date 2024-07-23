@@ -13,5 +13,8 @@ void main()
     vec4 texColor = texture(texture1, TexCoord);
 
     // Multiply the sampled color with the sprite color
-    FragColor = vec4(texColor.rgb * spriteColor, texColor.a); // Preserve the alpha channel
+
+    FragColor = vec4(texColor.rgb * spriteColor, 1.f); // Preserve the alpha channel
+  //  FragColor  = vec4(1.f, 0.f,0.f,1.0f);
+//    FragColor = Color; // Preserve the alpha channel
 }

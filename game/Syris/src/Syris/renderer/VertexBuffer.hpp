@@ -1,29 +1,39 @@
 #pragma once
-#include <iostream>
-
-#include <memory>
-namespace Syris{
+#include "AttributeLayoutList.hpp"
+namespace Syris::renderer{
 
     class VertexBuffer{
         public:
-            struct AttributeLayout{
-                uint32_t index_layout;
-                uint32_t values_count;
-                bool normalize;
-                uint32_t stride_count;
-                uint32_t skip_count;
+            /*
+             * AttributeLayoutList layout_list;
+             * void *data;
+             * uint32_t size;
+             */ 
+            struct BufferInfo{
+                AttributeLayoutList layout_list;
+                uint32_t size;
+                void *data;
             };
+
+            /*
+             * @brief members:
+             *
+             * bool dynamic;
+             * std::span<BufferInfo> buffers_info;
+             */ 
             struct CreateInfo{
                 bool dynamic;
-                uint32_t vertice_size;
-                uint32_t vertices_count;
-                void *data;
-                AttributeLayout* layouts;
-                uint32_t layouts_count;
+                std::span<BufferInfo> buffers_info;
             };
+            /*
+             * @brief returns a memory owning pointer to a vertex buffer
+             *
+             * the pointer is an abstrabtion over the current render api target
+             * vertex buffer
+             */
             static VertexBuffer* create(CreateInfo info);
-            virtual void bind() = 0;
-            virtual void unbind() = 0;
+            virtual void bind(uint32_t index) = 0;
+            virtual void unbind(uint32_t index) = 0;
             virtual ~VertexBuffer(){};
     };
 }

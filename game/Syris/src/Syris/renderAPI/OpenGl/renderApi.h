@@ -20,7 +20,7 @@ namespace Syris::renderAPI{
         glUniform3f(glGetUniformLocation(program, name),value.x, value.y, value.z);
     }
 
-    static void opengl_draw_quad2D(int program, OpenGLVertexBuffer* buffer, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
+    static void opengl_draw_quad2D(int program, renderer::OpenGLVertexBuffer* buffer, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
         if (!glIsTexture(texture.m_id)) {
             std::cerr << "Invalid texture ID! " << texture.m_id << std::endl;
             exit(1);
@@ -48,11 +48,11 @@ namespace Syris::renderAPI{
         };*/
 
         // Bind vao vbo
-        buffer->bind();
+        //buffer->bind();
+        CHECK_GL_ERROR();
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(updated_vertices), updated_vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        CHECK_GL_ERROR();
         set_uniform_value(program, projection_view, "ViewProjection");
         set_uniform_value(program, model, "model");
         //set_uniform_value(program, model, "model");

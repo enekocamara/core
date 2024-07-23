@@ -48,10 +48,6 @@ namespace shader{
             glGetProgramInfoLog(program_id, info_log_length, NULL, &ProgramErrorMessage[0]);
             throw std::runtime_error(&ProgramErrorMessage[0]);
         }
-
-        glDetachShader(program_id, vertex_shader_id);
-        glDetachShader(program_id, fragment_shader_id);
-
         glDeleteShader(vertex_shader_id);
         glDeleteShader(fragment_shader_id);
     }

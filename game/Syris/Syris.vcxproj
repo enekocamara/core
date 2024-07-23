@@ -158,9 +158,12 @@
     <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\Syris\renderAPI\OpenGl\renderApi.h" />
     <ClInclude Include="src\Syris\renderAPI\renderApi.h" />
+    <ClInclude Include="src\Syris\renderer\AttributeLayoutList.hpp" />
     <ClInclude Include="src\Syris\renderer\IndexBuffer.hpp" />
+    <ClInclude Include="src\Syris\renderer\RenderBuffer.hpp" />
     <ClInclude Include="src\Syris\renderer\Shader.hpp" />
     <ClInclude Include="src\Syris\renderer\Texture.h" />
+    <ClInclude Include="src\Syris\renderer\VertexArray.hpp" />
     <ClInclude Include="src\Syris\renderer\VertexBuffer.hpp" />
     <ClInclude Include="src\Syris\renderer\camera\OrthographicCamera.hpp" />
     <ClInclude Include="src\Syris\renderer\camera\OrthographicCameraController.hpp" />
@@ -176,7 +179,9 @@
     <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\Syris\renderAPI\renderApi.cpp" />
+    <ClCompile Include="src\Syris\renderer\AttributeLayoutList.cpp" />
     <ClCompile Include="src\Syris\renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Syris\renderer\RenderBuffer.cpp" />
     <ClCompile Include="src\Syris\renderer\Shader.cpp" />
     <ClCompile Include="src\Syris\renderer\Texture.cpp" />
     <ClCompile Include="src\Syris\renderer\VertexBuffer.cpp" />

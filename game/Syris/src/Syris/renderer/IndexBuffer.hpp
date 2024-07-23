@@ -13,6 +13,13 @@ namespace Syris{
             virtual ~IndexBuffer(){};
             virtual void bind() = 0;
             virtual void unbind() = 0;
+
+            /*
+             * @brief returns a memory owning pointer to a index buffer
+             *
+             * the pointer is an abstrabtion over the current render api target
+             * index buffer
+             */
             static IndexBuffer* create(CreateInfo info);
     };
 }

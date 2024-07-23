@@ -5,9 +5,13 @@
 #include "Syris/renderer/renderer2D/Renderer.h"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
 #include  "Syris/renderer/Texture.h"
+#include "Syris/renderer/RenderBuffer.hpp"
 #include "Syris/renderAPI/renderApi.h"
 
 namespace Sandbox{
+
+    struct SimpleVertex{};
+
     class SandboxApp{
         public:
             struct CreateInfo{
@@ -28,7 +32,6 @@ namespace Sandbox{
                 void draw_group(Group& group);
 
             Syris::Window m_window;
-            Syris::texture::TextureAtlas m_texture_atlas;
             scene::Scene* m_scene;
             Syris::renderer::Renderer2D m_renderer;
             entt::registry& m_registry;
