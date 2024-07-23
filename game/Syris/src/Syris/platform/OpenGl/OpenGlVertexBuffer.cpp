@@ -27,14 +27,14 @@ namespace Syris::renderer {
 
             for (uint32_t i = 0; i < buffer_info.layout_list.size(); i++){
                 auto& layout = buffer_info.layout_list[i];
-                glEnableVertexAttribArray(layout.index_layout);
                 if (layout.value_type != ValueType::Float){
                     Logger::core_error("TODO! Value type different to float");
                     exit(1);
                 }
-                glVertexAttribPointer(layout.index_layout, layout.values_count, GL_FLOAT, layout.normalize, layout.stride_size, layout.skip_size);
+                glVertexAttribPointer(layout.index_layout, layout.values_count, GL_FLOAT, layout.normalize, layout.stride_size, (void*)layout.skip_size);
                 if (layout.perInstance)
                     glVertexAttribDivisor(layout.index_layout,1);
+                glEnableVertexAttribArray(layout.index_layout);
 
 //                glVertexAttribDivisor(layout.index_layout, static_cast<GLuint>(layout.perInstance));
             }

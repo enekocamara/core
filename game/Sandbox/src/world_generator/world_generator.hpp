@@ -63,7 +63,7 @@ namespace Sandbox::world_generator {
                 if (noise_value > 1.f || noise_value < -1.f){
                     std::cerr << "noise value error: " << noise_value << '\n';
                 }
-                if (noise_value < 0.f){
+                if (noise_value < 0.3f){
                     texture.src = texture::atlas::dirt_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Water);
                 }else{

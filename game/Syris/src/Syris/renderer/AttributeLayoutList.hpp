@@ -41,7 +41,7 @@ namespace Syris::renderer{
         bool perInstance;
         bool normalize;
         uint32_t stride_size;
-        void* skip_size;
+        uint32_t skip_size;
     };
 
     class AttributeLayoutList{

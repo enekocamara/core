@@ -9,7 +9,7 @@ namespace Syris::renderer{
                 .value_type = layout_info.value_type,
                 .perInstance = layout_info.perInstance,
                 .normalize = layout_info.normalize,
-                .skip_size = (void *)m_stride_size,
+                .skip_size = m_stride_size,
             };
 
             m_stride_size += sizeof_ValueType(layout.value_type) * layout_info.values_count; 
@@ -30,7 +30,7 @@ namespace Syris::renderer{
             .value_type = layout_info.value_type,
             .perInstance = layout_info.perInstance,
             .normalize = layout_info.normalize,
-            .skip_size = (void *)m_stride_size,
+            .skip_size = m_stride_size,
         };
         m_stride_size += sizeof_ValueType(layout.value_type) * layout_info.values_count;  
         for (auto& layout : m_layouts){
