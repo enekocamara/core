@@ -1,6 +1,7 @@
 #include "RenderBuffer.hpp"
 #include <array>
-#include "Syris/renderAPI/OpenGl/renderApi.h"
+#include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
+#include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 namespace Syris::renderer{
     RenderBuffer::RenderBuffer(CreateInfo info){
         std::array<VertexBuffer::BufferInfo, 2> buffers{info.per_vertex_buffer_info, info.per_instance_buffer_info};
@@ -38,10 +39,7 @@ namespace Syris::renderer{
         texture.bind();
         glUniform1i(glGetUniformLocation(program, "texture1"), 0);
         renderAPI::set_uniform_value(program, glm::vec3(1.f), "spriteColor");
-        GLenum err;
-        while ((err = glGetError()) != GL_NO_ERROR) {
-            std::cerr << "OpenGL Error: " << err << std::endl;
-        }
+        CHECK_GL_ERROR();
         glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, instances);
     }
 }

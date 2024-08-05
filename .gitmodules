@@ -7,3 +7,6 @@
 [submodule "game/Syris/vendor/spdlog"]
 	path = game/Syris/vendor/spdlog
 	url = git@github.com:gabime/spdlog.git
+[submodule "game/Syris/vendor/hpx"]
+	path = game/Syris/vendor/hpx
+	url = https://github.com/STEllAR-GROUP/hpx.git

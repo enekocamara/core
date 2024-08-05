@@ -1,13 +1,14 @@
 #include "Window.h"
 #include "Syris/log/Log.h"
+#include "imgui.h"
 
 namespace Syris{
     void GLAPIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
     {
         if (severity == GL_DEBUG_SEVERITY_HIGH)
         {
-            Logger::core_error(message);
-            throw std::runtime_error("a");
+            CORE_ERROR(message);
+            throw std::runtime_error(message);
             exit(1);
         }
     }
@@ -24,7 +25,7 @@ namespace Syris{
     void Window::init(){
         int code = glfwInit();
         if (code != GLFW_TRUE){
-            Logger::core_error(std::format("Failed to init window: error code: {}", code).c_str());
+            CORE_ERROR(std::format("Failed to init window: error code: {}", code));
             exit(1);
         }
 
@@ -39,13 +40,13 @@ namespace Syris{
 
         m_window = glfwCreateWindow(m_info.dimmensions.x, m_info.dimmensions.y, m_info.name.c_str(), nullptr, nullptr);
         if (!m_window){
-            Logger::core_error("Failed to create window");
+            CORE_ERROR("Failed to create window");
             exit(1);
         }
         glfwMakeContextCurrent(m_window);
         int status  = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         if (!status){
-            Logger::core_error("Failed to load gl loader");
+            CORE_ERROR("Failed to load gl loader");
             exit(1);
         }
         glfwSetWindowUserPointer(m_window, &m_info);
@@ -61,11 +62,11 @@ namespace Syris{
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
         if (!ImGui_ImplGlfw_InitForOpenGL(m_window, true)){
-            Logger::core_error("failed to initialize ImGui_ImplGlfw for Opengl");
+            CORE_ERROR("failed to initialize ImGui_ImplGlfw for Opengl");
             exit(1);
         }
         if (!ImGui_ImplOpenGL3_Init(glsl_version)){
-            Logger::core_error("failed to initialize ImGui_ImplOpengl3 with GLSL version");
+            CORE_ERROR("failed to initialize ImGui_ImplOpengl3 with GLSL version");
             exit(1);
         }
     }
@@ -85,9 +86,14 @@ namespace Syris{
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        bool show_demo_window = false;
+        ImGui::Begin("Settings");
+        ImGui::Button("hello");
+        float value = 1.f;
+        ImGui::DragFloat("value", &value);
+        ImGui::End();
+//        bool show_demo_window = false;
 
-        ImGui::ShowDemoWindow(&show_demo_window);
+//        ImGui::ShowDemoWindow(&show_demo_window);
 
         // Rendering
         ImGui::Render();
@@ -110,7 +116,7 @@ namespace Syris{
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
         if (!backup_current_context){
-            Logger::core_error("failed to back up glfw current context");
+            CORE_ERROR("failed to back up glfw current context");
             exit(1);
         }
         glfwMakeContextCurrent(backup_current_context);

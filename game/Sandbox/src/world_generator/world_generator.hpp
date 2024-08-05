@@ -1,8 +1,9 @@
 #pragma once
-#include "Syris/Libs.h"
+#include <FastNoiseLite.h>
+#include "Syris/log/Log.h"
 #include "../ecs/Bush.h"
 #include "../ecs/Tile.h"
-#include <FastNoiseLite.h>
+
 
 namespace Sandbox::world_generator { 
     template<glm::u32 x, glm::u32 y>
@@ -61,7 +62,7 @@ namespace Sandbox::world_generator {
             for (size_t x = 0; x < map_config.num_tiles_x; x++){
                 float noise_value = noise.GetNoise((float)x, (float)y);
                 if (noise_value > 1.f || noise_value < -1.f){
-                    std::cerr << "noise value error: " << noise_value << '\n';
+                    Syris::Logger::client_info(std::format("noise value error: {}", noise_value).c_str());
                 }
                 if (noise_value < 0.3f){
                     texture.src = texture::atlas::dirt_0;

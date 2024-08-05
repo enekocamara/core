@@ -21,6 +21,7 @@ project "Sandbox"
         "%{wks.location}/Syris/vendor/glm",
         "%{wks.location}/Syris/vendor/stb",
         "%{wks.location}/Syris/vendor/spdlog/include",
+        "%{wks.location}/Syris/vendor/nlohmannJson",
         "%{wks.location}/Syris/src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",

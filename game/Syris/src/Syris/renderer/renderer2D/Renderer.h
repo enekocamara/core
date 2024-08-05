@@ -1,10 +1,9 @@
 #pragma once
 #include <array>
+#include <entt.hpp>
 
-#include "Syris/Libs.h"
 #include "Syris/renderer/Texture.h"
-#include "Syris/EngineTime.h"
-#include "Syris/renderer/VertexBuffer.hpp"
+#include "Syris/utils/EngineTime.h"
 #include "Syris/renderAPI/renderApi.h"
 
 namespace Syris::renderer{

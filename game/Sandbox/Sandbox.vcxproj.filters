@@ -1,58 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="app">
-      <UniqueIdentifier>{665E880B-D267-887C-5BE3-9E7CC7EB937C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ecs">
-      <UniqueIdentifier>{C06D880B-2C77-887C-B5F2-9E7C21FB937C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="scene">
-      <UniqueIdentifier>{D3075810-3F1C-80C1-089E-232174717CF2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="texture">
-      <UniqueIdentifier>{964579D9-0225-F874-0B3D-834B779B5ED6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="world_generator">
-      <UniqueIdentifier>{F329C2E2-5FB5-2FA7-68C6-B29BD4D08BA7}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\app\SandboxApp.cpp">
+      <Filter>src\app</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\scene\SandboxScene.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\app\SandboxApp.hpp">
-      <Filter>app</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\app\SandboxApp.hpp">
+      <Filter>src\app</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\Bush.h">
-      <Filter>ecs</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\ecs\Bush.h">
+      <Filter>src\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\Components.h">
-      <Filter>ecs</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\ecs\Components.h">
+      <Filter>src\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\Mushroom.h">
-      <Filter>ecs</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\ecs\Mushroom.h">
+      <Filter>src\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\Player.h">
-      <Filter>ecs</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\ecs\Player.h">
+      <Filter>src\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\Tile.h">
-      <Filter>ecs</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\ecs\Tile.h">
+      <Filter>src\ecs</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\SandboxScene.hpp">
-      <Filter>scene</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\scene\SandboxScene.hpp">
+      <Filter>src\scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\texture\SandboxTexture.hpp">
-      <Filter>texture</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\texture\SandboxTexture.hpp">
+      <Filter>src\texture</Filter>
     </ClInclude>
-    <ClInclude Include="src\world_generator\world_generator.hpp">
-      <Filter>world_generator</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Sandbox\src\world_generator\world_generator.hpp">
+      <Filter>src\world_generator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app\SandboxApp.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\scene\SandboxScene.cpp">
-      <Filter>scene</Filter>
-    </ClCompile>
+    <CustomBuild Include="C:\Users\eneko\dev\asharis\game\Sandbox\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{3E367FAC-FC87-349F-82AE-1009A18F97CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\app">
+      <UniqueIdentifier>{8C1F53F2-F8D5-378E-93DC-A17FCE035606}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ecs">
+      <UniqueIdentifier>{5BD26495-B793-3A38-BEED-45C2EADF7E1A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scene">
+      <UniqueIdentifier>{BB5D7EB0-9E96-39FA-B160-92F449F51E16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\texture">
+      <UniqueIdentifier>{A0406176-F8BB-31D7-B067-1F4A2A432F87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\world_generator">
+      <UniqueIdentifier>{DFAD396A-005A-3DC7-8803-25EBD601A98B}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

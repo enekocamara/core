@@ -26,11 +26,11 @@ namespace Syris::texture{
         stbi_uc* pixels = stbi_load(path.c_str(), &m_width, &m_height, &m_tex_channels, STBI_rgb_alpha);
         if (!pixels){
             std::string error = std::format("Texture2D: failed to read image: path {}", path);
-            Logger::core_error(error.c_str());
+            CORE_ERROR(error.c_str());
             throw std::runtime_error(error);
         }
         if (m_tex_channels != 4){
-            std::cerr << "error reading texture channels" << m_tex_channels << '\n';
+            CORE_ERROR(std::format("Error reading texture channels {}", m_tex_channels));
             exit(1);
         }
         int rowStride = m_width * 4; // 4 bytes per pixel (RGBA)
@@ -47,7 +47,7 @@ namespace Syris::texture{
         glad_glGenTextures(1, &this->m_id);
         if (m_id == std::numeric_limits<GLuint>::max()){
             std::string error = std::format("Texture2D: failed to generate texture");
-            Logger::core_error(error.c_str());
+            CORE_ERROR(error);
             throw std::runtime_error(error);
         }
         glBindTexture(GL_TEXTURE_2D, this->m_id);
@@ -61,7 +61,7 @@ namespace Syris::texture{
                 m_height, 0, create_bundle.image_format, GL_UNSIGNED_BYTE, flippedPixels.data());
         // unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
-        std::cout << "texture id: " << m_id << '\n';
+        CORE_INFO(std::format("Texture id: {}", m_id));
     }
     Texture2D::~Texture2D(){
     }

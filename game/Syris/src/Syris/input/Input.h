@@ -22,7 +22,7 @@ namespace Syris {
         private:
             Input(GLFWwindow* window){
                 if (window == nullptr){
-                    Logger::core_error("Input constructor called with nullptr window parameter");
+                    CORE_ERROR("Input constructor called with nullptr window parameter");
                     throw std::runtime_error("Input constructor called with nullptr window parameter");
                 }
                 m_initialized = true;

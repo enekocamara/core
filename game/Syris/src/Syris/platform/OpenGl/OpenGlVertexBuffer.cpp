@@ -6,7 +6,7 @@ namespace Syris::renderer {
     OpenGLVertexBuffer::OpenGLVertexBuffer(CreateInfo info){    
         glGenVertexArrays(1, &m_vertex_array);
         if (m_vertex_array == NotSet){
-            Logger::core_error("error generating vertex array");
+            CORE_ERROR("Failed to generate vertex array");
             exit(1);
         }
         glBindVertexArray(m_vertex_array);
@@ -28,7 +28,7 @@ namespace Syris::renderer {
             for (uint32_t i = 0; i < buffer_info.layout_list.size(); i++){
                 auto& layout = buffer_info.layout_list[i];
                 if (layout.value_type != ValueType::Float){
-                    Logger::core_error("TODO! Value type different to float");
+                    CORE_ERROR("TODO! Value type different to float");
                     exit(1);
                 }
                 glVertexAttribPointer(layout.index_layout, layout.values_count, GL_FLOAT, layout.normalize, layout.stride_size, (void*)layout.skip_size);
@@ -40,7 +40,7 @@ namespace Syris::renderer {
             }
             GLenum error = glGetError();
             if (error != GL_NO_ERROR) {
-                Logger::core_error(std::format("Opengl error: {}", error).c_str());
+                CORE_ERROR(std::format("OpenGL error: {}", error));
                 exit(1);
             }
             buffer_index++;

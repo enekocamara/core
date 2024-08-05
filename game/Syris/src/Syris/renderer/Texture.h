@@ -1,7 +1,7 @@
 #pragma once
+#include <string>
 #include <glad/glad.h>
-
-#include "Syris/Libs.h"
+#include <glm/glm.hpp>
 
 class IEntityTexture;
 namespace Syris::texture {

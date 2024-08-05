@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -9,196 +12,351 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Dist|x64">
-      <Configuration>Dist</Configuration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BF3E210E-2B53-49BF-F4D4-EC1E60A845F0}</ProjectGuid>
-    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <ProjectGuid>{50D4C3CD-84BB-3A37-881D-B2AF7675DC12}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Syris</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>Syris</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\Debug-windows-x86_64\Syris\</OutDir>
-    <IntDir>..\bin\-intDebug-windows-x86_64\Syris\</IntDir>
-    <TargetName>Syris</TargetName>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\Release-windows-x86_64\Syris\</OutDir>
-    <IntDir>..\bin\-intRelease-windows-x86_64\Syris\</IntDir>
-    <TargetName>Syris</TargetName>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <OutDir>..\bin\Dist-windows-x86_64\Syris\</OutDir>
-    <IntDir>..\bin\-intDist-windows-x86_64\Syris\</IntDir>
-    <TargetName>Syris</TargetName>
-    <TargetExt>.lib</TargetExt>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\eneko\dev\asharis\game\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Syris.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Syris</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\eneko\dev\asharis\game\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Syris.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Syris</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\eneko\dev\asharis\game\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Syris.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Syris</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\eneko\dev\asharis\game\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Syris.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Syris</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;vendor\spdlog\include;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <Optimization>Disabled</Optimization>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;vendor\spdlog\include;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Full</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;GAME_Dist;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\entt;vendor\fastNoise;vendor\glm;vendor\stb;vendor\spdlog\include;src;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Full</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;RENDER_API_OPENGL;SPDLOG_COMPILED_LIB;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui;C:\Users\eneko\dev\asharis\game\Syris\vendor\glm;C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\include;C:\Users\eneko\dev\asharis\game\Syris\vendor\entt;C:\Users\eneko\dev\asharis\game\Syris\vendor\stb;C:\Users\eneko\dev\asharis\game\Syris\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Syris\EngineTime.h" />
-    <ClInclude Include="src\Syris\Libs.h" />
-    <ClInclude Include="src\Syris\app\Window.h" />
-    <ClInclude Include="src\Syris\input\Input.h" />
-    <ClInclude Include="src\Syris\input\KeyCodes.h" />
-    <ClInclude Include="src\Syris\input\KeyCodesGLFW.h" />
-    <ClInclude Include="src\Syris\log\Log.h" />
-    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.hpp" />
-    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLVertexBuffer.hpp" />
-    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_glfw.h" />
-    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.h" />
-    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="src\Syris\renderAPI\OpenGl\renderApi.h" />
-    <ClInclude Include="src\Syris\renderAPI\renderApi.h" />
-    <ClInclude Include="src\Syris\renderer\AttributeLayoutList.hpp" />
-    <ClInclude Include="src\Syris\renderer\IndexBuffer.hpp" />
-    <ClInclude Include="src\Syris\renderer\RenderBuffer.hpp" />
-    <ClInclude Include="src\Syris\renderer\Shader.hpp" />
-    <ClInclude Include="src\Syris\renderer\Texture.h" />
-    <ClInclude Include="src\Syris\renderer\VertexArray.hpp" />
-    <ClInclude Include="src\Syris\renderer\VertexBuffer.hpp" />
-    <ClInclude Include="src\Syris\renderer\camera\OrthographicCamera.hpp" />
-    <ClInclude Include="src\Syris\renderer\camera\OrthographicCameraController.hpp" />
-    <ClInclude Include="src\Syris\renderer\renderer2D\Renderer.h" />
-    <ClInclude Include="src\Syris\scene\Scene.hpp" />
-    <ClInclude Include="src\Syris\utils\file\readfile.h" />
-    <ClInclude Include="src\Syris\utils\noise\PerlinNoise.hpp" />
+    <CustomBuild Include="C:\Users\eneko\dev\asharis\game\Syris\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/eneko/dev/asharis/game/Syris/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/eneko/dev/asharis/game -BC:/Users/eneko/dev/asharis/game --check-stamp-file C:/Users/eneko/dev/asharis/game/Syris/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\eneko\dev\asharis\game\Syris\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/eneko/dev/asharis/game/Syris/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/eneko/dev/asharis/game -BC:/Users/eneko/dev/asharis/game --check-stamp-file C:/Users/eneko/dev/asharis/game/Syris/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\eneko\dev\asharis\game\Syris\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/eneko/dev/asharis/game/Syris/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/eneko/dev/asharis/game -BC:/Users/eneko/dev/asharis/game --check-stamp-file C:/Users/eneko/dev/asharis/game/Syris/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\eneko\dev\asharis\game\Syris\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/eneko/dev/asharis/game/Syris/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/eneko/dev/asharis/game -BC:/Users/eneko/dev/asharis/game --check-stamp-file C:/Users/eneko/dev/asharis/game/Syris/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\eneko\dev\asharis\game\Syris\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Syris\app\Window.cpp" />
-    <ClCompile Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.cpp" />
-    <ClCompile Include="src\Syris\platform\OpenGl\OpenGlVertexBuffer.cpp" />
-    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_glfw.cpp" />
-    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="src\Syris\renderAPI\renderApi.cpp" />
-    <ClCompile Include="src\Syris\renderer\AttributeLayoutList.cpp" />
-    <ClCompile Include="src\Syris\renderer\IndexBuffer.cpp" />
-    <ClCompile Include="src\Syris\renderer\RenderBuffer.cpp" />
-    <ClCompile Include="src\Syris\renderer\Shader.cpp" />
-    <ClCompile Include="src\Syris\renderer\Texture.cpp" />
-    <ClCompile Include="src\Syris\renderer\VertexBuffer.cpp" />
-    <ClCompile Include="src\Syris\renderer\camera\OrthographicCamera.cpp" />
-    <ClCompile Include="src\Syris\renderer\camera\OrthographicCameraController.cpp" />
-    <ClCompile Include="src\Syris\renderer\renderer2D\Renderer.cpp" />
-    <ClCompile Include="src\Syris\scene\Scene.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\Libs.h" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\app\Window.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\app\Window.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\input\Input.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\input\KeyCodes.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\input\KeyCodesGLFW.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\log\Log.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLErrors.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLIndexBuffer.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLIndexBuffer.hpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLVertexBuffer.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGlVertexBuffer.cpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_glfw.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_glfw.h" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_opengl3.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\OpenGl\OpenGLrenderApi.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\OpenGl\renderApi.h" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\renderApi.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\renderApi.h" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\AttributeLayoutList.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\AttributeLayoutList.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\IndexBuffer.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\IndexBuffer.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\RenderBuffer.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\RenderBuffer.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Shader.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Shader.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Texture.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Texture.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\VertexArray.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\VertexBuffer.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\VertexBuffer.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCamera.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCamera.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCameraController.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCameraController.hpp" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\renderer2D\Renderer.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\renderer2D\Renderer.h" />
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\scene\Scene.cpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\scene\Scene.hpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\EngineTime.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\file\readfile.h" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\glm_stdout.hpp" />
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\noise\PerlinNoise.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
-      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    <ProjectReference Include="C:\Users\eneko\dev\asharis\game\ZERO_CHECK.vcxproj">
+      <Project>{6548200A-5460-3537-883E-647BD3ED3FBD}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="vendor\Glad\Glad.vcxproj">
-      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    <ProjectReference Include="C:\Users\eneko\dev\asharis\game\Syris\vendor\Glad\Glad.vcxproj">
+      <Project>{A1FD1728-E040-36A7-8820-604AE1979E59}</Project>
+      <Name>Glad</Name>
     </ProjectReference>
-    <ProjectReference Include="vendor\imGui\ImGui.vcxproj">
-      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    <ProjectReference Include="C:\Users\eneko\dev\asharis\game\Syris\vendor\imgui\ImGui.vcxproj">
+      <Project>{5F8FFF90-C0B7-3C9D-80A5-35BD728D5113}</Project>
+      <Name>ImGui</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\eneko\dev\asharis\game\Syris\vendor\GLFW\src\glfw.vcxproj">
+      <Project>{09802402-BAED-3AD1-A76E-7D4CD3B3A685}</Project>
+      <Name>glfw</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\eneko\dev\asharis\game\Syris\vendor\spdlog\spdlog.vcxproj">
+      <Project>{0D109697-49B0-337D-8E4E-07EB435E5749}</Project>
+      <Name>spdlog</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

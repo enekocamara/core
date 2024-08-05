@@ -1,8 +1,6 @@
 #include "app/SandboxApp.hpp"
 #include "texture/SandboxTexture.hpp"
-#include "scene/SandboxScene.hpp"
-#include "Syris/renderer/Texture.h"
-#include "Syris/log/Log.h"
+#include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 
 int main(){
     //Syris::Logger::client_trace(std::format("{},{}", Sandbox::texture::atlas::grass_0.min, Sandbox::texture::atlas::grass_0.max).c_str());

@@ -22,6 +22,7 @@ project "Syris"
         "vendor/entt",
         "vendor/fastNoise",
         "vendor/glm",
+        "vendor/nlohmannJson",
         "vendor/stb",
         "vendor/spdlog/include",
         "src",

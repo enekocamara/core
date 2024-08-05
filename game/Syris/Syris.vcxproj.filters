@@ -1,176 +1,198 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="app">
-      <UniqueIdentifier>{665E880B-D267-887C-5BE3-9E7CC7EB937C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="input">
-      <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="log">
-      <UniqueIdentifier>{078D880B-7396-887C-FC11-9F7C681A947C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="platform">
-      <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="platform\OpenGl">
-      <UniqueIdentifier>{5E351A86-CAC0-874A-D3D1-0A3F3FDCE34A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="renderAPI">
-      <UniqueIdentifier>{DF20AD0B-4B8B-6182-94C9-122800733FD7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="renderAPI\OpenGl">
-      <UniqueIdentifier>{53395E71-3F32-7DC3-6864-624854BC5CCF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="renderer">
-      <UniqueIdentifier>{9C6AA017-8837-FB22-B150-E9CA9D7C30B1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="renderer\camera">
-      <UniqueIdentifier>{B48BDB8D-2017-4952-2928-CC469532A552}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="renderer\renderer2D">
-      <UniqueIdentifier>{18015474-8462-3182-0DD0-773479306841}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="scene">
-      <UniqueIdentifier>{D3075810-3F1C-80C1-089E-232174717CF2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="utils">
-      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="utils\file">
-      <UniqueIdentifier>{25D54447-118D-8694-7A94-5FF0666B2185}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="utils\noise">
-      <UniqueIdentifier>{837D7330-EF32-EC25-7827-E6FCE4DBE229}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\app\Window.cpp">
+      <Filter>src\Syris\app</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLIndexBuffer.cpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGlVertexBuffer.cpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_glfw.cpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\renderApi.cpp">
+      <Filter>src\Syris\renderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\AttributeLayoutList.cpp">
+      <Filter>src\Syris\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\IndexBuffer.cpp">
+      <Filter>src\Syris\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\RenderBuffer.cpp">
+      <Filter>src\Syris\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Shader.cpp">
+      <Filter>src\Syris\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Texture.cpp">
+      <Filter>src\Syris\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\VertexBuffer.cpp">
+      <Filter>src\Syris\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCamera.cpp">
+      <Filter>src\Syris\renderer\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCameraController.cpp">
+      <Filter>src\Syris\renderer\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\renderer2D\Renderer.cpp">
+      <Filter>src\Syris\renderer\renderer2D</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\scene\Scene.cpp">
+      <Filter>src\Syris\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Syris\EngineTime.h" />
-    <ClInclude Include="src\Syris\Libs.h" />
-    <ClInclude Include="src\Syris\app\Window.h">
-      <Filter>app</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\Libs.h">
+      <Filter>src\Syris</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\input\Input.h">
-      <Filter>input</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\app\Window.h">
+      <Filter>src\Syris\app</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\input\KeyCodes.h">
-      <Filter>input</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\input\Input.h">
+      <Filter>src\Syris\input</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\input\KeyCodesGLFW.h">
-      <Filter>input</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\input\KeyCodes.h">
+      <Filter>src\Syris\input</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\log\Log.h">
-      <Filter>log</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\input\KeyCodesGLFW.h">
+      <Filter>src\Syris\input</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.hpp">
-      <Filter>platform\OpenGl</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\log\Log.h">
+      <Filter>src\Syris\log</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\platform\OpenGl\OpenGLVertexBuffer.hpp">
-      <Filter>platform\OpenGl</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLErrors.hpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_glfw.h">
-      <Filter>platform\OpenGl</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLIndexBuffer.hpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.h">
-      <Filter>platform\OpenGl</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\OpenGLVertexBuffer.hpp">
+      <Filter>src\Syris\platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h">
-      <Filter>platform\OpenGl</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_glfw.h">
+      <Filter>src\Syris\platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderAPI\OpenGl\renderApi.h">
-      <Filter>renderAPI\OpenGl</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_opengl3.h">
+      <Filter>src\Syris\platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderAPI\renderApi.h">
-      <Filter>renderAPI</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\platform\OpenGl\imgui_impl_opengl3_loader.h">
+      <Filter>src\Syris\platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\AttributeLayoutList.hpp">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\OpenGl\OpenGLrenderApi.h">
+      <Filter>src\Syris\renderAPI\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\IndexBuffer.hpp">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\OpenGl\renderApi.h">
+      <Filter>src\Syris\renderAPI\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\RenderBuffer.hpp">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderAPI\renderApi.h">
+      <Filter>src\Syris\renderAPI</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\Shader.hpp">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\AttributeLayoutList.hpp">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\Texture.h">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\IndexBuffer.hpp">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\VertexArray.hpp">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\RenderBuffer.hpp">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\VertexBuffer.hpp">
-      <Filter>renderer</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Shader.hpp">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\camera\OrthographicCamera.hpp">
-      <Filter>renderer\camera</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\Texture.h">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\camera\OrthographicCameraController.hpp">
-      <Filter>renderer\camera</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\VertexArray.hpp">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\renderer\renderer2D\Renderer.h">
-      <Filter>renderer\renderer2D</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\VertexBuffer.hpp">
+      <Filter>src\Syris\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\scene\Scene.hpp">
-      <Filter>scene</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCamera.hpp">
+      <Filter>src\Syris\renderer\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\utils\file\readfile.h">
-      <Filter>utils\file</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\camera\OrthographicCameraController.hpp">
+      <Filter>src\Syris\renderer\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Syris\utils\noise\PerlinNoise.hpp">
-      <Filter>utils\noise</Filter>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\renderer\renderer2D\Renderer.h">
+      <Filter>src\Syris\renderer\renderer2D</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\scene\Scene.hpp">
+      <Filter>src\Syris\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\EngineTime.h">
+      <Filter>src\Syris\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\file\readfile.h">
+      <Filter>src\Syris\utils\file</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\glm_stdout.hpp">
+      <Filter>src\Syris\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\eneko\dev\asharis\game\Syris\src\Syris\utils\noise\PerlinNoise.hpp">
+      <Filter>src\Syris\utils\noise</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Syris\app\Window.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\platform\OpenGl\OpenGLIndexBuffer.cpp">
-      <Filter>platform\OpenGl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\platform\OpenGl\OpenGlVertexBuffer.cpp">
-      <Filter>platform\OpenGl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_glfw.cpp">
-      <Filter>platform\OpenGl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\platform\OpenGl\imgui_impl_opengl3.cpp">
-      <Filter>platform\OpenGl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderAPI\renderApi.cpp">
-      <Filter>renderAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\AttributeLayoutList.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\IndexBuffer.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\RenderBuffer.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\Shader.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\Texture.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\VertexBuffer.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\camera\OrthographicCamera.cpp">
-      <Filter>renderer\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\camera\OrthographicCameraController.cpp">
-      <Filter>renderer\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\renderer\renderer2D\Renderer.cpp">
-      <Filter>renderer\renderer2D</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Syris\scene\Scene.cpp">
-      <Filter>scene</Filter>
-    </ClCompile>
+    <CustomBuild Include="C:\Users\eneko\dev\asharis\game\Syris\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{3E367FAC-FC87-349F-82AE-1009A18F97CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris">
+      <UniqueIdentifier>{CF767718-DC5E-3DDD-B59E-560EF2903F7B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\app">
+      <UniqueIdentifier>{FC339A19-06A1-3178-B2A1-B71950D92A82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\input">
+      <UniqueIdentifier>{386B714A-5F3D-3623-91DF-8018031620DC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\log">
+      <UniqueIdentifier>{B90E0512-6F53-30BB-8534-36CF1AA43A34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\platform">
+      <UniqueIdentifier>{45D0DE77-2733-3A46-8F87-45173E45D525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\platform\OpenGl">
+      <UniqueIdentifier>{859615EB-5B9E-387A-BDCC-AFEBE7064B68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\renderAPI">
+      <UniqueIdentifier>{F1AC799D-8D04-328C-8F0E-755D45A2BEF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\renderAPI\OpenGl">
+      <UniqueIdentifier>{C6398945-236E-3CED-B90F-DE1B71947624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\renderer">
+      <UniqueIdentifier>{C30A380D-6819-383F-A383-256940144114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\renderer\camera">
+      <UniqueIdentifier>{B72B0BB1-877E-323B-989A-EA4479797D5C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\renderer\renderer2D">
+      <UniqueIdentifier>{73DA8A21-1556-3300-9F50-FC05DFAF1236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\scene">
+      <UniqueIdentifier>{D99B66B4-9EE6-345D-B872-308B92FB0A25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\utils">
+      <UniqueIdentifier>{6902F52C-45A6-397A-B116-3B73235CD8CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\utils\file">
+      <UniqueIdentifier>{DD36951D-CB42-3B8A-B06B-B97943BF5E97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Syris\utils\noise">
+      <UniqueIdentifier>{7CD62BA6-0AB4-3DE6-9877-0B7111DCCF16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
