@@ -6,7 +6,7 @@
 #include "Syris/renderAPI/renderApi.h"
 
 namespace Syris::renderer {
-    Renderer2D::Renderer2D(entt::registry& registry) : m_registry(registry){
+    Renderer2D::Renderer2D(){
         this->time.init_time = std::chrono::high_resolution_clock::now();
     }
     Renderer2D::~Renderer2D(){

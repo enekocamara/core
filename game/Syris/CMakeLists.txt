@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 
-
 project(Syris CXX)
 
-#set(CMAKE_CXX_STANDARD 20)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the output directory structure
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 
 file(GLOB_RECURSE SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
@@ -31,7 +30,7 @@ endforeach()
 add_library(Syris STATIC ${SOURCES})
 
 # Include directories specific to Syris
-target_include_directories(Syris PRIVATE
+target_include_directories(Syris PUBLIC
     ${CMAKE_SOURCE_DIR}/Syris/vendor/GLFW/include
     ${CMAKE_SOURCE_DIR}/Syris/vendor/Glad/include
     ${CMAKE_SOURCE_DIR}/Syris/vendor/imgui
@@ -43,7 +42,10 @@ target_include_directories(Syris PRIVATE
     # other include directories
 )
 
-target_link_libraries(Syris PUBLIC ImGui Glad glfw spdlog)
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
+target_link_libraries(Syris PUBLIC ImGui Glad glfw spdlog ${Boost_LIBRARIES})
 
 target_compile_definitions(Syris PRIVATE
     PLATFORM_WINDOWS

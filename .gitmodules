@@ -10,3 +10,12 @@
 [submodule "game/Syris/vendor/hpx"]
 	path = game/Syris/vendor/hpx
 	url = https://github.com/STEllAR-GROUP/hpx.git
+[submodule "game/Syris/vendor/googletests"]
+	path = game/Syris/vendor/googletests
+	url = https://github.com/google/googletest.git
+[submodule "game/Syris/vendor/asio"]
+	path = game/Syris/vendor/asio
+	url = https://github.com/chriskohlhoff/asio.git
+[submodule "game/Syris/vendor/hwloc"]
+	path = game/Syris/vendor/hwloc
+	url = https://github.com/open-mpi/hwloc.git

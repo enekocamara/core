@@ -110,9 +110,15 @@ namespace Sandbox{
             };
             return new Syris::renderer::RenderBuffer(render_buffer_info);
     }
-    SandboxScene::SandboxScene(entt::registry& registry, const char* atlas_path):m_registry(registry), m_texture_atlas(atlas_path){
+    SandboxScene::SandboxScene(CreateInfo info):m_registry(info.registry), m_texture_atlas(info.atlas_path), m_graphics_context(info.context), m_camera(info.camera_info){
+        const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl";
+        const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl";
+        m_shader_id = m_graphics_context.get_shader_manager().add_shader({fragment_shader_path, vertex_shader_path});
+        if (!m_shader_id){
+            throw std::runtime_error("failed to add shader");
+        }
         m_texture_atlas.init();
-        bool a = true;
+        bool a = false;
         if (a){
             world_generator::generateGround<m_map_config>(m_registry);
             m_buffer = makeSimpleRenderBuffer<m_map_config.num_tiles_x * m_map_config.num_tiles_y>();
@@ -120,13 +126,15 @@ namespace Sandbox{
         }else{
             auto texture = ecs::Tile::defaultTextureBundle();
             texture.src = texture::atlas::grass_0;
-            ecs::Tile::newTile(glm::vec2(0,0), texture, registry, ecs::CTile::TileType::Grass);
+            ecs::Tile::newTile(glm::vec2(0,0), texture, m_registry, ecs::CTile::TileType::Grass);
             m_buffer = makeSimpleRenderBuffer<1>();
             CHECK_GL_ERROR();
         }
     }
-    void SandboxScene::onUpdate(GLuint program, glm::mat4 view_projection){
-          
+    void SandboxScene::on_update(){
+        //it now owns the camera
+        /*outdated by renderbuffer??*/
+        m_graphics_context.get_shader_manager().use_shader(m_shader_id);/*
         auto render_group = this->m_registry.group<>(entt::get<ecs::CTexture,
                 ecs::CPosition, ecs::CTile>);
         uint32_t index = 0;
@@ -166,20 +174,24 @@ namespace Sandbox{
             glBufferSubData(GL_ARRAY_BUFFER, index * sizeof(TileInstancedData), sizeof(glm::mat4), &model );
             index++;
             CHECK_GL_ERROR();
+            
         }
         m_buffer->bind(0);
-        glUseProgram(program);
-        /*float buffer[1000];
-        glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(buffer), buffer);
-        TileVertices * vertices = reinterpret_cast<TileVertices*>(buffer);
-        int i = 0;
-        std::cout << "after\n\n\n";
-        while (i < 1000 / 16){
-            std::cout << "min : " << vertices[1].get_min_max().first << "max : " << vertices[i].get_min_max().second << '\n';
-            i++;
-        };
+        //glUseProgram(program);already done by graphics context on update
+        //float buffer[1000];
+        //glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(buffer), buffer);
+        //TileVertices * vertices = reinterpret_cast<TileVertices*>(buffer);
+        //int i = 0;
+        //std::cout << "after\n\n\n";
+        //while (i < 1000 / 16){
+        //    std::cout << "min : " << vertices[1].get_min_max().first << "max : " << vertices[i].get_min_max().second << '\n';
+        //    i++;
+        //};
         */
-        m_buffer->draw_buffer(program, view_projection,m_texture_atlas.getTexture(), 100 * 100);
+        //m_buffer->draw_buffer(m_graphics_context.get_shader_manager().get_shader(m_shader_id), m_camera.getCamera().get_view_projection_matrix(), m_texture_atlas.getTexture(), 100 * 100);
+    }
+    bool SandboxScene::on_event(Syris::Event* event){
+        return false;
     }
     SandboxScene::~SandboxScene(){
 

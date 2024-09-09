@@ -1,5 +1,5 @@
 #include "Scene.hpp"
-namespace scene{
+namespace Syris{
     Scene::Scene(){
     }
 }

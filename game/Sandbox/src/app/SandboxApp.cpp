@@ -1,6 +1,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <array>
+#include <iostream>
+
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 #include "Syris/renderer/AttributeLayoutList.hpp"
 #include "../ecs/Components.h"
@@ -8,23 +10,27 @@
 #include "../texture/SandboxTexture.hpp"
 #include "SandboxApp.hpp"
 #include "Syris/input/Input.h"
-#include "Syris/renderer/Shader.hpp"
+#include "Syris/Shader/Shader.hpp"
 #include "Syris/renderer/Texture.h"
+
 namespace Sandbox {
 
-    SandboxApp::SandboxApp(SandboxApp::CreateInfo info)
-        : m_window(info.window_bundle),
-        m_scene(new SandboxScene(info.registry, info.atlas_path)), m_renderer(info.registry),
-        m_registry(info.registry), m_camera(info.cameraCreateInfo) {
+    SandboxApp::SandboxApp(SandboxApp::CreateInfo& info)
+        : 
+        m_graphics_context(info.gc_info),
+        m_data({m_registry, info.atlas_path, m_graphics_context}){
+        //m_window(m_graphics_context.get_window_handler()),
+        //m_camera(info.cameraCreateInfo)
             
             //init program and shaders
+            /*now in the graphics context, shader manager
             m_program = glCreateProgram();
             shader::compile_shader(m_program, info.vertex_shader_path,
                     info.fragment_shader_path);
-            
+            */
             //textures, timestamp, and input initialization
             m_time.init_time = std::chrono::high_resolution_clock::now();
-            Syris::Input::get(m_window.getWindow());
+            //Syris::Input::get(m_window.get_window()); done by graphics context
 
 //            m_renderBuffer = makeSimpleRenderBuffer(); 
             //render objects
@@ -45,26 +51,29 @@ namespace Sandbox {
            */ 
         }
 
-    SandboxApp::~SandboxApp() { delete quad; }
+    SandboxApp::~SandboxApp(){} //{ delete quad; }
 
     void SandboxApp::run() {
         m_time.last_frame = std::chrono::high_resolution_clock::now();
-        while (!m_window.shouldWindowClose()) {
+        while (!m_graphics_context.should_window_close()) {
             CHECK_GL_ERROR();
             std::chrono::high_resolution_clock::time_point now =
                 std::chrono::high_resolution_clock::now();
             m_time.delta_time_ms =
                 std::chrono::duration<float, std::milli>(now - m_time.last_frame)
                 .count();
-            glUseProgram(m_program);
-            m_window.onUpdateStart();
-            m_camera.on_update(m_time);
-            draw_frame();
-            m_window.onUpdateEnd();
+            //glUseProgram(m_program);
+            //
+            //m_window.on_update_start();
+            //m_camera.on_update(m_time);
+            //draw_frame();
+            //m_window.on_update_end();
+            m_graphics_context.on_update();
             CHECK_GL_ERROR();
         }
+        std::cout << "window closed\n";
     }
-
+/*DEPRECATED
     void SandboxApp::draw_frame() {
 
         glUseProgram(m_program);
@@ -75,6 +84,7 @@ namespace Sandbox {
 
         //draw_group(render_group);
     }
+    */
 
     template <typename Group> void SandboxApp::draw_group(Group &group) {
  /*       float ratio = 1920.f / 1080.f;
@@ -108,4 +118,45 @@ namespace Sandbox {
     */
         // exit(1);
     }
+
+    //main layer
 } // namespace Sandbox
+
+Application* get_client_app() {
+    Syris::GraphicsContext::CreateInfo gc_info = {
+        .layers_info = Syris::LayerManager::CreateInfo{
+            .layers = {}},
+        .window_info = Syris::WindowCreateInfo{
+            .dimmensions = glm::ivec2(1920, 1080),
+            .name = std::string("hola"),
+            .vSync = true,
+        }
+    };
+    //Syris::Window::WindowBundle info =   
+    float ratio = 1920.f / 1080.f;
+    Sandbox::SandboxApp::CreateInfo app_info = Sandbox::SandboxApp::CreateInfo{
+        .atlas_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\textures\\sprites\\atlas\\spritesheet.png",
+        .gc_info = Syris::GraphicsContext::CreateInfo{
+            .layers_info = Syris::LayerManager::CreateInfo{
+                .layers = {}},
+            .window_info = Syris::WindowCreateInfo{
+                .dimmensions = glm::ivec2(1920, 1080),
+                .name = std::string("hola"),
+                .vSync = true,
+            },
+            //.vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl",
+            //.fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl",
+        },
+        .camera_info = Syris::OrthographicCameraController::CreateInfo{
+            .aspec_ratio = ratio,
+            .zoom_level = 10.f,
+        }};
+        //  .window_bundle = info,
+        //.cameraCreateInfo = Syris::CameraOrthographic::CreateInfo{
+        //    .left = -1.0f,
+        //    .right = 1.0f,
+        //    .top  = 1.0f,
+        //    .bottom = -1.0f
+        //}
+        return new Sandbox::SandboxApp(app_info);
+}

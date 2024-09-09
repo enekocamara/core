@@ -1,0 +1,1672 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.19"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"build" : "Sandbox",
+					"jsonFile" : "directory-Sandbox-Debug-5f4392a0e5eaed8a8ee6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Sandbox",
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"build" : "Core",
+					"jsonFile" : "directory-Core-Debug-b3854b2db255c35a81c1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "Core",
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"build" : "Syris",
+					"jsonFile" : "directory-Syris-Debug-1ca9a1b257158f1c611c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "Syris",
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"build" : "Syris/vendor/imgui",
+					"jsonFile" : "directory-Syris.vendor.imgui-Debug-cf7b0def4298af33f39b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "Syris/vendor/imgui",
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"build" : "Syris/vendor/Glad",
+					"jsonFile" : "directory-Syris.vendor.Glad-Debug-371df51832df4a146e74.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 5,
+					"source" : "Syris/vendor/Glad",
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW",
+					"childIndexes" : 
+					[
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW-Debug-eaf57144da17f719ba23.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW",
+					"targetIndexes" : 
+					[
+						6,
+						16
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW.src-Debug-2472977ffcc879ceb06c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW/src",
+					"targetIndexes" : 
+					[
+						14,
+						17
+					]
+				},
+				{
+					"build" : "Syris/vendor/spdlog",
+					"jsonFile" : "directory-Syris.vendor.spdlog-Debug-9973283bfbe86a83f07c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 7,
+					"source" : "Syris/vendor/spdlog",
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "game",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "Sandbox",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "Core",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "Syris",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "ImGui",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "Glad",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "GLFW",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						14,
+						16,
+						17
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "spdlog",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-Debug-e7c97ac31291c39e27e1.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-ALL_BUILD-Debug-9b77b8f65c0b8444aa15.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-ALL_BUILD-Debug-727e45109bb658d63741.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ALL_BUILD::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-ALL_BUILD-Debug-bf86d2fa64e89f6fdb58.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ALL_BUILD::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ALL_BUILD-Debug-490226a16843beb327a9.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "ALL_BUILD::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-ALL_BUILD-Debug-1757548fa2f3415fff7e.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@6a318750ff5845d41117",
+					"jsonFile" : "target-ALL_BUILD-Debug-8bc22a7d0185d304bbc0.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "ALL_BUILD::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-ALL_BUILD-Debug-a1ddf78bc60b5d752909.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "Core::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-Core-Debug-b1ecf666d283591ee762.json",
+					"name" : "Core",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "Glad::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-Glad-Debug-b14e6ab446ebe0196182.json",
+					"name" : "Glad",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ImGui::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ImGui-Debug-199904ec37e5e930dd3e.json",
+					"name" : "ImGui",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "Sandbox::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-Sandbox-Debug-32813ad7596147194de2.json",
+					"name" : "Sandbox",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Syris::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-Syris-Debug-a6ce519b34657878ba19.json",
+					"name" : "Syris",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-Debug-9062016de45bb60fe23d.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "glfw::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-glfw-Debug-51826665970904ee71b7.json",
+					"name" : "glfw",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "spdlog::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-spdlog-Debug-72d924b94566e93c554f.json",
+					"name" : "spdlog",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "uninstall::@6a318750ff5845d41117",
+					"jsonFile" : "target-uninstall-Debug-79892b61e86d68050ea2.json",
+					"name" : "uninstall",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "update_mappings::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-update_mappings-Debug-a9f98b873e4cedfe8b4e.json",
+					"name" : "update_mappings",
+					"projectIndex" : 6
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.19"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"build" : "Sandbox",
+					"jsonFile" : "directory-Sandbox-Release-5f4392a0e5eaed8a8ee6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Sandbox",
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"build" : "Core",
+					"jsonFile" : "directory-Core-Release-b3854b2db255c35a81c1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "Core",
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"build" : "Syris",
+					"jsonFile" : "directory-Syris-Release-1ca9a1b257158f1c611c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "Syris",
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"build" : "Syris/vendor/imgui",
+					"jsonFile" : "directory-Syris.vendor.imgui-Release-cf7b0def4298af33f39b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "Syris/vendor/imgui",
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"build" : "Syris/vendor/Glad",
+					"jsonFile" : "directory-Syris.vendor.Glad-Release-371df51832df4a146e74.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 5,
+					"source" : "Syris/vendor/Glad",
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW",
+					"childIndexes" : 
+					[
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW-Release-eaf57144da17f719ba23.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW",
+					"targetIndexes" : 
+					[
+						6,
+						16
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW.src-Release-1b925ac35501c24942d9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW/src",
+					"targetIndexes" : 
+					[
+						14,
+						17
+					]
+				},
+				{
+					"build" : "Syris/vendor/spdlog",
+					"jsonFile" : "directory-Syris.vendor.spdlog-Release-9973283bfbe86a83f07c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 7,
+					"source" : "Syris/vendor/spdlog",
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "game",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "Sandbox",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "Core",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "Syris",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "ImGui",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "Glad",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "GLFW",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						14,
+						16,
+						17
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "spdlog",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-Release-e7c97ac31291c39e27e1.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-ALL_BUILD-Release-9b77b8f65c0b8444aa15.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-ALL_BUILD-Release-727e45109bb658d63741.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ALL_BUILD::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-ALL_BUILD-Release-bf86d2fa64e89f6fdb58.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ALL_BUILD::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ALL_BUILD-Release-490226a16843beb327a9.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "ALL_BUILD::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-ALL_BUILD-Release-1757548fa2f3415fff7e.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@6a318750ff5845d41117",
+					"jsonFile" : "target-ALL_BUILD-Release-8bc22a7d0185d304bbc0.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "ALL_BUILD::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-ALL_BUILD-Release-a1ddf78bc60b5d752909.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "Core::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-Core-Release-7e91d92ca1af06e0b2d6.json",
+					"name" : "Core",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "Glad::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-Glad-Release-9193441f3db1341522cb.json",
+					"name" : "Glad",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ImGui::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ImGui-Release-8bb5a700f4ca57dc7a65.json",
+					"name" : "ImGui",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "Sandbox::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-Sandbox-Release-e082829b898efd0f885a.json",
+					"name" : "Sandbox",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Syris::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-Syris-Release-0a3d38cddb462f41c78b.json",
+					"name" : "Syris",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-Release-9062016de45bb60fe23d.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "glfw::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-glfw-Release-e5c5ffacbee9131dfba1.json",
+					"name" : "glfw",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "spdlog::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-spdlog-Release-1ff8636893ddf7e85dee.json",
+					"name" : "spdlog",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "uninstall::@6a318750ff5845d41117",
+					"jsonFile" : "target-uninstall-Release-79892b61e86d68050ea2.json",
+					"name" : "uninstall",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "update_mappings::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-update_mappings-Release-a9f98b873e4cedfe8b4e.json",
+					"name" : "update_mappings",
+					"projectIndex" : 6
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-MinSizeRel-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.19"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"build" : "Sandbox",
+					"jsonFile" : "directory-Sandbox-MinSizeRel-5f4392a0e5eaed8a8ee6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Sandbox",
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"build" : "Core",
+					"jsonFile" : "directory-Core-MinSizeRel-b3854b2db255c35a81c1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "Core",
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"build" : "Syris",
+					"jsonFile" : "directory-Syris-MinSizeRel-1ca9a1b257158f1c611c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "Syris",
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"build" : "Syris/vendor/imgui",
+					"jsonFile" : "directory-Syris.vendor.imgui-MinSizeRel-cf7b0def4298af33f39b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "Syris/vendor/imgui",
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"build" : "Syris/vendor/Glad",
+					"jsonFile" : "directory-Syris.vendor.Glad-MinSizeRel-371df51832df4a146e74.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 5,
+					"source" : "Syris/vendor/Glad",
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW",
+					"childIndexes" : 
+					[
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW-MinSizeRel-eaf57144da17f719ba23.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW",
+					"targetIndexes" : 
+					[
+						6,
+						16
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW.src-MinSizeRel-f36845942fe76d2e3126.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW/src",
+					"targetIndexes" : 
+					[
+						14,
+						17
+					]
+				},
+				{
+					"build" : "Syris/vendor/spdlog",
+					"jsonFile" : "directory-Syris.vendor.spdlog-MinSizeRel-9973283bfbe86a83f07c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 7,
+					"source" : "Syris/vendor/spdlog",
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"name" : "MinSizeRel",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "game",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "Sandbox",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "Core",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "Syris",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "ImGui",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "Glad",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "GLFW",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						14,
+						16,
+						17
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "spdlog",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-e7c97ac31291c39e27e1.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-9b77b8f65c0b8444aa15.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-727e45109bb658d63741.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ALL_BUILD::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-bf86d2fa64e89f6fdb58.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ALL_BUILD::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-490226a16843beb327a9.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "ALL_BUILD::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-1757548fa2f3415fff7e.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@6a318750ff5845d41117",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-8bc22a7d0185d304bbc0.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "ALL_BUILD::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-a1ddf78bc60b5d752909.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "Core::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-Core-MinSizeRel-117a887dc6c17ea02bbc.json",
+					"name" : "Core",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "Glad::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-Glad-MinSizeRel-04d8a4bc1e35c69254eb.json",
+					"name" : "Glad",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ImGui::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ImGui-MinSizeRel-1611c89830f6155c0a18.json",
+					"name" : "ImGui",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "Sandbox::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-Sandbox-MinSizeRel-deb9fe0bd2e9db528b09.json",
+					"name" : "Sandbox",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Syris::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-Syris-MinSizeRel-a828a191dd47a8d48575.json",
+					"name" : "Syris",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-MinSizeRel-9062016de45bb60fe23d.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "glfw::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-glfw-MinSizeRel-5520dff07fd8a967b3eb.json",
+					"name" : "glfw",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "spdlog::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-spdlog-MinSizeRel-1ff50a75f5977355591e.json",
+					"name" : "spdlog",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "uninstall::@6a318750ff5845d41117",
+					"jsonFile" : "target-uninstall-MinSizeRel-79892b61e86d68050ea2.json",
+					"name" : "uninstall",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "update_mappings::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-update_mappings-MinSizeRel-a9f98b873e4cedfe8b4e.json",
+					"name" : "update_mappings",
+					"projectIndex" : 6
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.19"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"build" : "Sandbox",
+					"jsonFile" : "directory-Sandbox-RelWithDebInfo-5f4392a0e5eaed8a8ee6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Sandbox",
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"build" : "Core",
+					"jsonFile" : "directory-Core-RelWithDebInfo-b3854b2db255c35a81c1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "Core",
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"build" : "Syris",
+					"jsonFile" : "directory-Syris-RelWithDebInfo-1ca9a1b257158f1c611c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "Syris",
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"build" : "Syris/vendor/imgui",
+					"jsonFile" : "directory-Syris.vendor.imgui-RelWithDebInfo-cf7b0def4298af33f39b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "Syris/vendor/imgui",
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"build" : "Syris/vendor/Glad",
+					"jsonFile" : "directory-Syris.vendor.Glad-RelWithDebInfo-371df51832df4a146e74.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 5,
+					"source" : "Syris/vendor/Glad",
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW",
+					"childIndexes" : 
+					[
+						7
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW-RelWithDebInfo-eaf57144da17f719ba23.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW",
+					"targetIndexes" : 
+					[
+						6,
+						16
+					]
+				},
+				{
+					"build" : "Syris/vendor/GLFW/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-Syris.vendor.GLFW.src-RelWithDebInfo-42daa416731a1cf249bb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 6,
+					"source" : "Syris/vendor/GLFW/src",
+					"targetIndexes" : 
+					[
+						14,
+						17
+					]
+				},
+				{
+					"build" : "Syris/vendor/spdlog",
+					"jsonFile" : "directory-Syris.vendor.spdlog-RelWithDebInfo-9973283bfbe86a83f07c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 7,
+					"source" : "Syris/vendor/spdlog",
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "game",
+					"targetIndexes" : 
+					[
+						0,
+						13
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "Sandbox",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "Core",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "Syris",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "ImGui",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "Glad",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5,
+						9
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6,
+						7
+					],
+					"name" : "GLFW",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6,
+						14,
+						16,
+						17
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "spdlog",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						7,
+						15
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-e7c97ac31291c39e27e1.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-9b77b8f65c0b8444aa15.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "ALL_BUILD::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-727e45109bb658d63741.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "ALL_BUILD::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-bf86d2fa64e89f6fdb58.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ALL_BUILD::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-490226a16843beb327a9.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "ALL_BUILD::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-1757548fa2f3415fff7e.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ALL_BUILD::@6a318750ff5845d41117",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-8bc22a7d0185d304bbc0.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "ALL_BUILD::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-a1ddf78bc60b5d752909.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "Core::@94795ff35dabbbd3a8ca",
+					"jsonFile" : "target-Core-RelWithDebInfo-edec80e3d8637b5f6d7e.json",
+					"name" : "Core",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "Glad::@f1c9eb1fe3ba5583478d",
+					"jsonFile" : "target-Glad-RelWithDebInfo-f6fbe05a4d838f141a71.json",
+					"name" : "Glad",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "ImGui::@7eea63df0635bce97abe",
+					"jsonFile" : "target-ImGui-RelWithDebInfo-d26941676a7b14fa101b.json",
+					"name" : "ImGui",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "Sandbox::@df4fa095c2a3dbacf8fe",
+					"jsonFile" : "target-Sandbox-RelWithDebInfo-21a248e2a44f975af2da.json",
+					"name" : "Sandbox",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Syris::@1311e975eefd6b281b0e",
+					"jsonFile" : "target-Syris-RelWithDebInfo-ea1df4772b2c57f666d8.json",
+					"name" : "Syris",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-RelWithDebInfo-9062016de45bb60fe23d.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "glfw::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-glfw-RelWithDebInfo-5cd94cf116adbc3e7418.json",
+					"name" : "glfw",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "spdlog::@78dfcb3f8ad518e9b74c",
+					"jsonFile" : "target-spdlog-RelWithDebInfo-a66f4c3c21c9cd7ca697.json",
+					"name" : "spdlog",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "uninstall::@6a318750ff5845d41117",
+					"jsonFile" : "target-uninstall-RelWithDebInfo-79892b61e86d68050ea2.json",
+					"name" : "uninstall",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "update_mappings::@8852be1b9680e23b0fb9",
+					"jsonFile" : "target-update_mappings-RelWithDebInfo-a9f98b873e4cedfe8b4e.json",
+					"name" : "update_mappings",
+					"projectIndex" : 6
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/eneko/dev/asharis/game/build",
+		"source" : "C:/Users/eneko/dev/asharis/game"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

@@ -2,18 +2,21 @@
 #include <array>
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
+#include "Syris/context/OpenGLContext.hpp"
 namespace Syris::renderer{
     RenderBuffer::RenderBuffer(CreateInfo info){
         std::array<VertexBuffer::BufferInfo, 2> buffers{info.per_vertex_buffer_info, info.per_instance_buffer_info};
-        VertexBuffer::CreateInfo vertex_buffer_info = {};
-        vertex_buffer_info.dynamic = info.dynamic;
-        vertex_buffer_info.buffers_info = {buffers.begin(), buffers.end()};
+        VertexBuffer::CreateInfo vertex_buffer_info = VertexBuffer::CreateInfo{
+            .dynamic = info.dynamic,
+            .buffers_info = {buffers.begin(), buffers.end()},
+        };
         m_vertexBuffer = VertexBuffer::create(vertex_buffer_info);
 
-        IndexBuffer::CreateInfo index_buffer_info = {};
-        index_buffer_info.dynamic = info.dynamic;
-        index_buffer_info.indices = info.indices;
-        index_buffer_info.indices_count = info.index_count;
+        IndexBuffer::CreateInfo index_buffer_info{
+            .indices_count = info.index_count,
+            .indices = info.indices,
+            .dynamic = info.dynamic,
+        };
         m_indexBuffer = IndexBuffer::create(index_buffer_info);
     }
     RenderBuffer::~RenderBuffer(){
@@ -30,16 +33,25 @@ namespace Syris::renderer{
     void RenderBuffer::update_data(void *data){
          
     }
-    void RenderBuffer::draw_buffer(GLuint program, glm::mat4 projection_view, texture::Texture2D texture, uint32_t instances){
+   /* void RenderBuffer::draw_buffer(Shader* shader, glm::mat4 projection_view, texture::Texture2D texture, uint32_t instances){
+
+        //OpenGLContext* context_opengl = reinterpret_cast<OpenGLContext*>(context);
+        shader->use();
         m_vertexBuffer->bind(1);
         //m_vertexBuffer->bind(1);
         m_indexBuffer->bind();
-        renderAPI::set_uniform_value(program, projection_view, "ViewProjection");
-        glActiveTexture(GL_TEXTURE0);
+        shader->set_uniform_value(projection_view, "ViewProjection");
+        //renderAPI::set_uniform_value(context_opengl->get_program(), projection_view, "ViewProjection");
+        //glActiveTexture(GL_TEXTURE0);!!TODO
         texture.bind();
-        glUniform1i(glGetUniformLocation(program, "texture1"), 0);
-        renderAPI::set_uniform_value(program, glm::vec3(1.f), "spriteColor");
+
+        shader->set_uniform1i(0,"texture1");
+//        glUniform1i(glGetUniformLocation(context_opengl->get_program(), "texture1"), 0);
+        shader->set_uniform(glm::vec3(1.f), "spriteColor");
+        //renderAPI::set_uniform_value(context_opengl->get_program(), glm::vec3(1.f), "spriteColor");
         CHECK_GL_ERROR();
         glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, instances);
+        CHECK_GL_ERROR();
     }
+    */
 }

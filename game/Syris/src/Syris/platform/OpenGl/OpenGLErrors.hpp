@@ -7,5 +7,6 @@
         if (err != GL_NO_ERROR) \
         { \
             CORE_ERROR(std::format("OpenGL Error: {}", err));\
+            exit(1);\
         } \
     }

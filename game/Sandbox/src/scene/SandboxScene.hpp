@@ -3,6 +3,10 @@
 #include "Syris/renderer/RenderBuffer.hpp"
 #include "Syris/scene/Scene.hpp"
 #include "Syris/Libs.h"
+#include "Syris/context/GraphicsContext.hpp"
+#include "Syris/layers/Layer.hpp"
+#include "Syris/events/Event.hpp"
+#include "Syris/renderer/camera/OrthographicCameraController.hpp"
 
 namespace Sandbox{
     namespace config{
@@ -12,16 +16,22 @@ namespace Sandbox{
             size_t num_tiles_x;
             size_t num_tiles_y;
         };
-
     }
 
-    class SandboxScene : public scene::Scene{
+    class SandboxScene : public Syris::Scene, public Syris::Layer{
         public:
-            SandboxScene(entt::registry& registry, const char* atlas_path);
+            struct CreateInfo
+            {
+                entt::registry &registry;
+                const char *atlas_path;
+                Syris::GraphicsContext &context;
+                Syris::OrthographicCameraController::CreateInfo camera_info;
+            };
+            SandboxScene(CreateInfo info);
             ~SandboxScene();
 
-
-            void onUpdate(GLuint program, glm::mat4 view_projection);
+            void on_update() override;
+            bool on_event(Syris::Event* event)override;
             static constexpr config::MapConfig m_map_config = config::MapConfig{
                 .num_tiles_x = 100,
                     .num_tiles_y = 100
@@ -30,5 +40,8 @@ namespace Sandbox{
             entt::registry& m_registry;
             Syris::texture::TextureAtlas m_texture_atlas;
             Syris::renderer::RenderBuffer* m_buffer;
+            Syris::GraphicsContext& m_graphics_context;
+            Syris::OrthographicCameraController m_camera;
+            uint32_t m_shader_id;
     };
 }

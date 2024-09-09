@@ -1,0 +1,650 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "Release/Sandbox.exe"
+		},
+		{
+			"path" : "Release/Sandbox.pdb"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"_add_executable",
+			"add_executable",
+			"target_link_libraries",
+			"set_target_properties",
+			"include",
+			"_find_package",
+			"find_package",
+			"add_compile_options",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"C:/Users/eneko/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
+			"Sandbox/CMakeLists.txt",
+			"Core/CMakeLists.txt",
+			"Syris/CMakeLists.txt",
+			"C:/Users/eneko/dev/vcpkg/installed/x64-windows/share/hpx/HPXInternalTargets.cmake",
+			"C:/Users/eneko/dev/vcpkg/installed/x64-windows/share/hpx/HPXConfig.cmake",
+			"C:/Users/eneko/dev/vcpkg/installed/x64-windows/share/hpx/HPXTargets.cmake",
+			"C:/Users/eneko/dev/vcpkg/installed/x64-windows/share/hpx/FindHwloc.cmake",
+			"C:/Users/eneko/dev/vcpkg/installed/x64-windows/share/hpx/HPX_SetupHwloc.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 56,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 598,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 57,
+				"parent" : 0
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 35,
+				"parent" : 4
+			},
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 48,
+				"parent" : 6
+			},
+			{
+				"command" : 6,
+				"file" : 2,
+				"line" : 5,
+				"parent" : 4
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 859,
+				"parent" : 8
+			},
+			{
+				"file" : 5,
+				"parent" : 9
+			},
+			{
+				"command" : 4,
+				"file" : 5,
+				"line" : 81,
+				"parent" : 10
+			},
+			{
+				"file" : 4,
+				"parent" : 11
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 94,
+				"parent" : 12
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 86,
+				"parent" : 12
+			},
+			{
+				"command" : 4,
+				"file" : 5,
+				"line" : 82,
+				"parent" : 10
+			},
+			{
+				"file" : 6,
+				"parent" : 15
+			},
+			{
+				"command" : 3,
+				"file" : 6,
+				"line" : 61,
+				"parent" : 16
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 78,
+				"parent" : 12
+			},
+			{
+				"command" : 4,
+				"file" : 5,
+				"line" : 162,
+				"parent" : 10
+			},
+			{
+				"file" : 8,
+				"parent" : 19
+			},
+			{
+				"command" : 6,
+				"file" : 8,
+				"line" : 17,
+				"parent" : 20
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 859,
+				"parent" : 21
+			},
+			{
+				"file" : 7,
+				"parent" : 22
+			},
+			{
+				"command" : 2,
+				"file" : 7,
+				"line" : 82,
+				"parent" : 23
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 941,
+				"parent" : 12
+			},
+			{
+				"file" : 9
+			},
+			{
+				"command" : 7,
+				"file" : 9,
+				"line" : 27,
+				"parent" : 26
+			},
+			{
+				"command" : 8,
+				"file" : 1,
+				"line" : 58,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -std:c++20 -MD"
+				},
+				{
+					"backtrace" : 27,
+					"fragment" : "/MP"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Ox"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Ob1"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Zc:inline"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Gw"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Zc:throwingNew"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Zc:rvalueCast"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Zc:strictStrings"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Zc:__cplusplus"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-GR"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-MP"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-bigobj"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-permissive-"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "BOOST_ALL_NO_LIB"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "HPX_APPLICATION_EXPORTS"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "HPX_APPLICATION_NAME_DEFAULT=Sandbox"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "HPX_PREFIX_DEFAULT=\"C:/Users/eneko/dev/vcpkg/installed/x64-windows\""
+				},
+				{
+					"backtrace" : 3,
+					"define" : "SPDLOG_COMPILED_LIB"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 28,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/fastNoise"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Core/src"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/GLFW/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/Glad/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/imgui"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/glm"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/spdlog/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/entt"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/vendor/stb"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "C:/Users/eneko/dev/asharis/game/Syris/src"
+				},
+				{
+					"backtrace" : 3,
+					"isSystem" : true,
+					"path" : "C:/Users/eneko/dev/vcpkg/installed/x64-windows/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					3
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				2,
+				4,
+				11,
+				12,
+				14,
+				16
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "Glad::@f1c9eb1fe3ba5583478d"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "Core::@94795ff35dabbbd3a8ca"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "Syris::@1311e975eefd6b281b0e"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "glfw::@8852be1b9680e23b0fb9"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "ImGui::@7eea63df0635bce97abe"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "spdlog::@78dfcb3f8ad518e9b74c"
+		}
+	],
+	"id" : "Sandbox::@df4fa095c2a3dbacf8fe",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:console",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "..\\Release\\Core.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "..\\Release\\Syris.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 7,
+				"fragment" : "..\\Syris\\vendor\\imgui\\Release\\ImGui.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 7,
+				"fragment" : "..\\Syris\\vendor\\Glad\\Release\\Glad.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 7,
+				"fragment" : "..\\Syris\\vendor\\GLFW\\src\\Release\\glfw3.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 7,
+				"fragment" : "..\\Syris\\vendor\\spdlog\\Release\\spdlog.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 13,
+				"fragment" : "C:\\Users\\eneko\\dev\\vcpkg\\installed\\x64-windows\\lib\\hpx_wrap.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "C:\\Users\\eneko\\dev\\vcpkg\\installed\\x64-windows\\lib\\hpx_iostreams.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 14,
+				"fragment" : "C:\\Users\\eneko\\dev\\vcpkg\\installed\\x64-windows\\lib\\hpx_init.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 17,
+				"fragment" : "C:\\Users\\eneko\\dev\\vcpkg\\installed\\x64-windows\\lib\\hpx.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 18,
+				"fragment" : "C:\\Users\\eneko\\dev\\vcpkg\\installed\\x64-windows\\lib\\hpx_core.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 24,
+				"fragment" : "C:\\Users\\eneko\\dev\\vcpkg\\installed\\x64-windows\\debug\\lib\\hwloc.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 25,
+				"fragment" : "dbghelp.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 25,
+				"fragment" : "psapi.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 25,
+				"fragment" : "shlwapi.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "Sandbox",
+	"nameOnDisk" : "Sandbox.exe",
+	"paths" : 
+	{
+		"build" : "Sandbox",
+		"source" : "Sandbox"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "src\\app",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5
+			]
+		},
+		{
+			"name" : "src\\ecs",
+			"sourceIndexes" : 
+			[
+				6,
+				7,
+				8,
+				9,
+				10
+			]
+		},
+		{
+			"name" : "src",
+			"sourceIndexes" : 
+			[
+				11
+			]
+		},
+		{
+			"name" : "src\\scene",
+			"sourceIndexes" : 
+			[
+				12,
+				13,
+				14,
+				15,
+				16,
+				17
+			]
+		},
+		{
+			"name" : "src\\texture",
+			"sourceIndexes" : 
+			[
+				18
+			]
+		},
+		{
+			"name" : "src\\world_generator",
+			"sourceIndexes" : 
+			[
+				19
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/app/SandboxApp.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/app/SandboxApp.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/app/SandboxData.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/app/SandboxData.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/app/SandboxLayers.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/app/SandboxLayers.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/ecs/Bush.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/ecs/Components.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/ecs/Mushroom.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/ecs/Player.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/ecs/Tile.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/main.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/scene/SandboxScene.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/scene/SandboxScene.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/scene/SimpleScene.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/scene/SimpleScene.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "Sandbox/src/scene/TriangleScene.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/scene/TriangleScene.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/texture/SandboxTexture.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 2,
+			"path" : "Sandbox/src/world_generator/world_generator.hpp",
+			"sourceGroupIndex" : 5
+		}
+	],
+	"type" : "EXECUTABLE"
+}

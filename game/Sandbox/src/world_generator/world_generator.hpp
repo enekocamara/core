@@ -3,9 +3,9 @@
 #include "Syris/log/Log.h"
 #include "../ecs/Bush.h"
 #include "../ecs/Tile.h"
+#include "../scene/SandboxScene.hpp"
 
-
-namespace Sandbox::world_generator { 
+namespace Sandbox::world_generator {
     template<glm::u32 x, glm::u32 y>
     std::array<entt::entity, x * y> make_bushes(glm::vec2 top_left, float padding, entt::registry& registry){
         auto texture = ecs::Bush::defaultTextureBundle();

@@ -28,7 +28,7 @@ namespace Sandbox::ecs::Tile {
     inline Syris::texture::Texture2DBundle defaultTextureBundle(){
         return Syris::texture::Texture2DBundle{
             .src = texture::atlas::grass_0,
-            .size = {(float)config::render_tile_size, (float)config::render_tile_size},
+            .size = {(float)Syris::config::render_tile_size, (float)Syris::config::render_tile_size},
                 ///       .color = RAYWHITE,
                 ///       .rotation = 0
         };

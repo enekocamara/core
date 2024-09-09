@@ -50,8 +50,8 @@ namespace Sandbox::ecs::Bush {
         return Syris::texture::Texture2DBundle{
             .src = texture::atlas::bush_with_berries,
             .size = {
-                (float)config::render_tile_size,
-                (float)config::render_tile_size
+                (float)Syris::config::render_tile_size,
+                (float)Syris::config::render_tile_size
             },
                 /// .color = RAYWHITE,
                 ///.rotation = 0

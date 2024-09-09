@@ -32,11 +32,13 @@ namespace Syris::renderer {
                     exit(1);
                 }
                 glVertexAttribPointer(layout.index_layout, layout.values_count, GL_FLOAT, layout.normalize, layout.stride_size, (void*)layout.skip_size);
-                if (layout.perInstance)
-                    glVertexAttribDivisor(layout.index_layout,1);
+               
                 glEnableVertexAttribArray(layout.index_layout);
+                if (layout.perInstance)
+                    glVertexAttribDivisor(layout.index_layout, 1);
 
 //                glVertexAttribDivisor(layout.index_layout, static_cast<GLuint>(layout.perInstance));
+                //std::cout << "index  layout "  << layout.index_layout << "\n\t"<<'\n';
             }
             GLenum error = glGetError();
             if (error != GL_NO_ERROR) {

@@ -1,9 +1,10 @@
 #include "app/SandboxApp.hpp"
 #include "texture/SandboxTexture.hpp"
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
+//#include <Core/>
 
+/*
 int main(){
-    //Syris::Logger::client_trace(std::format("{},{}", Sandbox::texture::atlas::grass_0.min, Sandbox::texture::atlas::grass_0.max).c_str());
     Syris::Window::WindowBundle info = Syris::Window::WindowBundle{
         .dimmensions = glm::ivec2(1920, 1080),
         .name = std::string("hola"),
@@ -17,21 +18,20 @@ int main(){
         .atlas_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\textures\\sprites\\atlas\\spritesheet.png",
         .window_bundle = info,
         .registry = registry,
-        /*.cameraCreateInfo = Syris::CameraOrthographic::CreateInfo{
-            .left = -1.0f,
-            .right = 1.0f,
-            .top  = 1.0f,
-            .bottom = -1.0f
-
-        }*/
+        //.cameraCreateInfo = Syris::CameraOrthographic::CreateInfo{
+        //    .left = -1.0f,
+        //    .right = 1.0f,
+        //    .top  = 1.0f,
+        //    .bottom = -1.0f
+        //}
         .cameraCreateInfo = Syris::OrthographicCameraController::CreateInfo{
             .aspec_ratio = ratio,
             .zoom_level = 10.f,
         }
     };
-
     Sandbox::SandboxApp app(app_info);
     CHECK_GL_ERROR();
     app.run();
     return 0;
 }
+*/
