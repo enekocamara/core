@@ -33,7 +33,8 @@ add_library(Syris STATIC ${SOURCES})
 target_include_directories(Syris PUBLIC
     ${CMAKE_SOURCE_DIR}/Syris/vendor/GLFW/include
     ${CMAKE_SOURCE_DIR}/Syris/vendor/Glad/include
-    ${CMAKE_SOURCE_DIR}/Syris/vendor/imgui
+    #${CMAKE_SOURCE_DIR}/Syris/vendor/imgui
+    ${CMAKE_SOURCE_DIR}/Syris/vendor/imguiDocking
     ${CMAKE_SOURCE_DIR}/Syris/vendor/glm
     ${CMAKE_SOURCE_DIR}/Syris/vendor/spdlog/include
     ${CMAKE_SOURCE_DIR}/Syris/vendor/entt
@@ -45,7 +46,7 @@ target_include_directories(Syris PUBLIC
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-target_link_libraries(Syris PUBLIC ImGui Glad glfw spdlog ${Boost_LIBRARIES})
+target_link_libraries(Syris PUBLIC ImGuiDocking Glad glfw spdlog ${Boost_LIBRARIES})
 
 target_compile_definitions(Syris PRIVATE
     PLATFORM_WINDOWS

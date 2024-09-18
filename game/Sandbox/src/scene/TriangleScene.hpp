@@ -21,12 +21,13 @@ namespace Sandbox{
             TriangleScene(CreateInfo info);
             ~TriangleScene();
 
-            void on_update() override;
+            void on_update(Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
         private:
             Syris::GraphicsContext& m_graphics_context;
             Syris::OrthographicCameraController m_camera;
             uint32_t m_shader_id;
+            glm::vec3 m_triangle_color;
             unsigned int m_vbo;
             unsigned int m_vao;
 

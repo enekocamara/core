@@ -7,7 +7,7 @@ namespace Sandbox{
         public:
         SandboxDebugLayer(SandboxData& data);
         ~SandboxDebugLayer();
-        void on_update() override;
+        void on_update(Syris::engine_time::Time& time) override;
         bool on_event(Syris::Event *event) override;
         private:
             SandboxData& m_data;
@@ -25,7 +25,7 @@ namespace Sandbox{
         public:
             SandboxLayer(SandboxData& data);
             ~SandboxLayer();
-            void on_update();
+            void on_update(Syris::engine_time::Time& time);
             bool on_event(Syris::Event* event);
         private:
             SandboxData& m_data;

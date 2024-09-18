@@ -13,9 +13,9 @@ namespace Sandbox{
 
     struct TileVertices{
         std::array<float, 6> vertices;
-        TileVertices(){
-            vertices = {
-                // pos
+        TileVertices(int a){
+            std::cout << "tile  vertices\n";
+            this->vertices = {
                 -0.5f, -0.5f,
                  0.5f, -0.5f,
                  0.0f, 0.5f
@@ -28,24 +28,30 @@ namespace Sandbox{
 
     struct TileIndices{
         std::array<uint32_t, 6> vertices;
-        TileIndices(){
-            vertices = {
+        TileIndices(int a){
+            std::cout << "default indices\n";
+            this->vertices = {
                 0,1,2,2,3,0
             };
         }
 
     };
     struct TileInstancedData{
-        glm::mat4 data = glm::mat4(1.f);
+        glm::mat4 data;
+        TileInstancedData(int a) {
+            std::cout << "default instance data\n";
+            data = glm::mat4(1.f);
+        }
     };
 
 
     Syris::renderer::RenderBuffer* makeSimpleRenderBuffer(){
-            TileVertices vertices;
-            TileIndices indices;
-            TileInstancedData instanced_data;
+           
+            TileIndices indices{ 0 };
+            TileInstancedData instanced_data{0};
+            TileVertices vertices{0};
 
-
+            
             using AttCreateInfo = Syris::renderer::AttributeLayout::CreateInfo;
             //define per vertex layout
             AttCreateInfo layout_pos{
@@ -84,6 +90,8 @@ namespace Sandbox{
                 .perInstance = true
             };
             //per instance layout list
+            
+            
             std::array<AttCreateInfo, 4> instanced_layouts_info =  {instanced_model_col_0, instanced_model_col_1, instanced_model_col_2, instanced_model_col_3}; 
             Syris::renderer::AttributeLayoutList instance_attribute_list({instanced_layouts_info.begin(), instanced_layouts_info.end()}, vertex_attribute_list.attribute_size()); 
 
@@ -107,11 +115,12 @@ namespace Sandbox{
                 .per_vertex_buffer_info = vertex_buffer,
                 .per_instance_buffer_info = instance_buffer,
             };
-            return new Syris::renderer::RenderBuffer(render_buffer_info);
+            Syris::renderer::RenderBuffer *buffer = new Syris::renderer::RenderBuffer(render_buffer_info);
+            return buffer;
     }
     SimpleScene::SimpleScene(CreateInfo info): m_graphics_context(info.context), m_camera(info.camera_info){
-        const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl";
-        const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl";
+        const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\simple_vertex_shader.glsl";
+        const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\simple_fragment_shader.glsl";
         m_shader_id = m_graphics_context.get_shader_manager().add_shader({fragment_shader_path, vertex_shader_path});
         if (!m_shader_id){
             throw std::runtime_error("failed to add shader");
@@ -120,9 +129,10 @@ namespace Sandbox{
         texture.src = texture::atlas::grass_0;
         //ecs::Tile::newTile(glm::vec2(0, 0), texture, m_registry, ecs::CTile::TileType::Grass);
         m_buffer = makeSimpleRenderBuffer();
+        Syris::Logger::client_info("simple scene successfully created");
         CHECK_GL_ERROR();
     }
-    void SimpleScene::on_update(){
+    void SimpleScene::on_update(Syris::engine_time::Time& time){
         //it now owns the camera
         /*outdated by renderbuffer??*/
         /*
@@ -184,8 +194,11 @@ namespace Sandbox{
         Syris::Shader* shader = m_graphics_context.get_shader_manager().get_shader(m_shader_id);
         shader->use();
         //m_graphics_context.get_shader_manager().use_shader(m_shader_id); //shader->use();
-        m_buffer->bind(1); //m_vertexBuffer->bind(1); m_indexBuffer->bind();
+        m_buffer->bind(0); //m_vertexBuffer->bind(1); m_indexBuffer->bind();
+        
         shader->set_uniform_value(m_camera.getCamera().get_view_projection_matrix(), "ViewProjection");
+//        shader->set_uniform_value(glm::mat4(1.f), "ViewProjection");
+        
         //renderAPI::set_uniform_value(context_opengl->get_program(), projection_view, "ViewProjection");
         //glActiveTexture(GL_TEXTURE0);!!TODO
 
@@ -194,7 +207,7 @@ namespace Sandbox{
         CHECK_GL_ERROR();
         glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
         CHECK_GL_ERROR();
-
+        //Syris::Logger::client_info("drawing...\n");
         //m_buffer->draw_buffer(m_graphics_context.get_shader_manager().get_shader(m_shader_id), m_camera.getCamera().get_view_projection_matrix(), m_texture_atlas.getTexture(), 100 * 100);
     }
     bool SimpleScene::on_event(Syris::Event* event){

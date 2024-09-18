@@ -21,7 +21,7 @@ namespace Sandbox{
             SimpleScene(CreateInfo info);
             ~SimpleScene();
 
-            void on_update() override;
+            void on_update(Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
         private:
             Syris::renderer::RenderBuffer* m_buffer;

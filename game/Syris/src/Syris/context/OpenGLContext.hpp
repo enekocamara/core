@@ -16,7 +16,7 @@ namespace Syris{
         OpenGLContext &operator=(const OpenGLContext &ref) = delete;
 
         bool on_event(Event* event)override;
-        void on_update()override;
+        void on_update(engine_time::Time& time)override;
         bool should_window_close() override;
         GLFWwindow* get_window() override {return m_window.get_window();}
         OpenGLWindow& get_window_handler() override {return m_window;}

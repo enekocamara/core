@@ -64,10 +64,13 @@ namespace Sandbox::world_generator {
                 if (noise_value > 1.f || noise_value < -1.f){
                     Syris::Logger::client_info(std::format("noise value error: {}", noise_value).c_str());
                 }
-                if (noise_value < 0.3f){
+                std::cout << y * map_config.num_tiles_x + x << " ";
+                if (noise_value < 0){
+                    std::cout << "DIRT\n";
                     texture.src = texture::atlas::dirt_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Water);
                 }else{
+                    std::cout << "GRASS\n";
                     texture.src = texture::atlas::grass_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Grass);
                 }

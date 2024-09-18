@@ -19,3 +19,7 @@
 [submodule "game/Syris/vendor/hwloc"]
 	path = game/Syris/vendor/hwloc
 	url = https://github.com/open-mpi/hwloc.git
+[submodule "game/Syris/vendor/imguiDocking"]
+	path = game/Syris/vendor/imguiDocking
+	url = https://github.com/ocornut/imgui
+	branch = docking

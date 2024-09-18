@@ -1,5 +1,6 @@
 #include "TriangleScene.hpp"
 #include "Syris/shader/Shader.hpp"
+#include "Syris/renderAPI/OpenGl/renderApi.h"
 namespace Sandbox{
 
     TriangleScene::TriangleScene(CreateInfo info):
@@ -31,13 +32,21 @@ namespace Sandbox{
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+        m_triangle_color = glm::vec3(1.0,0.0,0.0);
     }
     TriangleScene::~TriangleScene(){
 
     }
 
-    void TriangleScene::on_update(){
+    void TriangleScene::on_update(Syris::engine_time::Time& time){
+        m_graphics_context.get_shader_manager().get_shader(m_shader_id)->on_update(time);
+        ImGui::Begin("Settings");
+        ImGui::ColorEdit3("color 1", reinterpret_cast<float *>(&m_triangle_color)); 
+
+        ImGui::End();
         m_graphics_context.get_shader_manager().use_shader(m_shader_id);
+        Syris::Shader* shader = m_graphics_context.get_shader_manager().get_shader(m_shader_id);
+        shader->set_uniform(m_triangle_color, "uColor");
         glBindVertexArray(m_vao);
         glDrawArrays(GL_TRIANGLES, 0, 3); 
         glBindVertexArray(m_vao); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized

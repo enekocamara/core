@@ -18,7 +18,8 @@ namespace Sandbox {
     SandboxApp::SandboxApp(SandboxApp::CreateInfo& info)
         : 
         m_graphics_context(info.gc_info),
-        m_data({m_registry, info.atlas_path, m_graphics_context}){
+        m_data(SandboxData::CreateInfo{m_registry, info.atlas_path, m_graphics_context, info.camera_info})
+        {
         //m_window(m_graphics_context.get_window_handler()),
         //m_camera(info.cameraCreateInfo)
             
@@ -68,7 +69,7 @@ namespace Sandbox {
             //m_camera.on_update(m_time);
             //draw_frame();
             //m_window.on_update_end();
-            m_graphics_context.on_update();
+            m_graphics_context.on_update(m_time);
             CHECK_GL_ERROR();
         }
         std::cout << "window closed\n";
@@ -129,7 +130,7 @@ Application* get_client_app() {
         .window_info = Syris::WindowCreateInfo{
             .dimmensions = glm::ivec2(1920, 1080),
             .name = std::string("hola"),
-            .vSync = true,
+            .vSync = false,
         }
     };
     //Syris::Window::WindowBundle info =   
@@ -142,7 +143,7 @@ Application* get_client_app() {
             .window_info = Syris::WindowCreateInfo{
                 .dimmensions = glm::ivec2(1920, 1080),
                 .name = std::string("hola"),
-                .vSync = true,
+                .vSync = false,
             },
             //.vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl",
             //.fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl",

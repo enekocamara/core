@@ -18,6 +18,11 @@ namespace Syris::renderAPI{
         glUniformMatrix4fv(location, 1, false, glm::value_ptr(value));
     }
     static void set_uniform_value(int program, glm::vec3 value, const char* name){
+        GLint location = glGetUniformLocation(program, name);
+        if (location == -1) {
+            CORE_ERROR(std::format("Uniform {} not found in shader program", name));
+            exit(1);
+        }
         glUniform3f(glGetUniformLocation(program, name),value.x, value.y, value.z);
     }
 

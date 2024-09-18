@@ -12,7 +12,7 @@ namespace Syris::renderAPI {
 static void set_uniform_value(int program, glm::mat4 value, const char *name) {
   GLint location = glGetUniformLocation(program, name);
   if (location == -1) {
-    Logger::core_error(
+    CORE_ERROR(
         std::format("Uniform {} not found in shader program", name).c_str());
     exit(1);
   }
@@ -28,7 +28,7 @@ static void opengl_draw_quad2D(int program,
                                texture::Texture2D texture,
                                texture::Rectangle2D src, glm::vec3 color) {
   if (!glIsTexture(texture.m_id)) {
-    Logger::core_error(
+    CORE_ERROR(
         std::format("Invalid texture ID!: {}", texture.m_id).c_str());
     exit(1);
   }

@@ -5,6 +5,7 @@
 #include "Syris/utils/file/readfile.h"
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
+#include "Syris/include/imgui.h"
 namespace Syris{
     void checkCompileErrors(unsigned int shader_id){
         GLint result = GL_FALSE;
@@ -59,7 +60,9 @@ namespace Syris{
 
     OpenGLShader::OpenGLShader(CreateInfo info){
         m_program = glCreateProgram();
+        m_info = info;
         compile_shaders(m_program, info.vertex_path, info.fragment_path);
+        m_last_change = std::max(std::filesystem::last_write_time(info.vertex_path), std::filesystem::last_write_time(info.fragment_path));
     }
     void OpenGLShader::use(){
         glUseProgram(m_program);
@@ -73,5 +76,30 @@ namespace Syris{
     }
     void OpenGLShader::set_uniform1i(int texture_index, const char *name) {        
         glUniform1i(glGetUniformLocation(m_program, name), texture_index);
+    }
+    void OpenGLShader::on_update(engine_time::Time& time){
+        if (m_last_change != std::max(std::filesystem::last_write_time(m_info.vertex_path), std::filesystem::last_write_time(m_info.fragment_path))){
+            int hold = glCreateProgram();
+            // m_program = glCreateProgram();
+            try
+            {
+                compile_shaders(hold, m_info.vertex_path, m_info.fragment_path);
+                m_program = hold;
+                m_last_change = std::max(std::filesystem::last_write_time(m_info.vertex_path), std::filesystem::last_write_time(m_info.fragment_path));
+            }
+            catch (std::runtime_error &error)
+            {
+                std::cerr << "failed to compile!" << std::endl;
+                CORE_ERROR("failed to compile shader");
+            }
+        }
+        /*ImGui::Begin("Shader Settings");
+        if (ImGui::Button("Recompile shader"))
+        {
+            
+            // This code will run when the button is clicked
+            //std::cout << "Button clicked!" << std::endl;
+        }
+        ImGui::End();*/
     }
 }

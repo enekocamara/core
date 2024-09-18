@@ -25,6 +25,7 @@ namespace Sandbox::ecs::Tile {
         registry.emplace<CTick>(tile, tick);
         return tile;
     }
+    
     inline Syris::texture::Texture2DBundle defaultTextureBundle(){
         return Syris::texture::Texture2DBundle{
             .src = texture::atlas::grass_0,

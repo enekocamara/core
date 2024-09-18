@@ -10,5 +10,5 @@ uniform vec3 spriteColor; // Color of the sprite
 void main()
 {
     vec4 texColor = texture(texture1, TexCoord);
-    FragColor = vec4(1.f,1.f,1.f, 1.f); // Preserve the alpha channel
+    FragColor = texColor;
 }

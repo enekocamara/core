@@ -61,3 +61,48 @@ namespace Syris{
     //defien 4 callback functions
 }
 #endif
+
+namespace Syris{
+
+    //key
+    EventKey::EventKey(int key, int scancode, int action, int mods){
+    }
+    EventType EventKey::get_type() const {
+        return EventType::KeyPressed;
+    }
+
+    //mouse
+    EventMouse::EventMouse(int button, int action, int mods):m_button(button),m_action(action),m_mods(mods){
+
+    }
+    EventType EventMouse::get_type() const{
+        return EventType::MouseButtonPressed;//!todo not correct type
+    }
+
+
+    //cursor
+    EventCursorPos::EventCursorPos(double xpos, double ypos):m_xpos(xpos), m_ypos(ypos){
+
+    }
+    EventType EventCursorPos::get_type() const{
+        return EventType::MouseMoved;
+    }
+
+    //scroll
+    EventScroll::EventScroll(double xoffset, double yoffset) : m_xoffset(xoffset), m_yoffset(yoffset)
+    {
+    }
+    EventType EventScroll::get_type() const
+    {
+        return EventType::MouseScrolled;
+    }
+
+    //window resize
+    EventWindowResize::EventWindowResize(int width, int height): m_width(width), m_height(height)
+    {
+    }
+    EventType EventWindowResize::get_type() const
+    {
+        return EventType::WindowResize;
+    }
+}

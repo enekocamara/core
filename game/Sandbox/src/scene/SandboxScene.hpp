@@ -30,13 +30,15 @@ namespace Sandbox{
             SandboxScene(CreateInfo info);
             ~SandboxScene();
 
-            void on_update() override;
+            void on_update(Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
             static constexpr config::MapConfig m_map_config = config::MapConfig{
                 .num_tiles_x = 100,
-                    .num_tiles_y = 100
+                .num_tiles_y = 100
             };
         private:
+
+            void update_data(bool imgui);
             entt::registry& m_registry;
             Syris::texture::TextureAtlas m_texture_atlas;
             Syris::renderer::RenderBuffer* m_buffer;

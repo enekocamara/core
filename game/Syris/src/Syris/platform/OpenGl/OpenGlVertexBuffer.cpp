@@ -4,6 +4,7 @@
 
 namespace Syris::renderer { 
     OpenGLVertexBuffer::OpenGLVertexBuffer(CreateInfo info){    
+        
         glGenVertexArrays(1, &m_vertex_array);
         if (m_vertex_array == NotSet){
             CORE_ERROR("Failed to generate vertex array");
@@ -31,8 +32,17 @@ namespace Syris::renderer {
                     CORE_ERROR("TODO! Value type different to float");
                     exit(1);
                 }
-                glVertexAttribPointer(layout.index_layout, layout.values_count, GL_FLOAT, layout.normalize, layout.stride_size, (void*)layout.skip_size);
-               
+                switch (layout.value_type){
+                    case ValueType::Float:
+                        glVertexAttribPointer(layout.index_layout, layout.values_count, GL_FLOAT, layout.normalize, layout.stride_size, (void*)layout.skip_size);
+                        break; 
+                    case ValueType::Int:
+                        glVertexAttribPointer(layout.index_layout, layout.values_count, GL_INT, layout.normalize, layout.stride_size, (void*)layout.skip_size);
+                        break; 
+                    default:
+                        CORE_ERROR("TODO! Value type different to float or int");
+                        exit(1);
+                } 
                 glEnableVertexAttribArray(layout.index_layout);
                 if (layout.perInstance)
                     glVertexAttribDivisor(layout.index_layout, 1);
@@ -47,6 +57,7 @@ namespace Syris::renderer {
             }
             buffer_index++;
         }
+        
     }
     
     OpenGLVertexBuffer::~OpenGLVertexBuffer(){

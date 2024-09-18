@@ -12,7 +12,7 @@ namespace Syris
         IGraphicsContext(){};
         virtual ~IGraphicsContext(){};
         virtual bool on_event(Event* event) = 0;
-        virtual void on_update() = 0;
+        virtual void on_update(engine_time::Time& time) = 0;
         virtual bool should_window_close() = 0;
         virtual GLFWwindow* get_window() = 0;
         virtual OpenGLWindow& get_window_handler() = 0;
@@ -34,7 +34,7 @@ namespace Syris
             GraphicsContext(CreateInfo& info);
             ~GraphicsContext();
             bool on_event(Event* event) override {return m_context_impl->on_event(event);}
-            void on_update() override {m_context_impl->on_update();}
+            void on_update(engine_time::Time& time) override {m_context_impl->on_update(time);}
             bool should_window_close() override {return m_context_impl->should_window_close();}
             LayerManager& get_layer_manager()override {return m_context_impl->get_layer_manager();}
             GLFWwindow* get_window() override {return m_context_impl->get_window();}

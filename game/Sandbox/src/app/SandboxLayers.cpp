@@ -8,7 +8,7 @@ namespace Sandbox{
 
     }
 
-    void SandboxLayer::on_update(){
+    void SandboxLayer::on_update(Syris::engine_time::Time& time){
 
     }
     bool SandboxLayer::on_event(Syris::Event* event){
@@ -40,7 +40,7 @@ namespace Sandbox{
 
     }
 
-    void SandboxDebugLayer::on_update(){
+    void SandboxDebugLayer::on_update(Syris::engine_time::Time& time){
         //!todo 
     }
     bool SandboxDebugLayer::on_event(Syris::Event* event){

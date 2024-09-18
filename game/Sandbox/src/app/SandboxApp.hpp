@@ -6,13 +6,15 @@
 #include "Syris/scene/Scene.hpp"
 #include "Syris/renderer/renderer2D/Renderer.h"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
-#include  "Syris/renderer/Texture.h"
+#include "Syris/renderer/Texture.h"
 #include "Syris/renderer/RenderBuffer.hpp"
 #include "Syris/renderAPI/renderApi.h"
 #include <Core/Core.hpp>
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 #include "SandboxData.hpp"
 #include "Syris/events/Event.hpp"
+
+#include "SandboxLayers.hpp"
 
 //data application
 //layers that use that data
@@ -40,8 +42,7 @@ namespace Sandbox{
 
             entt::registry m_registry;
             Syris::GraphicsContext m_graphics_context;
-            SandboxData m_data;//holds the data off the whole application 
-           // SandboxLayer* m_layer;//ok, pass &data handle at construction
+            SandboxData m_data;//holds the data off the whole application  
            // Syris::OpenGLWindow& m_window;
            // scene::Scene* m_scene;
            // Syris::renderer::Renderer2D m_renderer;
