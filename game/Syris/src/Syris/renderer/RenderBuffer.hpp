@@ -12,7 +12,7 @@
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
 
-namespace Syris::renderer{
+namespace Syris{
     //this will be opengl render buffer later
     class RenderBuffer{
         public:
@@ -20,8 +20,8 @@ namespace Syris::renderer{
                 bool dynamic;
                 uint32_t index_count;
                 uint32_t *indices;
-                VertexBuffer::BufferInfo per_vertex_buffer_info;
-                VertexBuffer::BufferInfo per_instance_buffer_info;
+                VertexBuffer::SubBufferInfo per_vertex_buffer_info;
+                VertexBuffer::SubBufferInfo per_instance_buffer_info;
             };
             RenderBuffer(CreateInfo info);
             ~RenderBuffer();

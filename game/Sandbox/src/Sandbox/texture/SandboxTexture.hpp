@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 #include "Syris/renderer/Texture.h"
 
 namespace Sandbox::texture{
@@ -23,8 +23,8 @@ namespace Sandbox::texture{
     namespace atlas{
         static constexpr size_t tile_size = 16;
         static constexpr size_t actions = 0;
-        static constexpr size_t player = 37;
-        static constexpr size_t objects = player + 11;
+        static constexpr size_t player = 36;
+        static constexpr size_t objects = player + 12;
         static constexpr size_t plants = objects + 6;
         static constexpr size_t crop = plants + 5;
         static constexpr size_t eggs = crop + 2;
@@ -62,6 +62,10 @@ namespace Sandbox::texture{
         static constexpr Syris::texture::Rectangle2D dirt_0 = {
             .min = {0.f, nor_y(dirt + 5)},
             .max = {nor_x(1), nor_y(dirt + 6)}
+        };
+        static constexpr Syris::texture::Rectangle2D player_0 = {
+            .min = {nor_x(1.f), nor_y(player + 1)},
+            .max = {nor_x(2), nor_y(player + 2)}
         };
     }
 }; // namespace textures

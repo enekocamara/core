@@ -1,14 +1,16 @@
 #include "ShaderManger.hpp"
 #include <stdexcept>
 #include "Syris/log/Log.h"
+#include <format>
+#include <iostream>
 namespace Syris{
 
     uint32_t ShaderManager::add_shader(Shader::CreateInfo info){
-        
         try{
+            std::cout << "PATH   :   [" << m_path_start << "] [" << info.path << "]\n";
+            std::string real_path = std::format("{}\\{}", m_path_start, info.path);
+            info.path = real_path.c_str();
             Shader* shader = Shader::create_shader(info);
-            auto path = std::string(info.fragment_path);
-            std::string name = get_shader_name_from_path(path);
             uint32_t id = m_id++;
             m_shaders[id] = shader;
             return id;
@@ -27,12 +29,12 @@ namespace Syris{
         return results;
     }
 
-    void ShaderManager::use_shader(ShaderID id){
-        m_shaders[id]->use();
+    void ShaderManager::use_shader(ShaderID id, void *uniforms){
+        m_shaders[id]->use(uniforms);
     }
 
-    void ShaderManager::use_shader(const char *name){
-        m_shaders[m_names_to_shaders[name]]->use();
+    void ShaderManager::use_shader(const char *name, void *uniforms){
+        m_shaders[m_names_to_shaders[name]]->use(uniforms);
     }
     uint32_t ShaderManager::get_shader_id(const char* name){
         if (m_names_to_shaders.find(name) != m_names_to_shaders.end()){

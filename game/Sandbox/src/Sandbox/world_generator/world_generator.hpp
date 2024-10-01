@@ -1,9 +1,10 @@
 #pragma once
 #include <FastNoiseLite.h>
 #include "Syris/log/Log.h"
-#include "../ecs/Bush.h"
-#include "../ecs/Tile.h"
-#include "../scene/SandboxScene.hpp"
+
+#include "Sandbox/ecs/Bush.h"
+#include "Sandbox/ecs/Tile.h"
+#include "Sandbox/scene/sandbox/SandboxScene.hpp"
 
 namespace Sandbox::world_generator {
     template<glm::u32 x, glm::u32 y>
@@ -66,11 +67,11 @@ namespace Sandbox::world_generator {
                 }
                 std::cout << y * map_config.num_tiles_x + x << " ";
                 if (noise_value < 0){
-                    std::cout << "DIRT\n";
+                    //std::cout << "DIRT\n";
                     texture.src = texture::atlas::dirt_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Water);
                 }else{
-                    std::cout << "GRASS\n";
+                    //std::cout << "GRASS\n";
                     texture.src = texture::atlas::grass_0;
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Grass);
                 }

@@ -28,7 +28,10 @@ namespace Syris{
         int m_program;
         ShaderManager m_shader_manager;
         LayerManager m_layer_manager;
-        //program
-        //shaders?
+
+        //fps
+        int m_fps = 0;
+        int m_fps_frame_count = 0;
+        int m_fps_acumulated_time = 0;
     };
 }

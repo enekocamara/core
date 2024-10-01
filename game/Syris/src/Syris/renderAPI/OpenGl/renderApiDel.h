@@ -9,6 +9,7 @@
 #include "Syris/renderer/Texture.h"
 
 namespace Syris::renderAPI {
+    /*
 static void set_uniform_value(int program, glm::mat4 value, const char *name) {
   GLint location = glGetUniformLocation(program, name);
   if (location == -1) {
@@ -23,10 +24,11 @@ static void set_uniform_value(int program, glm::vec3 value, const char *name) {
 }
 
 static void opengl_draw_quad2D(int program,
-                               renderer::OpenGLVertexBuffer *buffer,
+                               OpenGLVertexBuffer *buffer,
                                glm::mat4 model, glm::mat4 projection_view,
                                texture::Texture2D texture,
                                texture::Rectangle2D src, glm::vec3 color) {
+
   if (!glIsTexture(texture.m_id)) {
     CORE_ERROR(
         std::format("Invalid texture ID!: {}", texture.m_id).c_str());
@@ -43,17 +45,7 @@ static void opengl_draw_quad2D(int program,
       1.0f,  -1.0f, src.max.x, src.min.y, // bottom-right
       -1.0f, -1.0f, src.min.x, src.min.y, // bottom-left
   };
-  /*float updated_vertices[] = {
-      // positions   // texture coords
-      -1.0f,  1.0f,  0.0f, 1.0f,  // top-left
-      1.0f,  1.0f,  1.0f, 1.0f,  // top-right
-      1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
-
-      -1.0f,  1.0f,  0.0f, 1.0f,  // top-left
-      1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
-      -1.0f, -1.0f,  0.0f, 0.0f   // bottom-left
-  };*/
-
+ 
   // Bind vao vbo
   // buffer->bind();
   CHECK_GL_ERROR();
@@ -81,3 +73,4 @@ static void opengl_draw_quad2D(int program,
   // Unuse the shader program
 }
 } // namespace Syris::renderAPI
+*/

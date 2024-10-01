@@ -66,6 +66,11 @@ namespace Syris{
 
     //key
     EventKey::EventKey(int key, int scancode, int action, int mods){
+        m_key = key;
+        m_scancode = scancode;
+        m_action = action;
+        m_mods = mods;
+
     }
     EventType EventKey::get_type() const {
         return EventType::KeyPressed;

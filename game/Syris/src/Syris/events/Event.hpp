@@ -29,7 +29,9 @@ namespace Syris{
             EventKey( int key, int scancode, int action, int mods);
             ~EventKey(){};
             EventType get_type()const override;
+            
             int get_key()const{return m_key;}
+            int get_action()const{return m_action;}
             bool has_been_handled() const override{return m_has_been_handled;}
         private:
             int m_key;

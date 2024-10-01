@@ -3,9 +3,9 @@
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 #include "Syris/context/OpenGLContext.hpp"
-namespace Syris::renderer{
+namespace Syris{
     RenderBuffer::RenderBuffer(CreateInfo info){
-        std::array<VertexBuffer::BufferInfo, 2> buffers{info.per_vertex_buffer_info, info.per_instance_buffer_info};
+        std::array<VertexBuffer::SubBufferInfo, 2> buffers{info.per_vertex_buffer_info, info.per_instance_buffer_info};
         VertexBuffer::CreateInfo vertex_buffer_info = VertexBuffer::CreateInfo{
             .dynamic = info.dynamic,
             .buffers_info = {buffers.begin(), buffers.end()},

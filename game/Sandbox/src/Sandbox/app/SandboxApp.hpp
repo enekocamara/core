@@ -1,5 +1,8 @@
 #pragma once
 #include <entt.hpp>
+
+#include <Core/Core.hpp>
+
 #include "Syris/app/OpenGLWindow.h"
 #include "Syris/context/GraphicsContext.hpp"
 #include "Syris/layers/Layer.hpp"
@@ -8,13 +11,11 @@
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
 #include "Syris/renderer/Texture.h"
 #include "Syris/renderer/RenderBuffer.hpp"
-#include "Syris/renderAPI/renderApi.h"
-#include <Core/Core.hpp>
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
-#include "SandboxData.hpp"
 #include "Syris/events/Event.hpp"
-
 #include "SandboxLayers.hpp"
+
+#include "SandboxData.hpp"
 
 //data application
 //layers that use that data

@@ -3,7 +3,7 @@
 #include <span>
 
 
-namespace Syris::renderer{
+namespace Syris{
     
     enum class ValueType{
         Float,

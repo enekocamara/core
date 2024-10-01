@@ -1,14 +1,15 @@
 #pragma once
 #include <entt.hpp>
 
-#include "../scene/SandboxScene.hpp"
-#include "../scene/TriangleScene.hpp"
-#include "../scene/SimpleScene.hpp"
-#include "../layers/ImGuiLayer.hpp"
-
-
 #include "Syris/context/GraphicsContext.hpp"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
+
+#include "Sandbox/scene/sandbox/SandboxScene.hpp"
+#include "Sandbox/scene/TriangleScene.hpp"
+#include "Sandbox/scene/SimpleScene.hpp"
+#include "Sandbox/layers/ImGuiLayer.hpp"
+
+
 namespace Sandbox{
     //holds the data to the whole application
     //especially the entt owning groups

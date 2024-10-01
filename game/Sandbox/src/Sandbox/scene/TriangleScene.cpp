@@ -1,6 +1,8 @@
+#pragma once
 #include "TriangleScene.hpp"
 #include "Syris/shader/Shader.hpp"
-#include "Syris/renderAPI/OpenGl/renderApi.h"
+#include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
+#include "../shaders/triangle_scene_layout.h"
 namespace Sandbox{
 
     TriangleScene::TriangleScene(CreateInfo info):
@@ -8,9 +10,11 @@ namespace Sandbox{
         m_camera(info.camera_info){
 
         //auto shader_layout = ShaderLayout<>;
-        const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\triangle_vertex_shader.glsl";
-        const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\triangle_fragment_shader.glsl";
-        m_shader_id = m_graphics_context.get_shader_manager().add_shader({fragment_shader_path, vertex_shader_path});
+        //const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\triangle_vertex_shader.glsl";
+        //const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\triangle_fragment_shader.glsl";
+
+        Syris::Logger::client_info("triangle scene being created");
+        m_shader_id = m_graphics_context.get_shader_manager().add_shader(triangle_scene::get_shader_info());
         if (!m_shader_id){
             throw std::runtime_error("failed to add shader");
         }
@@ -33,6 +37,7 @@ namespace Sandbox{
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         m_triangle_color = glm::vec3(1.0,0.0,0.0);
+        Syris::Logger::client_info("triangle scene successfully created");
     }
     TriangleScene::~TriangleScene(){
 
@@ -44,9 +49,10 @@ namespace Sandbox{
         ImGui::ColorEdit3("color 1", reinterpret_cast<float *>(&m_triangle_color)); 
 
         ImGui::End();
-        m_graphics_context.get_shader_manager().use_shader(m_shader_id);
-        Syris::Shader* shader = m_graphics_context.get_shader_manager().get_shader(m_shader_id);
-        shader->set_uniform(m_triangle_color, "uColor");
+        triangle_scene::ShaderLayoutTuple data = m_triangle_color;
+        m_graphics_context.get_shader_manager().use_shader(m_shader_id, &data);
+        //Syris::Shader* shader = m_graphics_context.get_shader_manager().get_shader(m_shader_id);
+        //shader->set_uniform(m_triangle_color, "uColor");
         glBindVertexArray(m_vao);
         glDrawArrays(GL_TRIANGLES, 0, 3); 
         glBindVertexArray(m_vao); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized

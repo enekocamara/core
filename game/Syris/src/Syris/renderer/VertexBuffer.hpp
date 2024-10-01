@@ -1,6 +1,6 @@
 #pragma once
 #include "AttributeLayoutList.hpp"
-namespace Syris::renderer{
+namespace Syris{
 
     class VertexBuffer{
         public:
@@ -9,10 +9,12 @@ namespace Syris::renderer{
              * void *data;
              * uint32_t size;
              */ 
-            struct BufferInfo{
+
+            struct SubBufferInfo{
                 AttributeLayoutList layout_list;
-                uint32_t size;
+                uint64_t size;
                 void *data;
+                bool dynamic;
             };
 
             /*
@@ -23,7 +25,7 @@ namespace Syris::renderer{
              */ 
             struct CreateInfo{
                 bool dynamic;
-                std::span<BufferInfo> buffers_info;
+                std::span<SubBufferInfo> buffers_info;
             };
             /*
              * @brief returns a memory owning pointer to a vertex buffer
@@ -34,6 +36,7 @@ namespace Syris::renderer{
             static VertexBuffer* create(CreateInfo info);
             virtual void bind(uint32_t index) = 0;
             virtual void unbind(uint32_t index) = 0;
+            virtual void append(uint32_t index, uint64_t size, void* data) = 0;
             virtual ~VertexBuffer(){};
     };
 }

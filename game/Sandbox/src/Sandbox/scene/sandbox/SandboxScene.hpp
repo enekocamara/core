@@ -1,5 +1,7 @@
 #pragma once
 #include <entt.hpp>
+#include <hpx/thread.hpp>
+
 #include "Syris/renderer/RenderBuffer.hpp"
 #include "Syris/scene/Scene.hpp"
 #include "Syris/Libs.h"
@@ -7,6 +9,7 @@
 #include "Syris/layers/Layer.hpp"
 #include "Syris/events/Event.hpp"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
+#include "Syris/materials/Material.hpp"
 
 namespace Sandbox{
     namespace config{
@@ -32,6 +35,7 @@ namespace Sandbox{
 
             void on_update(Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
+            void sim_loop();
             static constexpr config::MapConfig m_map_config = config::MapConfig{
                 .num_tiles_x = 100,
                 .num_tiles_y = 100
@@ -41,9 +45,16 @@ namespace Sandbox{
             void update_data(bool imgui);
             entt::registry& m_registry;
             Syris::texture::TextureAtlas m_texture_atlas;
-            Syris::renderer::RenderBuffer* m_buffer;
+           // Syris::RenderBuffer* m_buffer;
             Syris::GraphicsContext& m_graphics_context;
             Syris::OrthographicCameraController m_camera;
+            Syris::Material *m_material;
+            Syris::Material *m_player_material;
+            entt::entity m_player_id;
             uint32_t m_shader_id;
+
+            //sim
+            std::atomic_bool m_sim_loop_running = true;
+            Syris::engine_time::Time m_sim_time;
     };
 }

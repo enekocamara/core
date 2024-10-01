@@ -10,9 +10,9 @@ namespace Syris::renderAPI{
     struct Quad2D{
         Quad2D() = delete;
         Quad2D(const Quad2D& ref) = delete;
-        Quad2D(renderer::VertexBuffer::CreateInfo);
+        Quad2D(VertexBuffer::CreateInfo);
         ~Quad2D();
-        renderer::VertexBuffer* buffer = nullptr;
+        VertexBuffer* buffer = nullptr;
     }; 
     void draw_quad(int program, Quad2D* quad, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color);
 }

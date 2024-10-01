@@ -6,7 +6,7 @@
 namespace Syris{
     class OpenGLIndexBuffer: public IndexBuffer{
         public:
-            OpenGLIndexBuffer(IndexBuffer::CreateInfo info);
+            OpenGLIndexBuffer(IndexBuffer::CreateInfo& info);
             ~OpenGLIndexBuffer();
             void bind();
             void unbind();

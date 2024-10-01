@@ -57,6 +57,7 @@ add_executable(Sandbox ${SOURCES})
 target_link_libraries(Sandbox PRIVATE Core)
 target_include_directories(Sandbox PRIVATE
     ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
+    ${CMAKE_SOURCE_DIR}/Sandbox/src
 )
 set(HPX_WITH_LOGGING OFF CACHE BOOL "Disable HPX logging" FORCE)
 # Enable multi-processor compilation (if supported by the compiler)

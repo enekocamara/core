@@ -10,8 +10,7 @@ layout (location = 5) in vec4 aModelCol3; // Texture coordinate attribute
 out vec2 TexCoord; // Output texture coordinate to the fragment shader
 
 uniform mat4 ViewProjection;
-
-uniform vec3 spriteColor;
+//uniform vec3 spriteColor;
 
 void main()
 {

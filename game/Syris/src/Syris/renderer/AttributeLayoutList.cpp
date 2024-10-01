@@ -1,6 +1,6 @@
 #include "AttributeLayoutList.hpp"
 
-namespace Syris::renderer{
+namespace Syris{
     AttributeLayoutList::AttributeLayoutList(std::span<AttributeLayout::CreateInfo> layouts_info, uint32_t attribute_index_padding):m_attribute_index_padding(attribute_index_padding){
         for (auto layout_info : layouts_info){
             AttributeLayout layout{

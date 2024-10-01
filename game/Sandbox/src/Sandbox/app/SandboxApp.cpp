@@ -1,27 +1,30 @@
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#pragma once
 #include <array>
 #include <iostream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "Sandbox/app/SandboxApp.hpp"
+
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 #include "Syris/renderer/AttributeLayoutList.hpp"
-#include "../ecs/Components.h"
-#include "../scene/SandboxScene.hpp"
-#include "../texture/SandboxTexture.hpp"
-#include "SandboxApp.hpp"
 #include "Syris/input/Input.h"
 #include "Syris/Shader/Shader.hpp"
 #include "Syris/renderer/Texture.h"
 
-namespace Sandbox {
+#include "Sandbox/ecs/Components.h"
+#include "Sandbox/scene/Sandbox/SandboxScene.hpp"
+#include "Sandbox/texture/SandboxTexture.hpp"
 
-    SandboxApp::SandboxApp(SandboxApp::CreateInfo& info)
+namespace Sandbox {
+       SandboxApp::SandboxApp(SandboxApp::CreateInfo& info)
         : 
         m_graphics_context(info.gc_info),
         m_data(SandboxData::CreateInfo{m_registry, info.atlas_path, m_graphics_context, info.camera_info})
-        {
-        //m_window(m_graphics_context.get_window_handler()),
-        //m_camera(info.cameraCreateInfo)
+        { 
+            // m_window(m_graphics_context.get_window_handler()),
+            // m_camera(info.cameraCreateInfo)
             
             //init program and shaders
             /*now in the graphics context, shader manager
@@ -63,13 +66,8 @@ namespace Sandbox {
             m_time.delta_time_ms =
                 std::chrono::duration<float, std::milli>(now - m_time.last_frame)
                 .count();
-            //glUseProgram(m_program);
-            //
-            //m_window.on_update_start();
-            //m_camera.on_update(m_time);
-            //draw_frame();
-            //m_window.on_update_end();
             m_graphics_context.on_update(m_time);
+            m_time.last_frame = now;
             CHECK_GL_ERROR();
         }
         std::cout << "window closed\n";
@@ -143,7 +141,7 @@ Application* get_client_app() {
             .window_info = Syris::WindowCreateInfo{
                 .dimmensions = glm::ivec2(1920, 1080),
                 .name = std::string("hola"),
-                .vSync = false,
+                .vSync = true,
             },
             //.vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl",
             //.fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl",

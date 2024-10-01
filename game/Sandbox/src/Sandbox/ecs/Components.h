@@ -3,7 +3,42 @@
 #include "Syris/renderer/Texture.h"
 #include "Syris/utils/EngineTime.h"
 #include <functional>
+#include <mutex>
+
 namespace Sandbox::ecs {
+    template<typename T>
+    class AsyncComponent{
+    public:
+        AsyncComponent(T value)
+        {
+            m_data = value;
+        }
+        AsyncComponent(AsyncComponent<T> &ref)
+        {
+            m_data = ref.get();
+        }
+
+        T get(){
+            m_mutex.lock();
+            T dummy = m_data;
+            m_mutex.unlock();
+            return dummy;
+        }
+        void set(T& data){
+            m_mutex.lock();
+            m_data = data;
+            m_mutex.unlock();
+        }
+        void set(T data){
+            m_mutex.lock();
+            m_data = data;
+            m_mutex.unlock();
+        }
+    private:
+        T m_data;
+        std::mutex m_mutex;
+    };
+
     struct MovementKeys{
         int up;
         int down;
@@ -23,6 +58,7 @@ namespace Sandbox::ecs {
         glm::fvec2 pos;
         CPosition(glm::fvec2 pos): pos(pos){}
         CPosition(const CPosition& ref): pos(ref.pos){}
+        CPosition(): pos({0,0}){}
     };
     struct CDir { glm::fvec2 value; };
     struct CSpeed { float value; };

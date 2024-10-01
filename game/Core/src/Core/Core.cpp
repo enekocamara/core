@@ -5,7 +5,7 @@
 #include <hpx/threading/thread.hpp>
 
 std::atomic<bool> shutdown_flag{false};
-constexpr bool HPX = false;
+constexpr bool HPX = true;
 int hpx_main(int argc, char* argv[])
 { 
     // ...Execute other code here...

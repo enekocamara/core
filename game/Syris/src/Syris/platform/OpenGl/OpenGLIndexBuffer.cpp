@@ -2,7 +2,7 @@
 
 namespace Syris{
 
-    OpenGLIndexBuffer::OpenGLIndexBuffer(IndexBuffer::CreateInfo info){
+    OpenGLIndexBuffer::OpenGLIndexBuffer(IndexBuffer::CreateInfo& info){
         glCreateBuffers(1, &m_buffer);      
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer);
         if (info.dynamic)

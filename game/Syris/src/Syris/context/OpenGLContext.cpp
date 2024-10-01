@@ -5,7 +5,7 @@
 #include "Syris/utils/EngineTime.h"
 #include "Syris/input/Input.h"
 namespace Syris{
-    OpenGLContext::OpenGLContext(GraphicsContext::CreateInfo &info) : m_layer_manager(), m_window(info.window_info)
+    OpenGLContext::OpenGLContext(GraphicsContext::CreateInfo &info) : m_shader_manager(std::string("C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\")), m_layer_manager(), m_window(info.window_info)
     {
 
         m_program = glCreateProgram();
@@ -20,6 +20,8 @@ namespace Syris{
     void OpenGLContext::on_update(Syris::engine_time::Time& time){
         //events
         glfwPollEvents();
+        m_fps_frame_count++;
+        m_fps_acumulated_time += time.delta_time_ms;
 
         //set imgui frame
         int display_w, display_h;
@@ -41,7 +43,17 @@ namespace Syris{
 
         //render
         m_layer_manager.on_update(time);
-        
+
+        if (m_fps_acumulated_time >= 1000.f)
+        {
+            m_fps = m_fps_frame_count;
+            m_fps_frame_count = 0;
+            m_fps_acumulated_time = 0;
+        }
+        ImGui::Begin("fps");
+        ImGui::Text("FPS: %d", m_fps);
+        ImGui::Text("Acumulated Time: %.1f", m_fps_acumulated_time);
+        ImGui::End();
 
         //resize
         glfwGetFramebufferSize(m_window.get_window(), &display_w, &display_h);

@@ -1,4 +1,5 @@
 #include <vector>
+#include <tuple>
 
 #include "glad/glad.h"
 #include "OpenGLShader.hpp"
@@ -61,11 +62,19 @@ namespace Syris{
     OpenGLShader::OpenGLShader(CreateInfo info){
         m_program = glCreateProgram();
         m_info = info;
-        compile_shaders(m_program, info.vertex_path, info.fragment_path);
-        m_last_change = std::max(std::filesystem::last_write_time(info.vertex_path), std::filesystem::last_write_time(info.fragment_path));
+        m_vertex_path = std::format("{}\\vertex.glsl", info.path);
+        m_fragment_path = std::format("{}\\fragment.glsl", info.path);
+        compile_shaders(m_program, m_vertex_path.c_str(), m_fragment_path.c_str());
+        info.layout->check_layout(m_program);
+        m_last_change = std::max(std::filesystem::last_write_time(m_fragment_path), std::filesystem::last_write_time(m_vertex_path));
+        m_layout = info.layout;
+        m_layout->get();
     }
-    void OpenGLShader::use(){
+
+    void OpenGLShader::use(void *uniforms /*TODO!!!*/) {
         glUseProgram(m_program);
+        auto hold = std::make_tuple(m_program, uniforms);
+        m_layout->set(&hold);
         CHECK_GL_ERROR();
     }
     void OpenGLShader::set_uniform_value(glm::mat4 val, const char *name){ 
@@ -78,14 +87,14 @@ namespace Syris{
         glUniform1i(glGetUniformLocation(m_program, name), texture_index);
     }
     void OpenGLShader::on_update(engine_time::Time& time){
-        if (m_last_change != std::max(std::filesystem::last_write_time(m_info.vertex_path), std::filesystem::last_write_time(m_info.fragment_path))){
+        if (m_last_change != std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path))){
             int hold = glCreateProgram();
             // m_program = glCreateProgram();
             try
             {
-                compile_shaders(hold, m_info.vertex_path, m_info.fragment_path);
+                compile_shaders(hold, m_vertex_path.c_str(), m_fragment_path.c_str());
                 m_program = hold;
-                m_last_change = std::max(std::filesystem::last_write_time(m_info.vertex_path), std::filesystem::last_write_time(m_info.fragment_path));
+                m_last_change = std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path));
             }
             catch (std::runtime_error &error)
             {

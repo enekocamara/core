@@ -6,7 +6,7 @@ namespace Syris{
     class IndexBuffer{
         public:
             struct CreateInfo{
-                uint32_t indices_count;
+                uint64_t indices_count;
                 uint32_t* indices;
                 bool dynamic;
             };

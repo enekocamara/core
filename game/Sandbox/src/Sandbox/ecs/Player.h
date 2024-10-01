@@ -12,8 +12,8 @@ namespace Sandbox::ecs {
             Left,
             Right
         };
-        inline void animate(entt::registry& registry, entt::entity entity, Syris::engine_time::Time time, Syris::texture::Texture2DBundle& texture){
-            auto[dir,speed] = registry.get<CDir, CSpeed>(entity);
+        inline void animate(entt::registry& registry, entt::entity entity, Syris::engine_time::Time time){
+            auto[dir,speed, texture] = registry.get<CDir, CSpeed, CTexture>(entity);
             bool iddle = speed.value == 0.f;
             std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
             int index;
@@ -28,16 +28,17 @@ namespace Sandbox::ecs {
             else{
                 animation_dir = (dir.value.y > 0) ? texture::Player::Dir::Down : texture::Player::Dir::Up;
             }
+            texture.rect = texture::Player::getPlayerTextureRectangle(animation_dir, iddle, index);
             ///texture.src.rect = ecs::textures::Player::getPlayerTextureRectangle(animation_dir, iddle,index);
         }
         inline entt::entity newPlayer(glm::vec2 pos, MovementKeys keys, Syris::texture::Texture2DBundle textureBundle, entt::registry& registry){
             entt::entity entity = registry.create();
-            registry.emplace<CPosition>(entity, pos);
+            registry.emplace<AsyncComponent<CPosition>>(entity, pos);
             registry.emplace<CTexture>(entity, textureBundle.src);
             registry.emplace<CKeyBinded>(entity, keys);
             registry.emplace<CSpeed>(entity, 0.f);
-            registry.emplace<CDir>(entity, glm::vec2(0.f,-1.f));
-            registry.emplace<CAnimated>(entity, animate);
+            registry.emplace<CDir>(entity, glm::vec2(0.f, -1.f));
+            //registry.emplace<CAnimated>(entity, animate);
             return entity;
         }
         inline Syris::texture::Texture2DBundle defaultTextureBundle(){

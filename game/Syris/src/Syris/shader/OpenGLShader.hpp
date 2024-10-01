@@ -12,7 +12,7 @@ namespace Syris{
     public:
         OpenGLShader(Shader::CreateInfo info);
         ~OpenGLShader(){};
-        void use();
+        void use(void *uniforms);
         void set_uniform_value(glm::mat4, const char *name)override;
         void set_uniform(glm::vec3 val, const char *name)override;
         void set_uniform1i(int texture_index, const char *name)override;
@@ -22,5 +22,8 @@ namespace Syris{
         int m_program;
         CreateInfo m_info;
         std::filesystem::file_time_type m_last_change;
+        std::string m_vertex_path;
+        std::string m_fragment_path;
+        IShaderLayout* m_layout;
     };
 }
