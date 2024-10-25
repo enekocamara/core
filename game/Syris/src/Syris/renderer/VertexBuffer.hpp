@@ -1,5 +1,6 @@
 #pragma once
 #include "AttributeLayoutList.hpp"
+#include "Syris/statistics/Statistics.hpp"
 namespace Syris{
 
     class VertexBuffer{
@@ -25,7 +26,8 @@ namespace Syris{
              */ 
             struct CreateInfo{
                 bool dynamic;
-                std::span<SubBufferInfo> buffers_info;
+                std::vector<SubBufferInfo> buffers_info;
+                Statistics& statistics;
             };
             /*
              * @brief returns a memory owning pointer to a vertex buffer
@@ -34,9 +36,12 @@ namespace Syris{
              * vertex buffer
              */
             static VertexBuffer* create(CreateInfo info);
-            virtual void bind(uint32_t index) = 0;
+            virtual void bind() = 0;
+            virtual void bind_subbuffer(uint32_t index) = 0;
             virtual void unbind(uint32_t index) = 0;
             virtual void append(uint32_t index, uint64_t size, void* data) = 0;
+            virtual void print_info() = 0;
+            virtual StatisticModID get_statistics() = 0;
             virtual ~VertexBuffer(){};
     };
 }

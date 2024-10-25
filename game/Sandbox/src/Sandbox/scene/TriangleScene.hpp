@@ -7,6 +7,7 @@
 #include "Syris/layers/Layer.hpp"
 #include "Syris/events/Event.hpp"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
+#include "Syris/statistics/Statistics.hpp"
 
 namespace Sandbox{
     class TriangleScene : public Syris::Scene, public Syris::Layer{
@@ -17,6 +18,7 @@ namespace Sandbox{
                 const char *atlas_path;
                 Syris::GraphicsContext &context;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
+                Syris::Statistics& statistics;
             };
             TriangleScene(CreateInfo info);
             ~TriangleScene();

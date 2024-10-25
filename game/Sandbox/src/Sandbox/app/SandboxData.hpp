@@ -3,12 +3,13 @@
 
 #include "Syris/context/GraphicsContext.hpp"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
+#include "Syris/scene/SceneManager.hpp"
 
 #include "Sandbox/scene/sandbox/SandboxScene.hpp"
 #include "Sandbox/scene/TriangleScene.hpp"
 #include "Sandbox/scene/SimpleScene.hpp"
 #include "Sandbox/layers/ImGuiLayer.hpp"
-
+#include "Syris/statistics/Statistics.hpp"
 
 namespace Sandbox{
     //holds the data to the whole application
@@ -26,6 +27,7 @@ namespace Sandbox{
                 const char * atlas_path;
                 Syris::GraphicsContext& graphics_context;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
+                Syris::Statistics& statistics; 
             };
             SandboxData(CreateInfo info);
             ~SandboxData();
@@ -37,20 +39,21 @@ namespace Sandbox{
             //[[nodiscard]] SandboxScene& get_scene() {return *m_scene;}
         private:
 
-            void set_scene(Scenes scene);
+            void set_scene(Syris::SceneID scene);
 
             entt::registry& m_registry;
-
-            SimpleScene* m_scene_simple;
-            TriangleScene* m_scene_triangle;
-            SandboxScene* m_scene_sandbox;
+            Syris::SceneManager m_scene_manager;
             
-            Syris::LayerID m_current_scene_id;
+            Syris::SceneID m_scene_simple;
+            Syris::SceneID m_scene_triangle;
+            Syris::SceneID m_scene_sandbox;
 
-            Scenes m_current_scene = Scenes::Triangle;
-            Scenes m_next_scene = Scenes::Triangle;
+            Syris::SceneID m_current_scene_id;
+            Syris::SceneID m_next_scene;
+            Syris::LayerID m_current_layer_id;
             //Syris::Layer m_gui_layer;
             Syris::GraphicsContext& m_graphics_context;
+            Syris::Statistics& m_statistics;
             ImGuiLayer m_gui_layer;
             SandboxLayer* m_layer;//ok, pass &data handle at construction
     };

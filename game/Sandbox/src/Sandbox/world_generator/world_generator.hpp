@@ -1,10 +1,13 @@
 #pragma once
 #include <FastNoiseLite.h>
 #include "Syris/log/Log.h"
+#include "Syris/ecs/EntityManager.hpp"
 
 #include "Sandbox/ecs/Bush.h"
 #include "Sandbox/ecs/Tile.h"
 #include "Sandbox/scene/sandbox/SandboxScene.hpp"
+
+#include "Sandbox/scene/sandbox/GridLookUp.hpp"
 
 namespace Sandbox::world_generator {
     template<glm::u32 x, glm::u32 y>
@@ -45,8 +48,7 @@ namespace Sandbox::world_generator {
         result |= get_val<map_config>(tiles, {x-1, y+1});
     }
    
-    template<config::MapConfig map_config>
-    static void generateGround(entt::registry& registry){
+    static GridLookUp *generateGround(Syris::EntityManager& entity_manager, glm::uvec2 grid_dimmensions, glm::vec2 tile_dimmesions){
         //TileMap<map_config> tiles;
         FastNoiseLite noise;
         noise.SetSeed(1);
@@ -59,6 +61,31 @@ namespace Sandbox::world_generator {
 //        noise.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction::CellularDistanceFunction_Euclidean);
 
         auto texture = ecs::Tile::defaultTextureBundle();
+
+        auto tile_gen = [noise](glm::uvec2 pos, Syris::EntityManager& entity_manager, uint32_t index) -> entt::entity
+        {
+            float noise_value = noise.GetNoise((float)pos.x, (float)pos.y);
+            if (noise_value > 1.f || noise_value < -1.f)
+            {
+                Syris::Logger::client_info(std::format("noise value error: {}", noise_value).c_str());
+            }
+            if (noise_value < 0)
+            {
+                return ecs::Tile::newTile(glm::vec2(pos), texture::atlas::dirt_0, entity_manager, ecs::CTile::TileType::Water, index);
+            }
+            else
+            {
+                return ecs::Tile::newTile(glm::vec2(pos), texture::atlas::grass_0,entity_manager , ecs::CTile::TileType::Grass, index);
+            }
+        };
+
+        GridLookUp::CreateInfo info{
+            .grid_dimmension = grid_dimmensions,
+            .tile_dimmensions = tile_dimmesions,
+            .tile_gen = tile_gen,
+            .entity_manager = entity_manager
+        };
+        return new GridLookUp(info);/*
         for (size_t y = 0; y < map_config.num_tiles_y; y++){
             for (size_t x = 0; x < map_config.num_tiles_x; x++){
                 float noise_value = noise.GetNoise((float)x, (float)y);
@@ -76,6 +103,6 @@ namespace Sandbox::world_generator {
                     ecs::Tile::newTile(glm::vec2((float)x, (float)y), texture, registry, ecs::CTile::TileType::Grass);
                 }
             }
-        }
+        }*/
     }
 }

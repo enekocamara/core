@@ -2,6 +2,7 @@
 #include "TriangleScene.hpp"
 #include "Syris/shader/Shader.hpp"
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
+#include "Syris/statistics/Components.hpp"
 #include "../shaders/triangle_scene_layout.h"
 namespace Sandbox{
 
@@ -12,6 +13,9 @@ namespace Sandbox{
         //auto shader_layout = ShaderLayout<>;
         //const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\triangle_vertex_shader.glsl";
         //const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\triangle_fragment_shader.glsl";
+        Syris::Statistics::AddModuleInfo mod_info{};
+        auto id = info.statistics.add_module(mod_info);
+        info.statistics.get_registry().emplace<Syris::statistics::CScene>(id, "Triangle Scene");
 
         Syris::Logger::client_info("triangle scene being created");
         m_shader_id = m_graphics_context.get_shader_manager().add_shader(triangle_scene::get_shader_info());

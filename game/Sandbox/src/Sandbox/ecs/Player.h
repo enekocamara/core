@@ -1,8 +1,11 @@
 #pragma once
+
 #include "Syris/Libs.h"
 #include "Components.h"
 #include "../texture/SandboxTexture.hpp"
 #include <cmath>
+#include <tuple>
+#include <glm/glm.hpp>
 
 namespace Sandbox::ecs {
     namespace Player{
@@ -12,15 +15,20 @@ namespace Sandbox::ecs {
             Left,
             Right
         };
+
+        //the components that make up the player entity
+        using ComponentsTuple = std::tuple<AsyncComponent<CPosition>,CTexture,CKeyBinded,CSpeed,CDir>;
+
         inline void animate(entt::registry& registry, entt::entity entity, Syris::engine_time::Time time){
+            
             auto[dir,speed, texture] = registry.get<CDir, CSpeed, CTexture>(entity);
-            bool iddle = speed.value == 0.f;
+            bool iddle = speed.speed.x == 0 && speed.speed.y == 0;
             std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
             int index;
             if (iddle)
-                index = (int)(std::chrono::duration<float, std::milli>(now - time.init_time).count() / 1000) % 2 == 0;
+                index = (int)(time.get_running_time_ms() / 1000) % 2 == 0;
             else
-                index = (int)(std::chrono::duration<float, std::milli>(now - time.init_time).count() / 250) % 2 == 0;
+                index = (int)(time.get_running_time_ms() / 250) % 2 == 0;
             texture::Player::Dir animation_dir;
 
             if (std::abs(dir.value.x) > std::abs(dir.value.y))
@@ -31,7 +39,7 @@ namespace Sandbox::ecs {
             texture.rect = texture::Player::getPlayerTextureRectangle(animation_dir, iddle, index);
             ///texture.src.rect = ecs::textures::Player::getPlayerTextureRectangle(animation_dir, iddle,index);
         }
-        inline entt::entity newPlayer(glm::vec2 pos, MovementKeys keys, Syris::texture::Texture2DBundle textureBundle, entt::registry& registry){
+        /*inline entt::entity newPlayer(glm::vec2 pos, MovementKeys keys, Syris::texture::Texture2DBundle textureBundle, entt::registry& registry){
             entt::entity entity = registry.create();
             registry.emplace<AsyncComponent<CPosition>>(entity, pos);
             registry.emplace<CTexture>(entity, textureBundle.src);
@@ -40,6 +48,50 @@ namespace Sandbox::ecs {
             registry.emplace<CDir>(entity, glm::vec2(0.f, -1.f));
             //registry.emplace<CAnimated>(entity, animate);
             return entity;
+        }*/
+        inline entt::entity newPlayerEntity(glm::vec2 pos, MovementKeys keys, Syris::texture::Texture2DBundle textureBundle, Syris::EntityManager& entity_manager, Syris::MaterialManager::MaterialID material_id){
+
+            //rendering part
+            TileVertices tile_vertices = TileVertices();
+            entity_shader::RawData vertex_buffer_rd{
+                .data = &tile_vertices,
+                .size = sizeof(TileVertices),
+            };
+
+            TileInstancedData* instance_data = new TileInstancedData();
+            instance_data->tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
+            instance_data->translation = glm::scale(glm::translate(instance_data->translation, glm::vec3(pos, 1.f)), {0.5,0.5,1.f});
+            /*entity_shader::RawData instance_buffer_rd
+                .data = &instance_data,
+                .size = sizeof(TileInstancedData),
+            };*/
+
+            TileIndices tile_indices = TileIndices();
+            Syris::IndexBuffer::CreateInfo index_buffer_info{
+                .indices_count = 6,
+                .indices = tile_indices.vertices.data(),
+                .dynamic = false
+            };
+
+
+            //entity system part
+            Syris::EntityManager::RenderInfo render_info{
+                .material = material_id,
+                //.size = sizeof(TileInstancedData),
+                .entity_data = instance_data
+            };
+            Syris::EntityManager::EntityInfo info{
+                .render_info = render_info
+            };
+            entt::registry& registry = entity_manager.get_registry();
+            entt::entity player = entity_manager.new_entity(info);
+            registry.emplace<AsyncComponent<CPosition>>(player, pos);
+            registry.emplace<CTexture>(player, textureBundle.src);
+            registry.emplace<CKeyBinded>(player, keys);
+            registry.emplace<CSpeed>(player, glm::vec2(0.f));
+            registry.emplace<CMovementSpeed>(player, 3.f);
+            registry.emplace<CDir>(player, glm::vec2(0.f,-1.f));
+            return player;
         }
         inline Syris::texture::Texture2DBundle defaultTextureBundle(){
             return Syris::texture::Texture2DBundle{
@@ -48,6 +100,17 @@ namespace Sandbox::ecs {
                     ///        .color = RAYWHITE,
                     ///        .rotation = 0
             };
+        }
+        inline void sync(Syris::EntityManager& entity_manager, Syris::MaterialManager& material_manager, Syris::MaterialManager::MaterialID material_id, entt::entity player){            
+            TileInstancedData player_data = TileInstancedData();
+            auto cPos = entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>>(player);
+            player_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
+            player_data.translation = glm::scale(glm::translate(player_data.translation, glm::vec3(cPos.get().pos, 1.f)), {0.5,0.5,1.0f});
+            Syris::MaterialSetRequest request{
+                .entity = player,
+                .data = &player_data
+            };
+            material_manager.set_entity(material_id, request);
         }
         
     }

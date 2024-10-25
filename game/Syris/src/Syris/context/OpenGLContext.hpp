@@ -30,8 +30,6 @@ namespace Syris{
         LayerManager m_layer_manager;
 
         //fps
-        int m_fps = 0;
-        int m_fps_frame_count = 0;
-        int m_fps_acumulated_time = 0;
+        engine_time::FPSOverlay m_fps;
     };
 }

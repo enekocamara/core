@@ -9,6 +9,7 @@ namespace Syris{
         VertexBuffer::CreateInfo vertex_buffer_info = VertexBuffer::CreateInfo{
             .dynamic = info.dynamic,
             .buffers_info = {buffers.begin(), buffers.end()},
+            .statistics = info.statistics
         };
         m_vertexBuffer = VertexBuffer::create(vertex_buffer_info);
 
@@ -24,7 +25,7 @@ namespace Syris{
         delete m_indexBuffer;
     }
     void RenderBuffer::bind(uint32_t buffer_index){
-        m_vertexBuffer->bind(buffer_index);
+        m_vertexBuffer->bind_subbuffer(buffer_index);
         m_indexBuffer->bind();
     }
     void RenderBuffer::set_data(void *data){

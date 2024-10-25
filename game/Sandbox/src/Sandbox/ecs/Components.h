@@ -1,11 +1,23 @@
 #pragma once
-#include <entt.hpp>
-#include "Syris/renderer/Texture.h"
-#include "Syris/utils/EngineTime.h"
+
 #include <functional>
 #include <mutex>
+#include <atomic>
+
+#include <entt.hpp>
+
+
+#include "Syris/utils/FastFunction.hpp"
+#include "Syris/renderer/Texture.h"
+#include "Syris/ecs/EntityManager.hpp"
+#include "Syris/utils/EngineTime.hpp"
+#include "Syris/materials/MaterialManager.hpp"
+#include "CollectableManager.hpp"
 
 namespace Sandbox::ecs {
+    struct SMaterialID{
+        Syris::MaterialManager::MaterialID material_id;
+    };
     template<typename T>
     class AsyncComponent{
     public:
@@ -61,7 +73,8 @@ namespace Sandbox::ecs {
         CPosition(): pos({0,0}){}
     };
     struct CDir { glm::fvec2 value; };
-    struct CSpeed { float value; };
+    struct CSpeed { glm::vec2 speed; };
+    struct CMovementSpeed{float movement_speed;};
     struct CAcceleration { glm::fvec2 value; };
     struct CTile{    
         enum class TileType : glm::u8{
@@ -69,6 +82,8 @@ namespace Sandbox::ecs {
             Water
         };
         TileType type;
+        std::mutex mutex;
+        bool in_use = false;
         CTile(TileType type): type(type){}
         CTile(const CTile& ref): type(ref.type){}
     };
@@ -80,18 +95,21 @@ namespace Sandbox::ecs {
         enum class InteractionType{
             Gader,
         };
-        InteractionType interaction_type;
-        const char * message;
-        std::function<bool(entt::registry&, entt::entity)> can_interact;
-        std::function<void(entt::registry&, entt::entity)> interact;
 
         CInteractable(const char *message, InteractionType type, std::function<bool(entt::registry&, entt::entity)> can_interact,std::function<void(entt::registry&, entt::entity)> interact ):message(message), interaction_type(type), can_interact(can_interact), interact(interact){
         }
         CInteractable(const CInteractable& ref): message(ref.message),interaction_type(ref.interaction_type), can_interact(ref.can_interact), interact(ref.interact){
         }
+        InteractionType interaction_type;
+        const char * message;
+        std::function<bool(entt::registry&, entt::entity)> can_interact;
+        std::function<void(entt::registry&, entt::entity)> interact;
     };
     struct CTick{
-        std::function<void(entt::registry&, entt::entity, Syris::engine_time::Time time)> tick;
+        std::function<void(Syris::EntityManager& entity_manager, entt::entity,const Syris::engine_time::Time& time)> tick;
+    };
+    struct CTickFast {
+        Syris::FastFunction<void, Syris::EntityManager&, entt::entity, const Syris::engine_time::Time&> tick;
     };
     struct CComposition{
         float life_matter;
@@ -100,5 +118,14 @@ namespace Sandbox::ecs {
     struct CSource{
         entt::entity source;
         float life_matter_consume_per_ms;
+    };
+    struct CMaterialID{
+        Syris::MaterialManager::MaterialID id;
+    };
+    struct CCollectable{
+        CollectableManager::ID id;
+        float current_life_matter;
+        uint8_t current_stage;
+        //Syris::FastFunction<void, Syris::EntityManager&, entt::entity, const Syris::engine_time::Time&> tick;
     };
 }

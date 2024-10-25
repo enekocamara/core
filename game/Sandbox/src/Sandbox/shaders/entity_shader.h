@@ -25,11 +25,11 @@ namespace Sandbox::entity_shader{
         return info;
     }
 
-    Syris::Material* make_entity_material(Syris::ShaderManager& shader_manager, RawData& vertex_buffer_rd, RawData& instance_buffer_rd, Syris::IndexBuffer::CreateInfo& index_buffer_info, uint32_t instances){
+    Syris::Material::CreateInfo get_entity_material(Syris::ShaderManager& shader_manager, RawData& vertex_buffer_rd, RawData& instance_buffer_rd, Syris::IndexBuffer::CreateInfo& index_buffer_info, uint32_t instances, Syris::Statistics& statistics){
         Syris::ShaderManager::ShaderID shader_id = shader_manager.add_shader(get_shader_info());
         if (shader_id == 0){
             CLIENT_ERROR("failed to make instance material");
-            return nullptr;
+            exit(1);
         }
         using AttCreateInfo = Syris::AttributeLayout::CreateInfo;
 
@@ -96,19 +96,22 @@ namespace Sandbox::entity_shader{
         Syris::VertexBuffer::CreateInfo vertex_buffer_info = Syris::VertexBuffer::CreateInfo{
             .dynamic = false,
             .buffers_info = {buffers.begin(), buffers.end()},
+            .statistics = statistics
         };
 
         /*const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl";
         const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl";
         */
         
-        Syris::Material::CreateInfo material_create_info = Syris::Material::CreateInfo{
+        return Syris::Material::CreateInfo{
+            .name = "entities",
             .shader_manager = shader_manager,
             .shader_id = shader_id,
             .vertex_buffer_info = vertex_buffer_info,
             .index_buffer_info = index_buffer_info,
             .instance_count = instances,
+            .statistics = statistics
         };
-        return Syris::Material::create_material(material_create_info);
+        //return Syris::Material::create_material(material_create_info);
     }
 }

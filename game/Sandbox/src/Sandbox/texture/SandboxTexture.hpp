@@ -48,8 +48,8 @@ namespace Sandbox::texture{
         }
 
         static constexpr Syris::texture::Rectangle2D grass_0 = {
-            .min = {0.f, nor_y(grass + 5)},
-            .max = {nor_x(1), nor_y(grass + 6)}
+            .min = {nor_x(1), nor_y(grass + 1)},
+            .max = {nor_x(2), nor_y(grass + 2)}
         };
         static constexpr Syris::texture::Rectangle2D bush_with_berries = {
             .min = {0.f, nor_y(plants + 3)},
@@ -57,11 +57,11 @@ namespace Sandbox::texture{
         };
         static constexpr Syris::texture::Rectangle2D bush_no_berries = {
             .min = {nor_x(1), nor_y(plants + 3)},
-            .max = {nor_y(2), nor_y(plants + 4)}
+            .max = {nor_x(2), nor_y(plants + 4)}
         };
         static constexpr Syris::texture::Rectangle2D dirt_0 = {
-            .min = {0.f, nor_y(dirt + 5)},
-            .max = {nor_x(1), nor_y(dirt + 6)}
+            .min = {nor_x(1), nor_y(dirt + 1)},
+            .max = {nor_x(2), nor_y(dirt + 2)}
         };
         static constexpr Syris::texture::Rectangle2D player_0 = {
             .min = {nor_x(1.f), nor_y(player + 1)},

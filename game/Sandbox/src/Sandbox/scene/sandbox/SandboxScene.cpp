@@ -3,12 +3,16 @@
 #include <vector>
 
 #include <hpx/async.hpp>
+#include <hpx/algorithm.hpp>
+#include <hpx/execution.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 #include "Syris/utils/glm_stdout.hpp"
-#include "Syris/materials/Material.hpp"
+#include "Syris/materials/MaterialManager.hpp"
+#include "Syris/statistics/Components.hpp"
 
 #include "SandboxScene.hpp"
 #include "Sandbox/shaders/sandbox_scene_layout.h"
@@ -16,113 +20,18 @@
 #include "Sandbox/world_generator/world_generator.hpp"
 #include "Sandbox/ecs/Components.h"
 #include "Sandbox/ecs/Tile.h"
+#include "Sandbox/ecs/Bush.h"
 #include "Sandbox/ecs/Player.h"
 #include "Sandbox/scene/helper.h"
 
 namespace Sandbox{
 
-    template<int size>
-    Syris::Material* makeSimpleMaterial(Syris::ShaderManager& shader_manager, Syris::ShaderManager::ShaderID shader_id){
-        //set up default data to fill buffers
-        std::vector<TileVertices> vertices(size);
-        std::vector<TileIndices> indices(size);
-        std::vector<TileInstancedData> instanced_data(size);
-
-        int span = 0;
-        for (auto &indice : indices)
-        {
-            for (auto &num : indice.vertices)
-                num += 4 * span;
-            span++;
-        }
-
-        //Create attribute layouts that describe the interaction with shaders
-        using AttCreateInfo = Syris::AttributeLayout::CreateInfo;
-
-        //   per vertex
-        AttCreateInfo layout_pos{
-            .values_count = 2,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = false,
-        };
-        std::array<AttCreateInfo, 1> vertex_layouts_info = {layout_pos};
-
-        //Attribute layout list combines more than one layout managing attribute indexing and 'span'
-        Syris::AttributeLayoutList vertex_attribute_list({vertex_layouts_info.begin(), vertex_layouts_info.end()}, 0);
-
-
-        //  per instance
-        AttCreateInfo instanced_tex_coord{
-            .values_count = 4,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = true,
-        };
-        AttCreateInfo instanced_model_col_0{
-            .values_count = 4,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = true};
-        AttCreateInfo instanced_model_col_1{
-            .values_count = 4,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = true};
-        AttCreateInfo instanced_model_col_2{
-            .values_count = 4,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = true};
-        AttCreateInfo instanced_model_col_3{
-            .values_count = 4,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = true
-        };
-
-        std::array<AttCreateInfo, 5> instanced_layouts_info = {instanced_tex_coord, instanced_model_col_0, instanced_model_col_1, instanced_model_col_2, instanced_model_col_3};
-        Syris::AttributeLayoutList instance_attribute_list({instanced_layouts_info.begin(), instanced_layouts_info.end()}, vertex_attribute_list.attribute_size());
-
-
-        //set the data to the buffers
-        using BufferInfo = Syris::VertexBuffer::SubBufferInfo;
-        BufferInfo vertex_buffer = BufferInfo{
-            .layout_list = vertex_attribute_list,
-            .size = sizeof(TileVertices) * size,
-            .data = vertices.data(),
-        };
-        BufferInfo instance_buffer{
-            .layout_list = instance_attribute_list,
-            .size = sizeof(TileInstancedData) * size,
-            .data = instanced_data.data()};
-
-        std::array<BufferInfo, 2> buffers = {vertex_buffer, instance_buffer};
-        Syris::VertexBuffer::CreateInfo vertex_buffer_info = Syris::VertexBuffer::CreateInfo{
-            .dynamic = false,
-            .buffers_info = {buffers.begin(), buffers.end()},
-        };
-
-        /*const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl";
-        const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl";
-        */
-        Syris::IndexBuffer::CreateInfo index_buffer_info = Syris::IndexBuffer::CreateInfo{
-            .indices_count = indices.size(),
-            .indices = reinterpret_cast<uint32_t*>(indices.data()),
-            .dynamic = false,
-        };
-        Syris::Material::CreateInfo material_create_info = Syris::Material::CreateInfo{
-            .shader_manager = shader_manager,
-            .shader_id = shader_id,
-            .vertex_buffer_info = vertex_buffer_info,
-            .index_buffer_info = index_buffer_info,
-            .instance_count = size
-        };
-        return Syris::Material::create_material(material_create_info);
-        //return new Syris::renderer::RenderBuffer(render_buffer_info);
+    void render_statistics(entt::entity entity, entt::registry& registry){
+        Syris::statistics::render_childs(entity, registry);
     }
-
-    Syris::Material* make_player(Syris::ShaderManager& shader_manager){
+    //creates the empty material where all the entities will reside
+    Syris::MaterialManager::MaterialID make_entity_material(Syris::EntityManager& entity_manager, Syris::ShaderManager& shader_manager, Syris::Statistics& statistics){
+        
         TileVertices tile_vertices = TileVertices();
         entity_shader::RawData vertex_buffer_rd{
             .data = &tile_vertices,
@@ -132,9 +41,13 @@ namespace Sandbox{
         TileInstancedData instance_data = TileInstancedData();
         instance_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
         instance_data.translation = glm::translate(instance_data.translation, glm::vec3(0.5,0.5,1.f));
-        entity_shader::RawData instance_buffer_rd{
+        /*entity_shader::RawData instance_buffer_rd{
             .data = &instance_data,
             .size = sizeof(TileInstancedData),
+        };*/
+        entity_shader::RawData instance_buffer_rd{
+            .data = nullptr,
+            .size = 0,
         };
         
         TileIndices tile_indices = TileIndices();
@@ -143,99 +56,137 @@ namespace Sandbox{
             .indices = tile_indices.vertices.data(),
             .dynamic = false
         };
+/*
+        {
 
-        return entity_shader::make_entity_material(shader_manager, vertex_buffer_rd, instance_buffer_rd, index_buffer_info, 1);
-        /*
-        TileIndices indices = TileIndices(); 
-        for (auto in : indices.vertices){
-            std::cout << "indice-> " << in << '\n';
-        }
-        TileVertices vertices = TileVertices();
-        for (int i = 0; i < vertices.vertices.size(); i += 2){
-            std::cout << "vertice-> " << vertices.vertices[i] << ',' << vertices.vertices[i + 1] << '\n';
-        }
-        Syris::texture::Rectangle2D player_texture_rect = ecs::Player::defaultTextureBundle().src;
-        player_texture_rect = texture::atlas::player_0;
+            Syris::ShaderManager::ShaderID shader_id = shader_manager.add_shader(entity_shader::get_shader_info());
+            if (shader_id == 0)
+            {
+                CLIENT_ERROR("failed to make instance material");
+                exit(1);
+            }
+            using AttCreateInfo = Syris::AttributeLayout::CreateInfo;
 
-        Syris::AttributeLayout::CreateInfo vertex_pos{
-            .values_count = 2,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = false
-        };
-        std::vector<Syris::AttributeLayout::CreateInfo> layouts_pos{vertex_pos};
-        Syris::AttributeLayoutList player_pos_layout({layouts_pos.begin(), layouts_pos.end()},0);
+            //   per vertex
+            AttCreateInfo layout_pos{
+                .values_count = 2,
+                .value_type = Syris::ValueType::Float,
+                .normalize = false,
+                .perInstance = false,
+            };
+            std::array<AttCreateInfo, 1> vertex_layouts_info = {layout_pos};
 
-        Syris::AttributeLayout::CreateInfo tex_coord{
-            .values_count = 4,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = true
-        };
+            // Attribute layout list combines more than one layout managing attribute indexing and 'span'
+            Syris::AttributeLayoutList vertex_attribute_list({vertex_layouts_info.begin(), vertex_layouts_info.end()}, 0);
 
-        std::vector<Syris::AttributeLayout::CreateInfo> layouts_tex{tex_coord};
-        Syris::AttributeLayoutList player_tex_layout({layouts_tex.begin(), layouts_tex.end()}, player_pos_layout.attribute_size());
+            //  per instance
+            AttCreateInfo instanced_tex_coord{
+                .values_count = 4,
+                .value_type = Syris::ValueType::Float,
+                .normalize = false,
+                .perInstance = true,
+            };
+            AttCreateInfo instanced_model_col_0{
+                .values_count = 4,
+                .value_type = Syris::ValueType::Float,
+                .normalize = false,
+                .perInstance = true};
+            AttCreateInfo instanced_model_col_1{
+                .values_count = 4,
+                .value_type = Syris::ValueType::Float,
+                .normalize = false,
+                .perInstance = true};
+            AttCreateInfo instanced_model_col_2{
+                .values_count = 4,
+                .value_type = Syris::ValueType::Float,
+                .normalize = false,
+                .perInstance = true};
+            AttCreateInfo instanced_model_col_3{
+                .values_count = 4,
+                .value_type = Syris::ValueType::Float,
+                .normalize = false,
+                .perInstance = true};
 
-        Syris::VertexBuffer::SubBufferInfo player_pos_subbuffer{
-            .layout_list = player_pos_layout,
-            .size = sizeof(TileVertices),
-            .data = vertices.vertices.data(),
-        };
-        Syris::VertexBuffer::SubBufferInfo player_tex_subbuffer{
-            .layout_list = player_tex_layout,
-            .size = sizeof(Syris::texture::Rectangle2D),
-            .data = &player_texture_rect,
-        };
+            std::array<AttCreateInfo, 5> instanced_layouts_info = {instanced_tex_coord, instanced_model_col_0, instanced_model_col_1, instanced_model_col_2, instanced_model_col_3};
+            Syris::AttributeLayoutList instance_attribute_list({instanced_layouts_info.begin(), instanced_layouts_info.end()}, vertex_attribute_list.attribute_size());
 
-        std::vector<Syris::VertexBuffer::SubBufferInfo> buffers_info{player_pos_subbuffer, player_tex_subbuffer};
+            // set the data to the buffers
+            using BufferInfo = Syris::VertexBuffer::SubBufferInfo;
+            BufferInfo vertex_buffer = BufferInfo{
+                .layout_list = vertex_attribute_list,
+                .size = vertex_buffer_rd.size, // sizeof(TileVertices) * size,
+                .data = vertex_buffer_rd.data,
+            };
+            BufferInfo instance_buffer{
+                .layout_list = instance_attribute_list,
+                .size = instance_buffer_rd.size, // sizeof(TileInstancedData) * size,
+                .data = instance_buffer_rd.data  // instanced_data.data()
+            };
 
-        Syris::VertexBuffer::CreateInfo vertex_buffer_info{
-            .dynamic = true,
-            .buffers_info = buffers_info
-        };
+            std::array<BufferInfo, 2> buffers = {vertex_buffer, instance_buffer};
+            Syris::VertexBuffer::CreateInfo vertex_buffer_info = Syris::VertexBuffer::CreateInfo{
+                .dynamic = false,
+                .buffers_info = {buffers.begin(), buffers.end()},
+            };
 
-        Syris::IndexBuffer::CreateInfo index_buffer_info{
-            .indices_count = 6,
-            .indices = reinterpret_cast<uint32_t*>(&indices),
-            .dynamic = false,
-        };
-        Syris::Material::CreateInfo info{
-            .shader_manager = shader_manager,
-            .shader_id = shader_id,
-            .vertex_buffer_info = vertex_buffer_info,
-            .index_buffer_info = index_buffer_info,
-            .instance_count = 1
-        };
-        return Syris::Material::create_material(info);
-        */
+
+
+            Syris::Material::CreateInfo info{
+                .shader_manager = shader_manager,
+                .shader_id = shader_id,
+                .vertex_buffer_info = vertex_buffer_info,
+                .index_buffer_info = index_buffer_info,
+                .instance_count = 1,
+            };
+            return entity_manager.get_materials().add_material(info);
+        }*/
+
+        //check that the info returned by get entity material persists and was not freed
+        Syris::Material::CreateInfo info = entity_shader::get_entity_material(shader_manager, vertex_buffer_rd, instance_buffer_rd, index_buffer_info, 0, statistics);
+        //todo check all the values are actually initialized here
+        auto a = entity_manager.get_materials().add_material<TileInstancedData>(info);
+        return a;
     }
 
-    SandboxScene::SandboxScene(CreateInfo info):m_registry(info.registry), m_texture_atlas(info.atlas_path), m_graphics_context(info.context), m_camera(info.camera_info){
-        //const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl";
-        //const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl";
-        /*Syris::IShaderLayout* layout = new Syris::ShaderLayout<>();
-        Syris::Shader::CreateInfo shader_info = {
-            .path = "sandbox_scene"
-        };*/
+    SandboxScene::SandboxScene(CreateInfo info) :
+        m_material_manager({info.statistics}),
+        m_entity_manager({ m_material_manager}),
+        m_texture_atlas(info.atlas_path),
+        m_graphics_context(info.context),
+        m_camera(info.camera_info),
+        m_statistics(info.statistics),
+        m_sim_fps({"simulation"})
+        {
+
+        //statistics
+        Syris::Statistics::AddModuleInfo mod_info{
+            .render = render_statistics,
+        };
+        m_statistic_mod_ID = info.statistics.add_module(mod_info);
+        info.statistics.get_registry().emplace<Syris::statistics::CScene>(m_statistic_mod_ID, "Sandbox Scene");
+
+        info.statistics.add_child(m_statistic_mod_ID, m_material_manager.get_statistics());
+
+
         Syris::Logger::client_info("sandbox scene being created");
-        m_shader_id = m_graphics_context.get_shader_manager().add_shader(sandbox_scene::get_shader_info());
-        if (!m_shader_id){
-            throw std::runtime_error("failed to add shader");
-        }
         m_texture_atlas.init();
-        bool a = true; 
-        if (a){
-            world_generator::generateGround<m_map_config>(m_registry);
-            //m_buffer = makeSimpleRenderBuffer<m_map_config.num_tiles_x * m_map_config.num_tiles_y>();
-            m_material = makeSimpleMaterial<m_map_config.num_tiles_x * m_map_config.num_tiles_y>(m_graphics_context.get_shader_manager(), m_shader_id);
-            CHECK_GL_ERROR();
-        }else{
-            auto texture = ecs::Tile::defaultTextureBundle();
-            texture.src = texture::atlas::grass_0;
-            ecs::Tile::newTile(glm::vec2(0,0), texture, m_registry, ecs::CTile::TileType::Grass);
-            //m_buffer = makeSimpleRenderBuffer<1>();
-            CHECK_GL_ERROR();
-        }
+        World::CreateInfo world_info{
+            .m_material_manager = m_material_manager,
+            .m_shader_manager = m_graphics_context.get_shader_manager(),
+            .m_entity_manager = m_entity_manager,
+            .world_dimmensions = {100,100},
+            .statistics = info.statistics
+        };
+        m_world = new World(world_info);
+        /*
+        m_tile_material = make_tile_material<m_map_config.num_tiles_x * m_map_config.num_tiles_y>(m_material_manager, m_graphics_context.get_shader_manager(), m_shader_id);
+        m_entity_manager.get_registry().ctx().emplace<ecs::Tile::SMaterialID>(m_tile_material);
+        //ecs::Tile::g_tile_material_id = m_tile_material;
+        m_world_tiles = world_generator::generateGround(m_entity_manager, {m_map_config.num_tiles_x, m_map_config.num_tiles_y}, {0,0});//todo
+        */
+        // m_buffer = makeSimpleRenderBuffer<m_map_config.num_tiles_x * m_map_config.num_tiles_y>();
+        
+        CHECK_GL_ERROR();
         ecs::MovementKeys keys =  ecs::MovementKeys{
             .up = GLFW_KEY_W,
             .down = GLFW_KEY_S,
@@ -243,7 +194,7 @@ namespace Sandbox{
             .right = GLFW_KEY_S,
         };
         Syris::texture::Texture2DBundle texture = ecs::Player::defaultTextureBundle();
-        m_player_id = ecs::Player::newPlayer({0,0}, keys, texture, m_registry);
+        //m_player_id = ecs::Player::newPlayer({0,0}, keys, texture, m_entity_manager.get_registry());
 
         /*
         uint32_t player_shader_id = m_graphics_context.get_shader_manager().add_shader(player_shader::get_shader_info());
@@ -251,31 +202,71 @@ namespace Sandbox{
         if (!m_shader_id){
             throw std::runtime_error("failed to add shader");
         }*/
-        m_player_material = make_player(m_graphics_context.get_shader_manager());
+        m_entity_material_id = make_entity_material(m_entity_manager, m_graphics_context.get_shader_manager(), m_statistics);
+        m_entity_manager.get_registry().ctx().emplace<ecs::SMaterialID>(m_entity_material_id);
+        m_entity_manager.get_registry().ctx().emplace<ecs::CollectableManager>();
+        //ecs::Tile::g_entity_material_id = m_entity_material_id;
+        m_player_id = ecs::Player::newPlayerEntity({0,0}, keys, texture, m_entity_manager, m_entity_material_id);
         
-        update_data(false);
+        //update_data(false);
         Syris::Logger::client_info("sandbox scene successfully created"); 
         hpx::async(std::bind(&SandboxScene::sim_loop, this));
     }
 
     void SandboxScene::sim_loop(){
-        using chrono_hrc = std::chrono::high_resolution_clock;
-        m_sim_time.init_time = chrono_hrc::now();
-        m_sim_time.last_frame = chrono_hrc::now();
+        m_sim_fps.start();
+        AsyncToSyncQueue::AsyncFunction func{
+            .function = std::bind(&Syris::engine_time::FPS::render_frame_count, &m_sim_fps),
+            .calls_to_be_consumed = std::nullopt,
+        };
+        //m_async_to_sync_queue.add(func);
+        constexpr bool single_thread = false;
+        std::size_t num_threads = 3;
+        // Create a dynamic chunk size with calculated chunk size
         while(m_sim_loop_running){
-            chrono_hrc::time_point now = chrono_hrc::now();
-            m_sim_time.delta_time_ms =
-                std::chrono::duration<float, std::milli>(now - m_sim_time.last_frame).count();
-            auto [cPos, cDir, cSpeed] = m_registry.get<ecs::AsyncComponent<ecs::CPosition>, ecs::CDir, ecs::CSpeed>(m_player_id);
-            cPos.set({cPos.get().pos + cDir.value * cSpeed.value * m_sim_time.delta_time_ms});
-            std::cout << "Speed: " << cSpeed.value << '\n';
-            m_sim_time.last_frame = now;
+            auto tick_group = m_entity_manager.get_registry().group<ecs::CTickFast>();
+            m_sim_fps.next_frame();
+            float delta_ms = m_sim_fps.get_time().get_delta_ms(); 
+            auto [cPos, cMovenmentSpeed, cSpeed] = m_entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>, ecs::CMovementSpeed, ecs::CSpeed>(m_player_id);
+            cPos.set({cPos.get().pos + cSpeed.speed * cMovenmentSpeed.movement_speed * delta_ms / 1000.f});
+            //std::cout << "Player: pos[" << cPos.get().pos << "] dir[" << cDir.value << "] speed[" << cSpeed.value << "] with " <<  delta_ms <<"ms\n";
+            if constexpr (single_thread){
+                for (auto entity : tick_group)
+                {
+                    // m_entity_manager.get_registry().get<ecs::CTickFast>(entity).tick(m_entity_manager, entity, m_sim_fps.get_time());
+                    tick_group.get<ecs::CTickFast>(entity).tick(m_entity_manager, entity, m_sim_fps.get_time());
+                }
+            }else{
+                /*
+                std::size_t num_entities = tick_group.size();
+                hpx::for_loop(hpx::execution::par, 0, num_entities, [&](std::size_t i)
+                              { tick_group.get<ecs::CTickFast>(tick_group[i]).tick(m_entity_manager, tick_group[i], m_sim_fps.get_time());
+                });
+                */
+                std::size_t num_entities = tick_group.size();
+                std::size_t chunk_size_value = num_entities + num_threads - 1 / num_threads;
+                hpx::execution::experimental::dynamic_chunk_size chunk_size(chunk_size_value);
+                auto policy = hpx::execution::par.with(chunk_size);
+
+                hpx::for_loop(hpx::execution::par, 0, num_threads,
+                    [&](std::size_t chunk_index) {
+                        std::size_t start = chunk_index * chunk_size_value;
+                        std::size_t end = std::min(start + chunk_size_value, num_entities);
+
+                        for (std::size_t i = start; i < end; ++i) {
+                            if (i < tick_group.size())
+                                tick_group.get<ecs::CTickFast>(tick_group[i]).tick(m_entity_manager, tick_group[i], m_sim_fps.get_time());
+                        }
+                    }
+                );
+            }
+
         }
     }
 
-    void SandboxScene::update_data(bool imgui){
+    void SandboxScene::update_data(bool imgui){/*
         //using material
-        auto render_group = this->m_registry.group<>(entt::get<ecs::CTexture,
+        auto render_group = this->m_entity_manager.get_registry().group<>(entt::get<ecs::CTexture,
                                                                ecs::CPosition, ecs::CTile>);
 
         uint32_t index = 0;
@@ -301,7 +292,7 @@ namespace Sandbox{
             Syris::Material::DataSet data_set{
                 .index_buffer = false,
                 .sub_buffer_index = 1,
-                .index = index * sizeof(TileInstancedData),
+                .mem_offset = index * sizeof(TileInstancedData),
                 .size = sizeof(TileInstancedData),
                 .data = &data
             };
@@ -310,189 +301,117 @@ namespace Sandbox{
             CHECK_GL_ERROR();
 
             index++;
-        }
-        //without material
-        /*
-        auto render_group = this->m_registry.group<>(entt::get<ecs::CTexture,
-                                                               ecs::CPosition, ecs::CTile>);
-        uint32_t index = 0;
-        bool first = false;
-
-        if (imgui){
-            ImGui::Begin("Map Debug");
-            static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
-            ImGui::BeginTable("table1", 10, flags);
-            for (int i = 0; i < 10; i++)
-            {
-                ImGui::TableSetupColumn(std::format("{}", i).c_str());
-            }
-            ImGui::TableHeadersRow();
-            ImGui::TableNextRow();
-        }
-        int row = 0;
-        int column = 0;
-        for (auto entity : render_group)
-        {
-            auto [cTexture, cPosition] =
-                render_group.get<ecs::CTexture, ecs::CPosition>(entity);
-            Syris::texture::Texture2D texture = m_texture_atlas.getTexture();
-            // std::cout << "min: " << cTexture.rect.min << " max: " << cTexture.rect.max << '\n';
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(
-                model, glm::vec3(cPosition.pos,
-                                 0.0f)); // first translate (transformations are: scale
-                                         // happens first, then rotation, and then final
-                                         // translation happens; reversed order)
-
-            //   model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y,
-            //  0.0f)); // move origin of rotation to center of quad model =
-            //  glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); //
-            //  then rotate model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f
-            //  size.y, 0.0f)); // move origin back
-
-            model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f)); // last scale
-
-
-            if (false) // vertex
-            {
-                CHECK_GL_ERROR();
-                m_buffer->bind(0);
-                std::array<float, 16> updated_vertices = {
-                    // pos     //uv texture
-                    -1.0f, 1.0f, cTexture.rect.min.x, cTexture.rect.max.y, // top-left
-                    1.0f, 1.0f, cTexture.rect.max.x, cTexture.rect.max.y,  // top-right
-                    1.0f, -1.0f, cTexture.rect.max.x, cTexture.rect.min.y, // bottom-right
-                    -1.0f, -1.0f, cTexture.rect.min.x, cTexture.rect.min.y // bottom-left
-                };
-                if (first)
-                {
-                    updated_vertices = {
-                        // pos     //uv texture
-                        -1.0f, 1.0f, 0, 0,  // top-left
-                        1.0f, 1.0f, 0, 0,   // top-right
-                        1.0f, -1.0f, 0, 0,  // bottom-right
-                        -1.0f, -1.0f, 0, 0, // bottom-left
-                    };
-                    TileVertices *ref = reinterpret_cast<TileVertices *>(updated_vertices.data());
-                    std::cout << "FIRST min : " << ref->get_min_max().first << "max : " << ref->get_min_max().second << '\n';
-                    first = false;
-                }
-                // std::cout << "min: " << cTexture.rect.min.y << '\n';
-                glBufferSubData(GL_ARRAY_BUFFER, index * sizeof(TileVertices), sizeof(TileVertices), updated_vertices.data());
-                CHECK_GL_ERROR();
-            }
-            m_buffer->bind(1);
-            TileInstancedData data;
-            data.translation = model;
-            data.tex_coord = {cTexture.rect.min, cTexture.rect.max};
-            //               if (index % 2 == 0){
-            //                  data.tex_coord = {texture::atlas::dirt_0.min, texture::atlas::dirt_0.max};
-            // s              }
-            glBufferSubData(GL_ARRAY_BUFFER, index * sizeof(TileInstancedData), sizeof(TileInstancedData), &data);
-            CHECK_GL_ERROR();
-
-            // im gui table
-            column = index % 10;
-            row = index / 10;
-            if (imgui)
-            {
-                if (index % 10 == 0)
-                {
-                    ImGui::TableNextRow();
-                }
-                ImGui::TableSetColumnIndex(column);
-                char buf[32];
-                sprintf(buf, "%d", index);
-                ImGui::TextUnformatted(buf);
-            }
-            index++;
-        }
-        if (imgui){
-            ImGui::EndTable();
-            ImGui::End();
-        }
-        m_buffer->bind(0);
-        if (false)
-        {
-            // glUseProgram(program);already done by graphics context on update
-            std::array<TileVertices, 100> vertices;
-            glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TileVertices) * vertices.size(), vertices.data());
-            std::cout << "after\n\n\n";
-            for (auto &tile : vertices)
-            {
-                std::cout << "min : " << tile.get_min_max().first << "max : " << tile.get_min_max().second << '\n';
-            };
-        } 
-        */
+        }*/
     }
     void SandboxScene::on_update(Syris::engine_time::Time& time){
+        //m_async_to_sync_queue.exec_all(); todo
+        
+        
         //move camera
         //m_camera.on_update(time);
 
         //ecs::Player::animate(m_registry, m_player_id, time);
 
         //render shader hot reload
-        m_graphics_context.get_shader_manager().get_shader(m_shader_id)->on_update(time);
 
-        //draw material
-        sandbox_scene::ShaderLayoutTuple data = {m_camera.getCamera().get_view_projection_matrix(), m_texture_atlas.getTexture()};
-        m_material->draw(&data);
+        //draw tiles
+        m_world->draw({ m_camera.getCamera().get_view_projection_matrix(), m_texture_atlas.getTexture() });
+       /* sandbox_scene::ShaderLayoutTuple data = ;
+        m_material_manager.draw(m_tile_material, &data);
+        */
+   
+        //player camera entities
 
+        ecs::Player::sync(m_entity_manager, m_material_manager, m_entity_material_id, m_player_id);
 
-        ecs::AsyncComponent<ecs::CPosition>& cPos =  m_registry.get<ecs::AsyncComponent<ecs::CPosition>>(m_player_id);
-        Syris::texture::Texture2D texture = m_texture_atlas.getTexture();
-        // std::cout << "min: " << cTexture.rect.min << " max: " << cTexture.rect.max << '\n';
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(
-            model, glm::vec3(cPos.get().pos,
-                             0.0f)); // first translate (transformations are: scale
-                                     // happens first, then rotation, and then final
-                                     // translation happens; reversed order)
-
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f)); // last scale
-
-        ecs::CDir& dir = m_registry.get<ecs::CDir>(m_player_id);
-        TileInstancedData instance_data = TileInstancedData();
-        instance_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
-        instance_data.translation = model;
-
-        Syris::Material::DataSet data_set{
-            .index_buffer = false,
-            .sub_buffer_index = 1,
-            .index = 0,
-            .size = sizeof(TileInstancedData),
-            .data = &instance_data, //set in every option or error
-        };
-        m_player_material->set_data(data_set);
+        ecs::AsyncComponent<ecs::CPosition>& cPos =  m_entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>>(m_player_id);
+        ecs::CSpeed& cSpeed = m_entity_manager.get_registry().get<ecs::CSpeed>(m_player_id);
         m_camera.getCamera().set_position({ cPos.get().pos, 0.f });
+        ImGui::Begin("Player pos");
+        ImGui::Text("Player pos {%.1f,%.1f}", cPos.get().pos.x, cPos.get().pos.y);
+        ImGui::Text("Player speed {%.1f,%.1f}", cSpeed.speed.x, cSpeed.speed.y);
+        ImGui::End();
         entity_shader::ShaderLayoutTuple data_player = {m_camera.getCamera().get_view_projection_matrix(), m_texture_atlas.getTexture()};
-        //player_shader::ShaderLayoutTuple data_player = {m_texture_atlas.getTexture()};
-        m_player_material->draw(&data_player);
+        m_material_manager.get_material(m_entity_material_id)->draw(&data_player);
+        ImGui::Begin("Entity Material");
+        ImGui::Text("Entity count %d",  m_material_manager.get_material(m_entity_material_id)->get_entity_count());
+        ImGui::Text("Created bushes count %lld",  ecs::Bush::g_number_of_bushes.load());
+        ImGui::End();
+        m_sim_fps.render_frame_count();
     }
+
+    inline float closest_to(float val) {
+        if (val < 0) {
+            return -1;
+        }if (val > 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    inline glm::vec2 closest_to(glm::vec2 val) {
+        return { closest_to(val.x), closest_to(val.y) };
+    }
+
     bool SandboxScene::on_event(Syris::Event* event){
         if (event->get_type() == Syris::EventType::KeyPressed){
             Syris::EventKey *event_key = (Syris::EventKey*)event; 
             int key = event_key->get_key();
             
-            auto [cDir, cSpeed] = m_registry.get<ecs::CDir, ecs::CSpeed>(m_player_id);
+            auto [cDir, cSpeed, cMovementSpeed] = m_entity_manager.get_registry().get<ecs::CDir, ecs::CSpeed, ecs::CMovementSpeed>(m_player_id);
+            cSpeed.speed = closest_to(cSpeed.speed);
+            float speed_to_aply;
             if (event_key->get_action()== GLFW_PRESS)
-                cSpeed.value = 1.f;
+                speed_to_aply = 1.f;
             else if (event_key->get_action() == GLFW_RELEASE)
-                cSpeed.value = 0.f;
-            switch(key){ 
-                case GLFW_KEY_W:
-                    cDir.value = {0.f, 1.f}; 
-                    break;
-                case GLFW_KEY_S:
-                    cDir.value = {0.f,-1.f}; 
-                    break;
-                case GLFW_KEY_A:
-                    cDir.value = {-1.f,0.f}; 
-                    break;
-                case GLFW_KEY_D:
-                    cDir.value = {1.f,0.f}; 
-                    break;
+                speed_to_aply = -1.f;
+            else {
+                //exit(1);
+                return true;
             }
+            switch (key){
+            case GLFW_KEY_W:
+                cDir.value.y += speed_to_aply;
+                //cDir.value = glm::normalize(cDir.value);
+
+                cSpeed.speed.y += speed_to_aply;
+//                cSpeed.speed = glm::normalize(cSpeed.speed);
+                break;
+            case GLFW_KEY_S:
+                cDir.value.y -= speed_to_aply;
+  //              cDir.value = glm::normalize(cDir.value);
+
+                cSpeed.speed.y -= speed_to_aply;
+//                cSpeed.speed = glm::normalize(cSpeed.speed);
+                // cDir.value = {0.f,-1.f};
+                break;
+            case GLFW_KEY_A:
+                cDir.value.x -= speed_to_aply;
+//                cDir.value = glm::normalize(cDir.value);
+
+                cSpeed.speed.x -= speed_to_aply;
+//                cSpeed.speed = glm::normalize(cSpeed.speed);
+                // cDir.value = {-1.f,0.f};
+                break;
+            case GLFW_KEY_D:
+                cDir.value.x += speed_to_aply;
+  //              cDir.value = glm::normalize(cDir.value);
+
+                cSpeed.speed.x += speed_to_aply;
+//                cSpeed.speed = glm::normalize(cSpeed.speed);
+                // cDir.value = {1.f,0.f};
+                break;
+            default:
+                return true;
+            }
+            if (glm::abs(cSpeed.speed.x) + glm::abs(cSpeed.speed.y) == 0)
+                cSpeed.speed = {0,0};
+            else
+                cSpeed.speed = glm::normalize(cSpeed.speed);
+            if (cDir.value.x + cDir.value.y == 0)
+                cDir.value = {0,0};
+            else
+                cDir.value = glm::normalize(cDir.value);
         }
         //Syris::Logger::client_info(std::format("event type {}", (int)event->get_type()).c_str());
         return false;

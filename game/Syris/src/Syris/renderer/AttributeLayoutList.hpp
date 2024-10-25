@@ -55,6 +55,7 @@ namespace Syris{
             void push_back(AttributeLayout::CreateInfo layout_info);
             uint32_t size()const {return m_layouts.size();}
             uint32_t attribute_size(){return m_layouts.size() + m_attribute_index_padding;}
+            void print_info();
         private:
             std::vector<AttributeLayout> m_layouts;
             const uint32_t m_attribute_index_padding;

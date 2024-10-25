@@ -9,7 +9,11 @@ constexpr bool HPX = true;
 int hpx_main(int argc, char* argv[])
 { 
     // ...Execute other code here...
-    Application* client_app = get_client_app();
+    Syris::Statistics statistics;
+    AppInit init{
+        .statistics = statistics
+    };
+    Application* client_app = get_client_app(init);
     client_app->run();
     delete client_app;
     shutdown_flag.store(true);
@@ -21,7 +25,10 @@ int main(int argc, char* argv[])
 {
     
     if constexpr (!HPX){
-        Application* client_app = get_client_app();
+        Syris::Statistics statistics;
+        AppInit init{
+            .statistics = statistics};
+        Application* client_app = get_client_app(init);
         client_app->run();
         delete client_app;
     }else{

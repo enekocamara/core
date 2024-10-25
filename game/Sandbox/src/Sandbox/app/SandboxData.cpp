@@ -4,16 +4,27 @@
 namespace Sandbox{
     SandboxData::SandboxData(CreateInfo info)
         : m_registry(info.registry),
-          m_scene_simple(new SimpleScene({m_registry, info.atlas_path, info.graphics_context, info.camera_info})),
-          m_scene_triangle(new TriangleScene({m_registry, info.atlas_path, info.graphics_context, info.camera_info})),
-          m_scene_sandbox(new SandboxScene({m_registry, info.atlas_path, info.graphics_context, info.camera_info})),
+          m_scene_manager({info.statistics}),/*
+          m_scene_simple(new SimpleScene({info.atlas_path, info.graphics_context, info.camera_info, info.statistics})),
+          m_scene_triangle(new TriangleScene({m_registry, info.atlas_path, info.graphics_context, info.camera_info, info.statistics})),
+          m_scene_sandbox(new SandboxScene({info.atlas_path, info.graphics_context, info.camera_info, info.statistics})),
+          */
           m_graphics_context(info.graphics_context),
+          m_statistics(info.statistics),
           m_gui_layer(),
           m_layer(new SandboxLayer(*this)){
-        m_current_scene_id = m_graphics_context.get_layer_manager().push_layer(m_scene_triangle);
+        
+        m_scene_simple = m_scene_manager.new_scene(new SimpleScene({info.atlas_path, info.graphics_context, info.camera_info, info.statistics})),
+        m_scene_triangle = m_scene_manager.new_scene(new TriangleScene({m_registry, info.atlas_path, info.graphics_context, info.camera_info, info.statistics})),
+        m_scene_sandbox = m_scene_manager.new_scene(new SandboxScene({info.atlas_path, info.graphics_context, info.camera_info, info.statistics})),
+        m_scene_manager.add_scene_to_statistics(reinterpret_cast<SandboxScene*>(m_scene_manager.get_scene(m_scene_sandbox))->get_statistic_mod_ID());
+        m_current_scene_id = m_scene_sandbox;
+        m_current_layer_id = -1;
+        m_current_layer_id = m_graphics_context.get_layer_manager().push_layer(reinterpret_cast<Syris::Layer*>(m_scene_manager.get_scene(m_scene_sandbox)));
         m_graphics_context.get_layer_manager().push_layer((Syris::Layer*)m_graphics_context.get_window_handler().get_layer());
         m_graphics_context.get_layer_manager().push_layer(&m_gui_layer);
         m_graphics_context.get_layer_manager().push_layer(this);
+        m_graphics_context.get_layer_manager().push_layer(static_cast<Syris::Layer *>(&info.statistics));
 
         const char* glsl_version = "#version 460";//exists in imguilayer
         if (!ImGui_ImplGlfw_InitForOpenGL(m_graphics_context.get_window(), true)){
@@ -28,31 +39,26 @@ namespace Sandbox{
     SandboxData::~SandboxData(){
 
     }
-    bool SandboxData::on_event(Syris::Event* event){
+    bool SandboxData::on_event(Syris::Event* event){ 
         return false;
     }
     void SandboxData::on_update(Syris::engine_time::Time& time){
         set_scene(m_next_scene);
-        ImGui::Begin("SandboxData Settings"); 
-        ImGui::RadioButton("triangle", (int*)&m_next_scene, (int)Scenes::Triangle); ImGui::SameLine();
-        ImGui::RadioButton("simple", (int*)&m_next_scene, (int)Scenes::Simple); ImGui::SameLine();
-        ImGui::RadioButton("scene", (int*)&m_next_scene, (int)Scenes::Sandbox);
+        ImGui::Begin("SandboxData Settings");
+        ImGui::RadioButton("triangle", (int*)&m_next_scene, m_scene_triangle); ImGui::SameLine();
+        ImGui::RadioButton("simple", (int*)&m_next_scene, m_scene_simple); ImGui::SameLine();
+        ImGui::RadioButton("scene", (int*)&m_next_scene, m_scene_sandbox);
         ImGui::End();
     }
-    void SandboxData::set_scene(Scenes scene){
-        if (m_current_scene != scene){
-            switch(scene){
-                case Scenes::Triangle:
-                    m_current_scene_id = m_graphics_context.get_layer_manager().replace_layer(m_scene_triangle, m_current_scene_id);
-                    break;
-                case Scenes::Simple:
-                    m_current_scene_id = m_graphics_context.get_layer_manager().replace_layer(m_scene_simple, m_current_scene_id);
-                    break;
-                case Scenes::Sandbox :
-                    m_current_scene_id = m_graphics_context.get_layer_manager().replace_layer(m_scene_sandbox, m_current_scene_id);
-                    break;
-            }
-            m_current_scene = scene;
+    void SandboxData::set_scene(Syris::SceneID scene){
+        if (m_current_scene_id != scene){
+            if (scene == m_scene_triangle)
+                m_current_layer_id = m_graphics_context.get_layer_manager().replace_layer(reinterpret_cast<Syris::Layer *>(m_scene_manager.get_scene(m_scene_triangle)), m_current_layer_id);
+            else if (scene == m_scene_simple)
+                m_current_layer_id = m_graphics_context.get_layer_manager().replace_layer(reinterpret_cast<Syris::Layer *>(m_scene_manager.get_scene(m_scene_simple)), m_current_layer_id);
+            else if (scene == m_scene_sandbox)
+                m_current_layer_id = m_graphics_context.get_layer_manager().replace_layer(reinterpret_cast<Syris::Layer *>(m_scene_manager.get_scene(m_scene_sandbox)), m_current_layer_id);
+            m_current_scene_id = scene;
         }
     }
 }

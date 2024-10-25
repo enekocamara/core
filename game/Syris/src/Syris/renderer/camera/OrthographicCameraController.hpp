@@ -1,6 +1,6 @@
 #pragma once
 #include "OrthographicCamera.hpp"
-#include "Syris/utils/EngineTime.h"
+#include "Syris/utils/EngineTime.hpp"
 namespace Syris {
 
 class OrthographicCameraController {

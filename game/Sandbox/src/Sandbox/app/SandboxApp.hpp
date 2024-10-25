@@ -3,6 +3,7 @@
 
 #include <Core/Core.hpp>
 
+#include "Syris/utils/EngineTime.hpp"
 #include "Syris/app/OpenGLWindow.h"
 #include "Syris/context/GraphicsContext.hpp"
 #include "Syris/layers/Layer.hpp"
@@ -31,6 +32,7 @@ namespace Sandbox{
                 //Syris::Window::WindowBundle window_bundle;
                 Syris::GraphicsContext::CreateInfo gc_info;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
+                AppInit app_init;
             };
 
             SandboxApp(CreateInfo& info);

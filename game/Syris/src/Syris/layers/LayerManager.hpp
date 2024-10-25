@@ -5,7 +5,7 @@
 #include "Syris/events/Event.hpp"
 #include <boost/serialization/strong_typedef.hpp>
 namespace Syris{
-    BOOST_STRONG_TYPEDEF(uint32_t, LayerID)
+    using LayerID = uint32_t;
     class LayerManager
     {
     public:
@@ -32,6 +32,6 @@ namespace Syris{
         // owning pointers will be freed at destruction
         LayerID m_currentID = LayerID(1);
         std::vector<LayerID> m_layers_order;
-        std::unordered_map<uint32_t, Layer*> m_layers_map;
+        std::unordered_map<LayerID, Layer*> m_layers_map;
     };
 }

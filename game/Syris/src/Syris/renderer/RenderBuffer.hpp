@@ -22,6 +22,7 @@ namespace Syris{
                 uint32_t *indices;
                 VertexBuffer::SubBufferInfo per_vertex_buffer_info;
                 VertexBuffer::SubBufferInfo per_instance_buffer_info;
+                Statistics& statistics;
             };
             RenderBuffer(CreateInfo info);
             ~RenderBuffer();

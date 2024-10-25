@@ -9,4 +9,6 @@ uniform sampler2D texture1; // Sampler for the texture
 void main()
 {
     FragColor = texture(texture1, TexCoord);
+  //  FragColor.r = 1.f;
+  //  FragColor.a = 1.f;
 }

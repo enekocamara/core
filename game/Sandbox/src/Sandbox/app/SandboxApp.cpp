@@ -21,7 +21,7 @@ namespace Sandbox {
        SandboxApp::SandboxApp(SandboxApp::CreateInfo& info)
         : 
         m_graphics_context(info.gc_info),
-        m_data(SandboxData::CreateInfo{m_registry, info.atlas_path, m_graphics_context, info.camera_info})
+        m_data(SandboxData::CreateInfo{m_registry, info.atlas_path, m_graphics_context, info.camera_info, info.app_init.statistics})
         { 
             // m_window(m_graphics_context.get_window_handler()),
             // m_camera(info.cameraCreateInfo)
@@ -33,7 +33,7 @@ namespace Sandbox {
                     info.fragment_shader_path);
             */
             //textures, timestamp, and input initialization
-            m_time.init_time = std::chrono::high_resolution_clock::now();
+            //m_time.init_time = std::chrono::high_resolution_clock::now();
             //Syris::Input::get(m_window.get_window()); done by graphics context
 
 //            m_renderBuffer = makeSimpleRenderBuffer(); 
@@ -58,16 +58,11 @@ namespace Sandbox {
     SandboxApp::~SandboxApp(){} //{ delete quad; }
 
     void SandboxApp::run() {
-        m_time.last_frame = std::chrono::high_resolution_clock::now();
+        m_time.start();
         while (!m_graphics_context.should_window_close()) {
             CHECK_GL_ERROR();
-            std::chrono::high_resolution_clock::time_point now =
-                std::chrono::high_resolution_clock::now();
-            m_time.delta_time_ms =
-                std::chrono::duration<float, std::milli>(now - m_time.last_frame)
-                .count();
+            m_time.next_frame();
             m_graphics_context.on_update(m_time);
-            m_time.last_frame = now;
             CHECK_GL_ERROR();
         }
         std::cout << "window closed\n";
@@ -121,35 +116,27 @@ namespace Sandbox {
     //main layer
 } // namespace Sandbox
 
-Application* get_client_app() {
+Application* get_client_app(AppInit& app_init) {
     Syris::GraphicsContext::CreateInfo gc_info = {
         .layers_info = Syris::LayerManager::CreateInfo{
             .layers = {}},
         .window_info = Syris::WindowCreateInfo{
             .dimmensions = glm::ivec2(1920, 1080),
             .name = std::string("hola"),
-            .vSync = false,
+            .vSync = true,
         }
     };
     //Syris::Window::WindowBundle info =   
     float ratio = 1920.f / 1080.f;
     Sandbox::SandboxApp::CreateInfo app_info = Sandbox::SandboxApp::CreateInfo{
         .atlas_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\textures\\sprites\\atlas\\spritesheet.png",
-        .gc_info = Syris::GraphicsContext::CreateInfo{
-            .layers_info = Syris::LayerManager::CreateInfo{
-                .layers = {}},
-            .window_info = Syris::WindowCreateInfo{
-                .dimmensions = glm::ivec2(1920, 1080),
-                .name = std::string("hola"),
-                .vSync = true,
-            },
-            //.vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl",
-            //.fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl",
-        },
+        .gc_info = gc_info,
         .camera_info = Syris::OrthographicCameraController::CreateInfo{
             .aspec_ratio = ratio,
             .zoom_level = 10.f,
-        }};
+        },
+        .app_init = app_init
+    };
         //  .window_bundle = info,
         //.cameraCreateInfo = Syris::CameraOrthographic::CreateInfo{
         //    .left = -1.0f,
@@ -157,5 +144,5 @@ Application* get_client_app() {
         //    .top  = 1.0f,
         //    .bottom = -1.0f
         //}
-        return new Sandbox::SandboxApp(app_info);
+    return new Sandbox::SandboxApp(app_info);
 }

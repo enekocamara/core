@@ -2,7 +2,7 @@
 #include "Syris/Libs.h"
 #include "Shader.hpp"
 #include <glm/glm.hpp>
-#include "Syris/utils/EngineTime.h"
+#include "Syris/utils/EngineTime.hpp"
 #include "Syris/events/Event.hpp"
 #include <filesystem>
 

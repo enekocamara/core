@@ -9,12 +9,12 @@ namespace Syris{
     }
     void LayerManager::on_update(engine_time::Time& time){
         for (auto it = m_layers_order.rbegin(); it != m_layers_order.rend(); it++){
-            m_layers_map[*it]->on_update(time);
+             m_layers_map[*it]->on_update(time);
         }
     }
     bool LayerManager::on_event(Event* event){
-        for (auto it = m_layers_order.begin(); it != m_layers_order.end(); it++){
-            if (m_layers_map[*it]->on_event(event))
+        for (auto id : m_layers_order){
+            if (m_layers_map[id]->on_event(event))
                 return true;
         }
         return false;

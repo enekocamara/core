@@ -12,15 +12,15 @@ namespace Syris {
     
     void OrthographicCameraController::on_update(engine_time::Time time){
         if (Input::is_key_pressed(KeyCode::KEY_A))
-            m_position.x -= time.delta_time_ms / 1000 * m_speed / m_zoom_level;
+            m_position.x -= time.get_delta_ms() / 1000 * m_speed / m_zoom_level;
             
         if (Input::is_key_pressed(KeyCode::KEY_D))
-            m_position.x += time.delta_time_ms / 1000 * m_speed / m_zoom_level;
+            m_position.x += time.get_delta_ms() / 1000 * m_speed / m_zoom_level;
         if (Input::is_key_pressed(KeyCode::KEY_W))
-            m_position.y += time.delta_time_ms / 1000 * m_speed / m_zoom_level;
+            m_position.y += time.get_delta_ms() / 1000 * m_speed / m_zoom_level;
 
         if (Input::is_key_pressed(KeyCode::KEY_S))
-            m_position.y -= time.delta_time_ms / 1000 * m_speed / m_zoom_level;
+            m_position.y -= time.get_delta_ms() / 1000 * m_speed / m_zoom_level;
 
         m_camera.set_position(m_position);
     }

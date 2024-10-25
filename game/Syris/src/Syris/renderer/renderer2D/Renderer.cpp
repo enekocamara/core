@@ -7,7 +7,7 @@
 
 namespace Syris::renderer {
     Renderer2D::Renderer2D(){
-        this->time.init_time = std::chrono::high_resolution_clock::now();
+        //this->time.init_time = std::chrono::high_resolution_clock::now();
     }
     Renderer2D::~Renderer2D(){
         this->state = GameEngineState::WindowClosed;

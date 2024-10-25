@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "../texture/SandboxTexture.hpp"
 #include <iostream>
+#include "Syris/utils/glm_stdout.hpp"
 
 namespace Sandbox{
     struct TileVertices{
@@ -29,9 +30,13 @@ namespace Sandbox{
             };
         }
     };
+    constexpr auto a =sizeof(TileIndices);
     struct TileInstancedData{
-        glm::vec4 tex_coord = {texture::atlas::grass_0.min, texture::atlas::grass_0.max};
+        glm::vec4 tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
         glm::mat4 translation = glm::mat4(1.f);
+        void print(){
+            std::cout <<"Coord: " << tex_coord << '\n';
+        }
     };
 
     struct TileVerticesTriangle{

@@ -10,6 +10,7 @@ namespace Syris{
         else
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, info.indices_count * sizeof(uint32_t), info.indices, GL_STATIC_DRAW);
         
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     OpenGLIndexBuffer::~OpenGLIndexBuffer(){
 
@@ -18,6 +19,6 @@ namespace Syris{
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,m_buffer);
     }
     void OpenGLIndexBuffer::unbind(){
-
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 }

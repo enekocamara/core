@@ -3,7 +3,7 @@
 #include <entt.hpp>
 
 #include "Syris/renderer/Texture.h"
-#include "Syris/utils/EngineTime.h"
+#include "Syris/utils/EngineTime.hpp"
 #include "Syris/renderAPI/renderApi.h"
 
 namespace Syris::renderer{
@@ -27,7 +27,7 @@ namespace Syris::renderer{
             std::optional<entt::entity> interactable = std::nullopt;
             GameEngineState state = GameEngineState::Init;
             std::array<bool, 249> keys = {false};
-            engine_time::Time time;
+            //engine_time::Time time;
             glm::ivec2 screen_size;
     };
 }
