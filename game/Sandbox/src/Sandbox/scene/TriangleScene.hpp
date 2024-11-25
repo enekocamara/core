@@ -14,19 +14,18 @@ namespace Sandbox{
         public:
             struct CreateInfo
             {
-                entt::registry &registry;
                 const char *atlas_path;
-                Syris::GraphicsContext &context;
+                Syris::ShaderManager &shader_manager;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
                 Syris::Statistics& statistics;
             };
             TriangleScene(CreateInfo info);
             ~TriangleScene();
 
-            void on_update(Syris::engine_time::Time& time) override;
+            void on_update(const Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
         private:
-            Syris::GraphicsContext& m_graphics_context;
+            Syris::ShaderManager& m_shader_manager;
             Syris::OrthographicCameraController m_camera;
             uint32_t m_shader_id;
             glm::vec3 m_triangle_color;

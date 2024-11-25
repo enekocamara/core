@@ -1,19 +1,16 @@
 #pragma once
 #include "Syris/shader/ShaderManger.hpp"
 #include "../scene/helper.h"
-#include "Syris/materials/Material.hpp"
+#include "Syris/renderer/batch_renderer/BatchRenderer.hpp"
 #include "Syris/renderer/AttributeLayoutList.hpp"
+#include "util.h"
 #include "Syris/log/Log.h"
 
-namespace Sandbox::entity_shader{
+namespace Sandbox::entity_shader{/*
 
-    struct RawData{
-        void *data;
-        uint64_t size;
-    };
 
-    using ShaderLayout = Syris::ShaderLayout<glm::mat4, Syris::texture::Texture2D>;
-    using ShaderLayoutTuple = std::tuple<glm::mat4, Syris::texture::Texture2D>;
+    using ShaderLayout = Syris::ShaderLayout<glm::mat4, Syris::Texture2D>;
+    using ShaderLayoutTuple = std::tuple<glm::mat4, Syris::Texture2D&>;
     Syris::Shader::CreateInfo get_shader_info(){
         const char * path = "entity";
         std::vector<std::string> names = {"ViewProjection", "texture1"};
@@ -25,7 +22,7 @@ namespace Sandbox::entity_shader{
         return info;
     }
 
-    Syris::Material::CreateInfo get_entity_material(Syris::ShaderManager& shader_manager, RawData& vertex_buffer_rd, RawData& instance_buffer_rd, Syris::IndexBuffer::CreateInfo& index_buffer_info, uint32_t instances, Syris::Statistics& statistics){
+    Syris::BatchRenderer::CreateInfo get_entity_material(Syris::ShaderManager& shader_manager, RawData& vertex_buffer_rd, RawData& instance_buffer_rd, Syris::IndexBuffer::CreateInfo& index_buffer_info, uint32_t instances, Syris::Statistics& statistics){
         Syris::ShaderManager::ShaderID shader_id = shader_manager.add_shader(get_shader_info());
         if (shader_id == 0){
             CLIENT_ERROR("failed to make instance material");
@@ -44,7 +41,6 @@ namespace Sandbox::entity_shader{
 
         //Attribute layout list combines more than one layout managing attribute indexing and 'span'
         Syris::AttributeLayoutList vertex_attribute_list({vertex_layouts_info.begin(), vertex_layouts_info.end()}, 0);
-
 
         //  per instance
         AttCreateInfo instanced_tex_coord{
@@ -99,11 +95,7 @@ namespace Sandbox::entity_shader{
             .statistics = statistics
         };
 
-        /*const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\vertexShader.glsl";
-        const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\fragmentShader.glsl";
-        */
-        
-        return Syris::Material::CreateInfo{
+        return Syris::BatchRenderer::CreateInfo{
             .name = "entities",
             .shader_manager = shader_manager,
             .shader_id = shader_id,
@@ -112,6 +104,6 @@ namespace Sandbox::entity_shader{
             .instance_count = instances,
             .statistics = statistics
         };
-        //return Syris::Material::create_material(material_create_info);
-    }
+        //return Syris::BatchRenderer::create_material(material_create_info);
+    }*/
 }

@@ -2,9 +2,9 @@
 #include <vector>
 #include <span>
 #include "Syris/shader/Shader.hpp"
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 
-namespace Sandbox::quad_shader{
+namespace Sandbox::quad_shader{/*
     using ShaderLayout = Syris::ShaderLayout<>;
     using ShaderLayoutTuple = std::tuple<>;
     Syris::Shader::CreateInfo get_shader_info(){
@@ -16,5 +16,5 @@ namespace Sandbox::quad_shader{
             .layout = layout 
         };
         return info;
-    }
+    }*/
 }

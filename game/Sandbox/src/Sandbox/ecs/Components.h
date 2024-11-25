@@ -8,15 +8,15 @@
 
 
 #include "Syris/utils/FastFunction.hpp"
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 #include "Syris/ecs/EntityManager.hpp"
 #include "Syris/utils/EngineTime.hpp"
-#include "Syris/materials/MaterialManager.hpp"
+#include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "CollectableManager.hpp"
 
 namespace Sandbox::ecs {
-    struct SMaterialID{
-        Syris::MaterialManager::MaterialID material_id;
+    struct SER_ID{
+        Syris::BatchRendererManager::BR_ID renderer_id;
     };
     template<typename T>
     class AsyncComponent{
@@ -58,9 +58,13 @@ namespace Sandbox::ecs {
         int right;
     };
     struct CTexture{
-        Syris::texture::Rectangle2D rect;
+        Syris::Rectangle2D rect;
     };
-
+    struct CTileData{
+        float height = 0;
+        float humidity = 0;
+        float heat = 0;
+    };
     struct CKeyBinded{
         MovementKeys keys;
         CKeyBinded(MovementKeys keys): keys(keys){}
@@ -76,20 +80,11 @@ namespace Sandbox::ecs {
     struct CSpeed { glm::vec2 speed; };
     struct CMovementSpeed{float movement_speed;};
     struct CAcceleration { glm::fvec2 value; };
-    struct CTile{    
-        enum class TileType : glm::u8{
-            Grass,
-            Water
-        };
-        TileType type;
-        std::mutex mutex;
-        bool in_use = false;
-        CTile(TileType type): type(type){}
-        CTile(const CTile& ref): type(ref.type){}
+    struct CTile{
     };
 
     struct CAnimated{
-        std::function<void(entt::registry&, entt::entity, Syris::engine_time::Time time, Syris::texture::Texture2DBundle& texture)> animate; 
+        std::function<void(entt::registry&, entt::entity, Syris::engine_time::Time time, Syris::Texture2DBundle& texture)> animate; 
     };
     struct CInteractable{
         enum class InteractionType{
@@ -119,8 +114,8 @@ namespace Sandbox::ecs {
         entt::entity source;
         float life_matter_consume_per_ms;
     };
-    struct CMaterialID{
-        Syris::MaterialManager::MaterialID id;
+    struct CER_ID{
+        Syris::BatchRendererManager::BR_ID id;
     };
     struct CCollectable{
         CollectableManager::ID id;

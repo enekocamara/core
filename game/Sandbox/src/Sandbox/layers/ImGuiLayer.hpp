@@ -8,7 +8,7 @@ namespace Sandbox{
         public:
             ImGuiLayer();
             ~ImGuiLayer();
-            void on_update(Syris::engine_time::Time& time) override;
+            void on_update(const Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event *event) override;
     };
 }

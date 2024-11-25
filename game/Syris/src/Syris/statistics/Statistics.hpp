@@ -57,7 +57,7 @@ namespace Syris{
         //StatisticModule& get_module(StatisticModID id){return m_modules[m_ids_x_index.from<StatisticModID>()[id]];};
         StatisticModID get_root(){return m_root_id;}
         void add_child(StatisticModID parent, StatisticModID child);
-        void on_update(engine_time::Time &time) override;
+        void on_update(const engine_time::Time &time) override;
         bool on_event(Event *event) override { return false; }
     private:
         StatisticModType add_mod_type(std::string mod_name)

@@ -25,7 +25,7 @@ namespace Sandbox{
         return false;
     }
 
-    void ImGuiLayer::on_update(Syris::engine_time::Time& time){
+    void ImGuiLayer::on_update(const Syris::engine_time::Time& time){
        /*
         ImGui::SetCurrentContext(m_gui_context);
         //display size

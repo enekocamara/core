@@ -4,6 +4,8 @@
 #include "Syris/shader/Shader.hpp"
 
 namespace Sandbox::triangle_scene{
+    const char* path = "triangle_scene";
+    /*
     using ShaderLayout = Syris::ShaderLayout<glm::vec3>;
     using ShaderLayoutTuple = std::tuple<glm::vec3>;
     Syris::Shader::CreateInfo get_shader_info(){
@@ -16,4 +18,5 @@ namespace Sandbox::triangle_scene{
         };
         return info;
     }
+    */
 }

@@ -13,6 +13,13 @@ namespace Syris{
             else
                 return second_to_first;
         };
+        template <typename T>
+        const auto& from() const{
+            if constexpr(std::is_same<T, First>())
+                return first_to_second;
+            else
+                return second_to_first;
+        };
         void add(First first, Second second){
             first_to_second[first] = second;
             second_to_first[second] = first;        

@@ -12,7 +12,7 @@ struct AppInit{
     Syris::Statistics& statistics;
 };
 
-extern Application* get_client_app(AppInit& app_init);
+extern std::unique_ptr<Application> get_client_app(AppInit& app_init);
 
 /*
 int main(int argc, char* argv[])

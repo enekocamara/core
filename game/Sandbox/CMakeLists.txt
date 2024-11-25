@@ -5,7 +5,7 @@ project(Sandbox CXX)
 
 #find_package(HPX REQUIRED)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the output directory structure
@@ -52,9 +52,11 @@ endforeach()
 #endif()
 
 
+
 set(HPX_LOGLEVEL 0)
 add_executable(Sandbox ${SOURCES})
 target_link_libraries(Sandbox PRIVATE Core)
+#target_link_libraries(Sandbox PRIVATE Scripts)
 target_include_directories(Sandbox PRIVATE
     ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
     ${CMAKE_SOURCE_DIR}/Sandbox/src

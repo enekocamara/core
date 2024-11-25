@@ -7,7 +7,7 @@
 namespace Sandbox{
 
     TriangleScene::TriangleScene(CreateInfo info):
-        m_graphics_context(info.context),
+        m_shader_manager(info.shader_manager),
         m_camera(info.camera_info){
 
         //auto shader_layout = ShaderLayout<>;
@@ -18,10 +18,14 @@ namespace Sandbox{
         info.statistics.get_registry().emplace<Syris::statistics::CScene>(id, "Triangle Scene");
 
         Syris::Logger::client_info("triangle scene being created");
-        m_shader_id = m_graphics_context.get_shader_manager().add_shader(triangle_scene::get_shader_info());
-        if (!m_shader_id){
-            throw std::runtime_error("failed to add shader");
+        Syris::Shader::CreateInfo shader_info{
+            .path = "triangle_scene"
+        };
+        auto shader_id_res = m_shader_manager.add_shader(shader_info);
+        if (!shader_id_res){
+            throw std::runtime_error(std::format("Failed to add triangle shader: {}", shader_id_res.error()));
         }
+        m_shader_id = shader_id_res.value();
         float vertices[] = {
             -0.5f, -0.5f, 0.0f,
             0.5f, -0.5f, 0.0f,
@@ -47,14 +51,18 @@ namespace Sandbox{
 
     }
 
-    void TriangleScene::on_update(Syris::engine_time::Time& time){
-        m_graphics_context.get_shader_manager().get_shader(m_shader_id)->on_update(time);
+    void TriangleScene::on_update(const Syris::engine_time::Time& time){
+        m_shader_manager.get_shader(m_shader_id)->on_update(time);
         ImGui::Begin("Settings");
         ImGui::ColorEdit3("color 1", reinterpret_cast<float *>(&m_triangle_color)); 
 
         ImGui::End();
-        triangle_scene::ShaderLayoutTuple data = m_triangle_color;
-        m_graphics_context.get_shader_manager().use_shader(m_shader_id, &data);
+        Syris::Uniform uniform{
+            .name = "uColor",
+            .data = &m_triangle_color,
+            .pnext = nullptr
+        };
+        m_shader_manager.use_shader(m_shader_id, &uniform);
         //Syris::Shader* shader = m_graphics_context.get_shader_manager().get_shader(m_shader_id);
         //shader->set_uniform(m_triangle_color, "uColor");
         glBindVertexArray(m_vao);

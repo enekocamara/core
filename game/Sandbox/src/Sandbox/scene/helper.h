@@ -30,15 +30,15 @@ namespace Sandbox{
             };
         }
     };
-    constexpr auto a =sizeof(TileIndices);
-    struct TileInstancedData{
+    
+    struct alignas(16) QuadTexInstancedData{
         glm::vec4 tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
         glm::mat4 translation = glm::mat4(1.f);
         void print(){
             std::cout <<"Coord: " << tex_coord << '\n';
         }
     };
-
+    constexpr auto a = sizeof(QuadTexInstancedData);
     struct TileVerticesTriangle{
         std::array<float, 6> vertices;
         TileVerticesTriangle(int a){

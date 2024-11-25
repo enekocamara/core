@@ -7,7 +7,7 @@ namespace Syris{
         m_currentID = LayerID(m_currentID + 1);
         m_layers_map.insert(m_layers.end(), info.layers.begin(), info.layers.end());*/
     }
-    void LayerManager::on_update(engine_time::Time& time){
+    void LayerManager::on_update(const engine_time::Time& time){
         for (auto it = m_layers_order.rbegin(); it != m_layers_order.rend(); it++){
              m_layers_map[*it]->on_update(time);
         }

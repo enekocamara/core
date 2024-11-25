@@ -2,7 +2,7 @@
 #include <array>
 #include <entt.hpp>
 
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 #include "Syris/utils/EngineTime.hpp"
 #include "Syris/renderAPI/renderApi.h"
 
@@ -20,7 +20,7 @@ namespace Syris::renderer{
             ~Renderer2D();
 
             //render api
-            void draw_quad(int program, renderAPI::Quad2D* quad, glm::mat4 model,glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color);
+            void draw_quad(int program, renderAPI::Quad2D* quad, glm::mat4 model,glm::mat4 projection_view, Texture2D& texture, Rectangle2D src, glm::vec3 color);
             void clear_window(glm::vec3 color);
         private:
             //entt::entity player;

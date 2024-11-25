@@ -5,14 +5,13 @@
 
 #include <entt.hpp>
 
-#include "Syris/materials/Material.hpp"
-#include "Syris/materials/MaterialManager.hpp"
+#include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 
 namespace Syris{
     class EntityManager{
         public:
             struct RenderInfo{
-                Syris::MaterialManager::MaterialID material;
+                BatchRendererManager::BR_ID renderer;
                 void* entity_data;
             };
             struct EntityInfo{
@@ -20,7 +19,7 @@ namespace Syris{
             };
             struct CreateInfo{
                 //entt::registry &registry;
-                Syris::MaterialManager& material_manager;
+                BatchRendererManager& batch_renderer_manager;
             };
 
             EntityManager(CreateInfo info);
@@ -37,11 +36,11 @@ namespace Syris{
                 m_create_mutex.unlock();
                 if (info.render_info.has_value()) {
                     RenderInfo render = info.render_info.value();
-                    MaterialAddRequest request{
+                   BR_AddRequest request{
                         .entity = id,
                         .data = render.entity_data
                     };
-                    m_material_manager.get_material(render.material)->add_entity(request);
+                    m_batch_renderer_manager.get_renderer(render.renderer)->add_entity(request);
                     //add to the material its rendering information
                     //todo
                 }
@@ -50,13 +49,13 @@ namespace Syris{
             void delete_entity(entt::entity entity);
             entt::registry& get_registry(){return m_registry;}
 
-            Syris::MaterialManager& get_materials() {return m_material_manager;}
+            Syris::BatchRendererManager& get_batch_renderer_manager() {return m_batch_renderer_manager;}
            // entt::group& get_entities();
         private:
             entt::registry m_registry;
             uint32_t m_entity_count;
             std::mutex m_create_mutex;
-            Syris::MaterialManager& m_material_manager;
+            BatchRendererManager& m_batch_renderer_manager;
 
     };
 }

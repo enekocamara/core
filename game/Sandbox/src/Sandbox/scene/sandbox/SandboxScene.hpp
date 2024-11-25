@@ -9,11 +9,11 @@
 #include "Syris/layers/Layer.hpp"
 #include "Syris/events/Event.hpp"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
-#include "Syris/materials/MaterialManager.hpp"
+#include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "Syris/ecs/EntityManager.hpp"
 #include "Syris/statistics/Statistics.hpp"
 #include "Sandbox/ecs/CollectableManager.hpp"
-#include "World.hpp"
+#include "Sandbox/world_generator/World.hpp"
 #include "AsyncToSyncQueue.hpp"
 
 
@@ -27,20 +27,20 @@ namespace Sandbox{
         };
     }
 
-    class SandboxScene : public Syris::Scene, public Syris::Layer{
+    class SandboxScene : public Syris::Scene{
         public:
             struct CreateInfo
             {
                 // entt::registry &registry;
                 const char *atlas_path;
-                Syris::GraphicsContext &context;
+                Syris::ShaderManager &shader_manager;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
                 Syris::Statistics& statistics;
             };
             SandboxScene(CreateInfo info);
             ~SandboxScene();
 
-            void on_update(Syris::engine_time::Time& time) override;
+            void on_update(const Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
             void sim_loop();
             Syris::StatisticModID get_statistic_mod_ID(){return m_statistic_mod_ID;}
@@ -51,15 +51,16 @@ namespace Sandbox{
         private:
 
             void update_data(bool imgui);
+            void make_entity_renderer();
             //entt::registry& m_registry;
-            Syris::MaterialManager m_material_manager;
+            Syris::BatchRendererManager m_material_manager;
             Syris::EntityManager m_entity_manager;
-            Syris::texture::TextureAtlas m_texture_atlas;
+            Syris::TextureAtlas m_texture_atlas;
            // Syris::RenderBuffer* m_buffer;
-            Syris::GraphicsContext& m_graphics_context;
+            Syris::ShaderManager& m_shader_manager;
             Syris::OrthographicCameraController m_camera;
-            //Syris::MaterialManager::MaterialID m_tile_material;
-            Syris::MaterialManager::MaterialID m_entity_material_id;
+            //Syris::BatchRendererManager::ER_IDle_material;
+            Syris::BatchRendererManager::BR_ID m_entity_renderer_id;
             entt::entity m_player_id;
             uint32_t m_shader_id;
             World *m_world;
@@ -74,6 +75,7 @@ namespace Sandbox{
             AsyncToSyncQueue m_async_to_sync_queue;
 
             //sim
+            uint32_t m_sim_thread_count = 3;
             std::atomic_bool m_sim_loop_running = true;
             //Syris::engine_time::Time m_sim_time;
             Syris::engine_time::FPS m_sim_fps;

@@ -6,20 +6,18 @@
 #include "Syris/input/Input.h"
 
 namespace Syris{
-    OpenGLContext::OpenGLContext(GraphicsContext::CreateInfo &info) : m_shader_manager(std::string("C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\")), m_layer_manager(), m_window(info.window_info),m_fps("Render")
+    OpenGLContext::OpenGLContext(GraphicsContext::CreateInfo &info) : m_shader_manager(std::string("C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders"), info.statistics), m_layer_manager(), m_window(std::move(std::make_unique<OpenGLWindow>(info.window_info))), m_fps("Render")
     {
-
         m_program = glCreateProgram();
-        setup_callbacks(m_window.get_window(),this);
-        Input::get(m_window.get_window());
-        //compile_shaders(m_program, info.vertex_shader_path,
-         //                      info.fragment_shader_path);
+        setup_callbacks(m_window->get_window(),this);
+        Input::get(m_window->get_window());
     }
     bool OpenGLContext::should_window_close(){
-        return m_window.should_window_close();
+        return m_window->should_window_close();
     }
-    void OpenGLContext::on_update(Syris::engine_time::Time& time){
+    void OpenGLContext::on_update(const Syris::engine_time::Time& time){
         //events
+        m_shader_manager.on_update(time);
         glfwPollEvents();
         
         m_fps.next_frame(time);
@@ -27,8 +25,8 @@ namespace Syris{
         //set imgui frame
         int display_w, display_h;
 
-        ImGui::SetCurrentContext(m_window.get_imgui_context());
-        glfwGetFramebufferSize(m_window.get_window(), &display_w, &display_h);
+        ImGui::SetCurrentContext(m_window->get_imgui_context());
+        glfwGetFramebufferSize(m_window->get_window(), &display_w, &display_h);
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(display_w, display_h);
 
@@ -48,7 +46,7 @@ namespace Syris{
         m_fps.render_frame_count();
 
         //resize
-        glfwGetFramebufferSize(m_window.get_window(), &display_w, &display_h);
+        glfwGetFramebufferSize(m_window->get_window(), &display_w, &display_h);
 
         //finish imgui frame
         io.DisplaySize = ImVec2(display_w, display_h);
@@ -60,7 +58,7 @@ namespace Syris{
         glfwMakeContextCurrent(backup_current_context);
 
         //swap buffer
-        m_window.swap_buffers();
+        m_window->swap_buffers();
         
         //std::cout << "swap buffers\n";
     }

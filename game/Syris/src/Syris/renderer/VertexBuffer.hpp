@@ -1,6 +1,8 @@
 #pragma once
 #include "AttributeLayoutList.hpp"
 #include "Syris/statistics/Statistics.hpp"
+#include "Syris/types/Type.h"
+#include "Syris/utils/memory.h"
 namespace Syris{
 
     class VertexBuffer{
@@ -9,13 +11,30 @@ namespace Syris{
              * AttributeLayoutList layout_list;
              * void *data;
              * uint32_t size;
-             */ 
+             */
+            struct Attribute{
+                std::string name;
+                Type type;
+            };
 
-            struct SubBufferInfo{
-                AttributeLayoutList layout_list;
-                uint64_t size;
-                void *data;
-                bool dynamic;
+            class SubBufferInfo{
+            public:
+                SubBufferInfo(bool per_instance, bool dynamic) : m_per_instance(per_instance), m_dynamic(dynamic) {}
+                void push(Attribute &&attribute)
+                {
+                    m_attributes.emplace_back(attribute);
+                    m_type_size += dyn_sizeof_type(attribute.type);
+                }
+                bool is_dynamic()const {return m_dynamic;}
+                bool is_per_instance() const {return m_per_instance;}
+                uint64_t get_type_size()const{return m_type_size;}
+                const std::vector<Attribute>& get_attributes()const {return m_attributes;}
+
+            private:
+                std::vector<Attribute> m_attributes;
+                bool m_per_instance;
+                bool m_dynamic;
+                uint64_t m_type_size = 0;
             };
 
             /*
@@ -25,9 +44,9 @@ namespace Syris{
              * std::span<BufferInfo> buffers_info;
              */ 
             struct CreateInfo{
-                bool dynamic;
-                std::vector<SubBufferInfo> buffers_info;
+                const std::vector<SubBufferInfo>& buffers_info;
                 Statistics& statistics;
+                //MemSpan temp; 
             };
             /*
              * @brief returns a memory owning pointer to a vertex buffer

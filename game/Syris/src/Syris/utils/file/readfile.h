@@ -1,11 +1,11 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <format>
 namespace utils{
-    static std::string readFile(const char * filename)
+    inline std::string read_file(const char * filename)
     {
-
         std::string source;
         std::ifstream fileStream(filename, std::ios::in);
         if (fileStream.is_open()) {
@@ -17,10 +17,6 @@ namespace utils{
         }
         else {
             throw std::runtime_error(std::format("Failed to open file {}", filename));
-        }{
-            return source;
-
         }
     }
-
 }

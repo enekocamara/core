@@ -7,7 +7,7 @@
 #include "Syris/layers/Layer.hpp"
 #include "Syris/events/Event.hpp"
 #include "Syris/renderer/camera/OrthographicCameraController.hpp"
-#include "Syris/materials/MaterialManager.hpp"
+#include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "Syris/ecs/EntityManager.hpp"
 #include "Syris/statistics/Statistics.hpp"
 
@@ -18,20 +18,28 @@ namespace Sandbox{
             {
                 //entt::registry &registry;
                 const char *atlas_path;
-                Syris::GraphicsContext &context;
+                Syris::ShaderManager &shader_manager;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
                 Syris::Statistics& statistics;
             };
             SimpleScene(CreateInfo info);
             ~SimpleScene();
 
-            void on_update(Syris::engine_time::Time& time) override;
+            void on_update(const Syris::engine_time::Time& time) override;
             bool on_event(Syris::Event* event)override;
+            void make_batch_renderer();
+            Syris::StatisticModID get_statistics()const{return m_statistic_mod_ID;}
+            void render_statistics(entt::entity module, entt::registry& registry){
+                ImGui::Text("Simple scene info.");
+                m_batch_renderer_manager.render(m_batch_renderer_manager.get_statistics(), m_statistics.get_registry());
+            };
         private:
-            Syris::MaterialManager::MaterialID m_material;
-            Syris::GraphicsContext& m_graphics_context;
-            Syris::MaterialManager m_material_manager;
+            Syris::StatisticModID m_statistic_mod_ID;
+            Syris::BatchRendererManager::BR_ID m_batch_renderer_id;
+            Syris::ShaderManager& m_shader_manager;
+            Syris::BatchRendererManager m_batch_renderer_manager;
             Syris::EntityManager m_entity_manager;
+            Syris::Statistics& m_statistics;
             Syris::OrthographicCameraController m_camera;
             uint32_t m_shader_id;
     };

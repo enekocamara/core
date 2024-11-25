@@ -10,7 +10,7 @@ namespace Syris {
 
     OrthographicCameraController::~OrthographicCameraController(){}
     
-    void OrthographicCameraController::on_update(engine_time::Time time){
+    void OrthographicCameraController::on_update(const engine_time::Time& time){
         if (Input::is_key_pressed(KeyCode::KEY_A))
             m_position.x -= time.get_delta_ms() / 1000 * m_speed / m_zoom_level;
             

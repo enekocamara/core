@@ -1,6 +1,6 @@
 #include "SandboxLayers.hpp"
 namespace Sandbox{
-
+    /*
     SandboxLayer::SandboxLayer(SandboxData& data): m_data(data), m_debug_layer(m_data){
 
     }
@@ -13,7 +13,7 @@ namespace Sandbox{
     }
     bool SandboxLayer::on_event(Syris::Event* event){
         return m_debug_layer.on_event(event);
-    }
+    }*/
 
     //render layer
     /*Functionality migrated to the scene
@@ -33,7 +33,8 @@ namespace Sandbox{
     }
     */
     //debug layer
-    SandboxDebugLayer::SandboxDebugLayer(SandboxData& data): m_data(data){
+    /*
+       SandboxDebugLayer::SandboxDebugLayer(SandboxData& data): m_data(data){
 
     }
     SandboxDebugLayer::~SandboxDebugLayer(){
@@ -46,5 +47,5 @@ namespace Sandbox{
     bool SandboxDebugLayer::on_event(Syris::Event* event){
         //!todo 
         return false;
-    }
+    }*/
 }

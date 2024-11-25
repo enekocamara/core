@@ -1,15 +1,15 @@
 #pragma once
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 
 namespace Sandbox::texture{
     static constexpr glm::fvec2 default_tyle_size = {16.f, 16.f};
     namespace Player {
         enum class Dir : int { Down, Up, Left, Right };
-        static constexpr Syris::texture::Rectangle2D getPlayerTextureRectangle(Dir dir, bool idle,
+        static constexpr Syris::Rectangle2D getPlayerTextureRectangle(Dir dir, bool idle,
                 int index) {
             int layer = static_cast<int>(dir);
             int column = !(int)idle * 2 + index;
-            return Syris::texture::Rectangle2D{
+            return Syris::Rectangle2D{
                 /*.orig = {default_tyle_size.x * column * 3 + default_tyle_size.x,
                   default_tyle_size.y * layer * 3 + default_tyle_size.y},
                   .size = {default_tyle_size.x, default_tyle_size.y}};*/
@@ -47,25 +47,41 @@ namespace Sandbox::texture{
             return (index) / float(total_x);
         }
 
-        static constexpr Syris::texture::Rectangle2D grass_0 = {
+        static constexpr Syris::Rectangle2D grass_0 = {
             .min = {nor_x(1), nor_y(grass + 1)},
             .max = {nor_x(2), nor_y(grass + 2)}
         };
-        static constexpr Syris::texture::Rectangle2D bush_with_berries = {
+        static constexpr Syris::Rectangle2D bush_with_berries = {
             .min = {0.f, nor_y(plants + 3)},
             .max = {nor_x(1), nor_y(plants + 4)}
         };
-        static constexpr Syris::texture::Rectangle2D bush_no_berries = {
+        static constexpr Syris::Rectangle2D bush_no_berries = {
             .min = {nor_x(1), nor_y(plants + 3)},
             .max = {nor_x(2), nor_y(plants + 4)}
         };
-        static constexpr Syris::texture::Rectangle2D dirt_0 = {
+        static constexpr Syris::Rectangle2D dirt_0 = {
             .min = {nor_x(1), nor_y(dirt + 1)},
             .max = {nor_x(2), nor_y(dirt + 2)}
         };
-        static constexpr Syris::texture::Rectangle2D player_0 = {
+        static constexpr Syris::Rectangle2D player_0 = {
             .min = {nor_x(1.f), nor_y(player + 1)},
             .max = {nor_x(2), nor_y(player + 2)}
+        };
+        static constexpr Syris::Rectangle2D corn_stage_0 = {
+            .min = {nor_x(1), nor_y(plants + 5)},
+            .max = {nor_x(2), nor_y(plants + 6)}
+        };
+        static constexpr Syris::Rectangle2D corn_stage_1 = {
+            .min = {nor_x(2), nor_y(plants + 5)},
+            .max = {nor_x(3), nor_y(plants + 6)}
+        };
+        static constexpr Syris::Rectangle2D corn_stage_2 = {
+            .min = {nor_x(3), nor_y(plants + 5)},
+            .max = {nor_x(4), nor_y(plants + 6)}
+        };
+        static constexpr Syris::Rectangle2D corn_stage_3 = {
+            .min = {nor_x(4), nor_y(plants + 5)},
+            .max = {nor_x(5), nor_y(plants + 6)}
         };
     }
 }; // namespace textures

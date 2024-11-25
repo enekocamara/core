@@ -5,7 +5,10 @@
 
 namespace Syris{
     void render_root(entt::entity root, entt::registry& registry){
-        ImGui::Text("Im Root");
+        if (ImGui::TreeNode("tree")){
+            ImGui::Text("Content");
+            ImGui::TreePop();
+        }
         for (auto child : registry.get<statistics::CChilds>(root).childs){
             registry.get<statistics::CRender>(child).render(child, registry);
         }
@@ -19,7 +22,7 @@ namespace Syris{
         m_root_id = add_module(info);
         m_registry.emplace<statistics::CStatisticsRoot>(m_root_id);
     }
-    void Statistics::on_update(engine_time::Time &time){
+    void Statistics::on_update(const engine_time::Time &time){
         ImGui::Begin("Statistics");
         m_registry.get<statistics::CRender>(m_root_id).render(m_root_id, m_registry);
         //render_module(m_root_id, true);

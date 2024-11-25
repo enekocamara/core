@@ -8,7 +8,7 @@ namespace Syris
     public:
         Layer() {};
         virtual ~Layer() {};
-        virtual void on_update(engine_time::Time& time) = 0;
+        virtual void on_update(const engine_time::Time& time) = 0;
         virtual bool on_event(Event *event) = 0;
     };
 }

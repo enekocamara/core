@@ -2,15 +2,15 @@
 #include <entt.hpp>
 
 #include "Syris/ecs/EntityManager.hpp"
-#include "Syris/materials/Material.hpp"
+#include "Syris/renderer/batch_renderer/BatchRenderer.hpp"
 
 #include "Components.h"
 
 namespace Sandbox::ecs::Quad {
-    inline entt::entity newQuad(glm::vec3 color, Syris::EntityManager &entity_manager, Syris::MaterialManager::MaterialID material_id)
+    inline entt::entity newQuad(glm::vec3 color, Syris::EntityManager &entity_manager, Syris::BatchRendererManager::BR_ID material_id)
     {
         Syris::EntityManager::RenderInfo render_info{
-            .material = material_id,
+            .renderer = material_id,
             //.size = sizeof(glm::vec3),
             .entity_data = &color,
         };

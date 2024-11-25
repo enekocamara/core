@@ -8,78 +8,51 @@
 #include "Syris/Libs.h"
 #include "Syris/log/Log.h"
 
+#include "Sandbox/world_generator/TileMaterial.hpp"
 #include "Components.h"
 #include "Bush.h"
+#include "Corn.h"
 namespace Sandbox::ecs::Tile {
     //this needs to be reworked asap
-    //static Syris::MaterialManager::MaterialID g_tile_material_id = 0;
-    //static Syris::MaterialManager::MaterialID g_entity_material_id = 0;
-    struct SMaterialID{
-        Syris::MaterialManager::MaterialID material_id;
+    //static Syris::BatchRendererManager::ER_ID g_tile_material_id = 0;
+    //static Syris::BatchRendererManager::ER_ID g_entity_material_id = 0;
+    struct SER_ID{
+        Syris::BatchRendererManager::BR_ID renderer_id;
     };
 
     static void tick(Syris::EntityManager& entity_manager, entt::entity entity, const Syris::engine_time::Time& time){
-        //return;
-        auto[c_composition, c_position, c_tile] =  entity_manager.get_registry().get<CComposition, CPosition, CTile>(entity);
-        /*c_tile.mutex.lock();
-        if (c_tile.in_use){
-            std::cout << "multiple threads accesing the same entity at the same time. Entity: " << (uint64_t)entity << std::endl; 
-            exit(1);
-        }
-        c_tile.in_use = true;
-        c_tile.mutex.unlock();
-        */
+        auto[c_composition, c_position, c_data] =  entity_manager.get_registry().get<CComposition, CPosition, CTileData>(entity);
         c_composition.life_matter += time.get_delta_ms() * c_composition.regen_per_ms;
-        if (c_composition.life_matter > 80 &&  c_tile.type == ecs::CTile::TileType::Grass){
+        if (c_composition.life_matter > 80){
             c_composition.life_matter -= 40;
-        //  c_tile.in_use = false;
-        //    return;
-            int choice = rand() % 3;
-            if (choice == 0)
-                ecs::Bush::newBushEntity(c_position.pos,  entity_manager, entity, time);
-            else if (choice == 1)
-                ecs::Bush::newBushEntity(c_position.pos, entity_manager, entity, time);
-            else if (choice == 2)
-                ecs::Bush::newBushEntity(c_position.pos, entity_manager, entity, time);
-            else
-                exit(1);
+            return;
+            if (c_data.heat > 0.5f && c_data.humidity > 0.2f && c_data.height < 0.7f)
+                ecs::Corn::new_corn_entity(c_position.pos, entity_manager, entity, time);
+            else if(c_data.humidity > 0.f && c_data.heat > -0.8 && c_data.height > 0.2f)
+                ecs::Bush::new_bush_entity(c_position.pos,  entity_manager, entity, time);
         }
-        //c_tile.in_use = false;
     }
 
-    inline entt::entity newTile(glm::vec2 pos, Syris::texture::Rectangle2D texture, Syris::EntityManager& entity_manager, ecs::CTile::TileType type,  uint32_t index){
-            
-            //set model matrix
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(pos, 0.0f));
-            model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
-            
-            //data to change
-                //m_buffer->bind(1);
-            TileInstancedData data;
-            data.translation = model;
-            data.tex_coord = {texture.min, texture.max};
-           
-            //m_material->set_data(data_set);
-            Syris::EntityManager::RenderInfo render_info{
-                .material = entity_manager.get_registry().ctx().get<SMaterialID>().material_id,
-                .entity_data = &data,
+    inline entt::entity newTile(TileInstancedData* data, Syris::EntityManager& entity_manager, uint32_t index, float init_life_matter, glm::vec2 pos){
+        // m_material->set_data(data_set);
+        Syris::EntityManager::RenderInfo render_info{
+            .renderer = entity_manager.get_registry().ctx().get<SER_ID>().renderer_id,
+            .entity_data = data,
         };
         Syris::EntityManager::EntityInfo info{
-            .render_info = render_info 
-        };
+            .render_info = render_info};
         entt::entity entity = entity_manager.new_entity(info);
-        entt::registry& registry = entity_manager.get_registry();
-        registry.emplace<CTile>(entity, type);
+        entt::registry &registry = entity_manager.get_registry();
+        registry.emplace<CTile>(entity);
         registry.emplace<CPosition>(entity, pos);
-        registry.emplace<CTexture>(entity, texture);
         registry.emplace<CTickFast>(entity, tick);
-        registry.emplace<CComposition>(entity, float(rand() % 50), 0.01f);
+        registry.emplace<CComposition>(entity, init_life_matter, 0.01f);
+        registry.emplace<CTileData>(entity, *(CTileData*)&data->mat);
         return entity;
     }
     
-    inline Syris::texture::Texture2DBundle defaultTextureBundle(){
-        return Syris::texture::Texture2DBundle{
+    inline Syris::Texture2DBundle defaultTextureBundle(){
+        return Syris::Texture2DBundle{
             .src = texture::atlas::grass_0,
             .size = {(float)Syris::config::render_tile_size, (float)Syris::config::render_tile_size},
                 ///       .color = RAYWHITE,

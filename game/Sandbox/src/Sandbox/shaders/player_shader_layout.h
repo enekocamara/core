@@ -5,6 +5,7 @@
 #include "Syris/renderer/Texture.h"
 
 namespace Sandbox::player_shader{
+    /*
     using ShaderLayout = Syris::ShaderLayout<glm::mat4, glm::mat4, Syris::texture::Texture2D>;
     using ShaderLayoutTuple = std::tuple<glm::mat4, glm::mat4, Syris::texture::Texture2D>;
     Syris::Shader::CreateInfo get_shader_info(){
@@ -17,4 +18,5 @@ namespace Sandbox::player_shader{
         };
         return info;
     }
+    */
 }

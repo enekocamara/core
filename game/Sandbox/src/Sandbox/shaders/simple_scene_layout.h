@@ -2,7 +2,7 @@
 #include <vector>
 #include <span>
 #include "Syris/shader/Shader.hpp"
-
+/*
 namespace Sandbox::simple_scene{
     using ShaderLayout = Syris::ShaderLayout<glm::mat4>;
     using ShaderLayoutTuple = std::tuple<glm::mat4>;
@@ -17,3 +17,4 @@ namespace Sandbox::simple_scene{
         return info;
     }
 }
+*/

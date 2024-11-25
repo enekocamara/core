@@ -10,9 +10,8 @@ namespace Syris{
     {
     public:
     
-        struct CreateInfo
-        {
-            std::span<Layer *> layers;
+        struct CreateInfo{
+            std::span<Layer*> layers;
         };
         //LayerManager(CreateInfo &info);
         LayerManager();
@@ -23,7 +22,7 @@ namespace Syris{
         LayerManager &operator=(const LayerManager &ref) = delete;
 
         bool on_event(Event *event);
-        void on_update(engine_time::Time& time);
+        void on_update(const engine_time::Time& time);
         LayerID push_layer(Layer* layer);
         void pop_layer(LayerID layer);
         LayerID replace_layer(Layer* layer, LayerID id_to_replace);

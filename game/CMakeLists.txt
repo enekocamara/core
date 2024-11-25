@@ -95,6 +95,8 @@ endif()
 
 add_subdirectory(Sandbox)
 add_subdirectory(Core)
+add_subdirectory(Sandbox/scripts)
+add_subdirectory(Test)
 
 add_subdirectory(Syris)
 add_subdirectory(Syris/vendor/imgui)
@@ -102,6 +104,7 @@ add_subdirectory(Syris/vendor/imguiDocking)
 add_subdirectory(Syris/vendor/Glad)
 add_subdirectory(Syris/vendor/GLFW)
 add_subdirectory(Syris/vendor/spdlog)
+add_subdirectory(Syris/vendor/googletests)
 
 
 

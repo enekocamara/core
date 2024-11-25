@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 #include "Syris/renderAPI/renderApi.h"
 
 namespace Syris::renderer {
@@ -61,7 +61,7 @@ namespace Syris::renderer {
             cAnimated.animate(this->m_registry, entity, this->time, cTexture.texture);
         } 
     }*/
-    void Renderer2D::draw_quad(int program, renderAPI::Quad2D* quad, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color){
+    void Renderer2D::draw_quad(int program, renderAPI::Quad2D* quad, glm::mat4 model, glm::mat4 projection_view, Texture2D& texture, Rectangle2D src, glm::vec3 color){
         renderAPI::draw_quad(program, quad, model, projection_view, texture, src, color);
     }
     /*

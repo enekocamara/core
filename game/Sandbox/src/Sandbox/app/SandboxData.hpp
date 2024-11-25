@@ -1,4 +1,5 @@
 #pragma once
+/*
 #include <entt.hpp>
 
 #include "Syris/context/GraphicsContext.hpp"
@@ -23,7 +24,7 @@ namespace Sandbox{
     class SandboxData : public Syris::Layer{
         public:
             struct CreateInfo{
-                entt::registry& registry;
+                //entt::registry& registry;
                 const char * atlas_path;
                 Syris::GraphicsContext& graphics_context;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
@@ -38,7 +39,6 @@ namespace Sandbox{
 
             //[[nodiscard]] SandboxScene& get_scene() {return *m_scene;}
         private:
-
             void set_scene(Syris::SceneID scene);
 
             entt::registry& m_registry;
@@ -59,3 +59,4 @@ namespace Sandbox{
     };
 }
 #include "SandboxLayers.hpp"
+*/

@@ -1,10 +1,10 @@
 #pragma once 
 #include <unordered_map>
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 
 namespace Sandbox::ecs{
     struct Stages{
-        Syris::texture::Rectangle2D texture;
+        Syris::Rectangle2D texture;
         float threashold;
         float comsuption_ms;
     };

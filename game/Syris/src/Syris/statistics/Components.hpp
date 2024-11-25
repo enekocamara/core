@@ -21,7 +21,7 @@ namespace Syris::statistics{
     struct CScene{
         std::string scene_name;
     };
-    struct CMaterial{
+    struct CBatchRenderer{
         std::string material_name;
     };
     struct CVertexBuffer{
@@ -32,7 +32,7 @@ namespace Syris::statistics{
         std::string indentifier;
     };
     struct CStatisticsRoot{};
-    struct CMaterialManager{};
+    struct CBatchRendererManager{};
     struct CSceneManager{};
     struct CRender{
         std::function<void(entt::entity, entt::registry&)> render;

@@ -13,7 +13,7 @@ class OrthographicCameraController {
         OrthographicCameraController(CreateInfo info);
         ~OrthographicCameraController();
 
-        void on_update(engine_time::Time time);
+        void on_update(const engine_time::Time& time);
         void on_event();
 
         CameraOrthographic& getCamera() {return m_camera;}

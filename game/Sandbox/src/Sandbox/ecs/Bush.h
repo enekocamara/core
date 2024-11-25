@@ -45,7 +45,7 @@ namespace Sandbox::ecs::Bush {
             tile_life_matter -= comsuption;
         else{
             Syris::MaterialRemoveRequest request = {bush};
-            entity_manager.get_materials().get_material(entity_manager.get_registry().ctx().get<SMaterialID>().material_id)->remove_entity(request);
+            entity_manager.get_materials().get_material(entity_manager.get_registry().ctx().get<SER_ID>().material_id)->remove_entity(request);
             entity_manager.delete_entity(bush);
             return;
         }
@@ -61,7 +61,7 @@ namespace Sandbox::ecs::Bush {
                 .entity = bush,
                 .data = &instance_data
             };
-            entity_manager.get_materials().set_entity(entity_manager.get_registry().ctx().get<SMaterialID>().material_id, request);
+            entity_manager.get_materials().set_entity(entity_manager.get_registry().ctx().get<SER_ID>().material_id, request);
         }
     }
 */
@@ -89,7 +89,7 @@ namespace Sandbox::ecs::Bush {
         };
     }
     
-    inline entt::entity newBushEntity(glm::vec2 pos, Syris::EntityManager &entity_manager, entt::entity source, const Syris::engine_time::Time& time)
+    inline entt::entity new_bush_entity(glm::vec2 pos, Syris::EntityManager &entity_manager, entt::entity source, const Syris::engine_time::Time& time)
     {
         g_number_of_bushes++;
         /*TileInstancedData *instance_data = new TileInstancedData();
@@ -98,7 +98,7 @@ namespace Sandbox::ecs::Bush {
 
         // entity system part
         Syris::EntityManager::RenderInfo render_info{
-            .material = entity_manager.get_registry().ctx().get<SMaterialID>().material_id,
+            .material = entity_manager.get_registry().ctx().get<SER_ID>().material_id,
             //.size = sizeof(TileInstancedData),
             .entity_data = instance_data
         };
@@ -116,9 +116,9 @@ namespace Sandbox::ecs::Bush {
         registry.emplace<CInteractable>(bush, "Collect Berries", ecs::CInteractable::InteractionType::Gader,  can_interact ,interact);
         return bush;*/
     }
-    inline Syris::texture::Texture2DBundle defaultTextureBundle()
+    inline Syris::Texture2DBundle defaultTextureBundle()
     {
-        return Syris::texture::Texture2DBundle{
+        return Syris::Texture2DBundle{
             .src = texture::atlas::bush_with_berries,
             .size = {
                 (float)Syris::config::render_tile_size,

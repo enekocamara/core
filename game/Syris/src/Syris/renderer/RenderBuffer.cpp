@@ -4,6 +4,7 @@
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 #include "Syris/context/OpenGLContext.hpp"
 namespace Syris{
+    /*
     RenderBuffer::RenderBuffer(CreateInfo info){
         std::array<VertexBuffer::SubBufferInfo, 2> buffers{info.per_vertex_buffer_info, info.per_instance_buffer_info};
         VertexBuffer::CreateInfo vertex_buffer_info = VertexBuffer::CreateInfo{
@@ -33,7 +34,7 @@ namespace Syris{
     }
     void RenderBuffer::update_data(void *data){
          
-    }
+    }*/
    /* void RenderBuffer::draw_buffer(Shader* shader, glm::mat4 projection_view, texture::Texture2D texture, uint32_t instances){
 
         //OpenGLContext* context_opengl = reinterpret_cast<OpenGLContext*>(context);

@@ -6,7 +6,7 @@ namespace Syris{
     {
         entt::registry &registry;
     };
-    EntityManager::EntityManager(CreateInfo info) : m_material_manager(info.material_manager){
+    EntityManager::EntityManager(CreateInfo info) : m_batch_renderer_manager(info.batch_renderer_manager){
 
     }
     EntityManager::~EntityManager(){

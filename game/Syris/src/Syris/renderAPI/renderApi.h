@@ -3,7 +3,7 @@
 
 // #ifdef RENDER_API_OPENGL
 #include "Syris/renderer/VertexBuffer.hpp"
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 
 namespace Syris::renderAPI{
 
@@ -14,6 +14,6 @@ namespace Syris::renderAPI{
         ~Quad2D();
         VertexBuffer* buffer = nullptr;
     }; 
-    void draw_quad(int program, Quad2D* quad, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color);
+    void draw_quad(int program, Quad2D* quad, glm::mat4 model, glm::mat4 projection_view, Texture2D& texture, Rectangle2D src, glm::vec3 color);
 }
 //#endif

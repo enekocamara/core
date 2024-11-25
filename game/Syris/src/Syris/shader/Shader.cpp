@@ -10,10 +10,10 @@ namespace Syris{
 }
 
 #ifdef RENDER_API_OPENGL
-#include "OpenGLShader.hpp"
+#include "AutoShader.hpp"
 namespace Syris{
     Shader* Shader::create_shader(Shader::CreateInfo info){
-        return new OpenGLShader(info);
+        return new AutoShader(info);
     }
 }
 

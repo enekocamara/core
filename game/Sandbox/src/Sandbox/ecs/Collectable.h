@@ -23,34 +23,34 @@ namespace Sandbox::ecs::Collectable {
             if (c_collectable.current_stage < stages.size() - 1){
                 if (c_collectable.current_life_matter > stages[c_collectable.current_stage + 1].threashold){
                     c_collectable.current_stage++;
-                    TileInstancedData instance_data{
+                    QuadTexInstancedData instance_data{
                         .tex_coord = {stages[c_collectable.current_stage].texture.min, stages[c_collectable.current_stage].texture.max},
                         .translation = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(entity_manager.get_registry().get<CPosition>(collectable).pos, 1.f)), {0.5, 0.5, 1.f}),
                     };
-                    Syris::MaterialSetRequest request{
+                    Syris::BR_SetRequest request{
                         .entity = collectable,
                         .data = &instance_data
                     };
-                    entity_manager.get_materials().set_entity(entity_manager.get_registry().ctx().get<SMaterialID>().material_id, request);
+                    entity_manager.get_batch_renderer_manager().set_entity(entity_manager.get_registry().ctx().get<SER_ID>().renderer_id, request);
                 }
             }
         } else{
-            Syris::MaterialRemoveRequest request = {collectable};
-            entity_manager.get_materials().get_material(entity_manager.get_registry().ctx().get<SMaterialID>().material_id)->remove_entity(request);
+            Syris::BR_RemoveRequest request = {collectable};
+            entity_manager.get_batch_renderer_manager().get_renderer(entity_manager.get_registry().ctx().get<SER_ID>().renderer_id)->remove_entity(request);
             entity_manager.delete_entity(collectable);
         }
     }
 
     inline entt::entity new_collectable_entity(glm::vec2 pos, CCollectable collectable_info, Syris::EntityManager &entity_manager, entt::entity source, const Syris::engine_time::Time& time)
     {
-        TileInstancedData instance_data;
+        QuadTexInstancedData instance_data;
         auto stages = entity_manager.get_registry().ctx().get<CollectableManager>().get_collectable(collectable_info.id);
-        instance_data .tex_coord = {stages[collectable_info.current_stage].texture.min, stages[collectable_info.current_stage].texture.max},
+        instance_data.tex_coord = {stages[collectable_info.current_stage].texture.min, stages[collectable_info.current_stage].texture.max},
         instance_data.translation = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(pos, 1.f)), {0.5,0.5,1.f});
 
         // entity system part
         Syris::EntityManager::RenderInfo render_info{
-            .material = entity_manager.get_registry().ctx().get<SMaterialID>().material_id,
+            .renderer = entity_manager.get_registry().ctx().get<SER_ID>().renderer_id,
             //.size = sizeof(TileInstancedData),
             .entity_data = &instance_data
         };

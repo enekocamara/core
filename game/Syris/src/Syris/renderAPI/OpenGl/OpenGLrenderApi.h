@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 #include "Syris/log/Log.h"
 #include "Syris/platform/OpenGl/OpenGLVertexBuffer.hpp"
 
@@ -19,6 +19,16 @@ namespace Syris::renderAPI{
         }
         glUniformMatrix4fv(location, 1, false, glm::value_ptr(value));
     }
+    static void set_uniform_value(int program, glm::vec2 value, const char *name)
+    {
+        GLint location = glGetUniformLocation(program, name);
+        if (location == -1)
+        {
+            CORE_ERROR(std::format("Uniform {} not found in shader program", name));
+            exit(1);
+        }
+        glUniform2f(glGetUniformLocation(program, name), value.x, value.y);
+    }
     static void set_uniform_value(int program, glm::vec3 value, const char *name)
     {
         GLint location = glGetUniformLocation(program, name);
@@ -29,12 +39,27 @@ namespace Syris::renderAPI{
         }
         glUniform3f(glGetUniformLocation(program, name), value.x, value.y, value.z);
     }
-
-    static void opengl_draw_quad2D(int program, OpenGLVertexBuffer *buffer, glm::mat4 model, glm::mat4 projection_view, texture::Texture2D texture, texture::Rectangle2D src, glm::vec3 color)
+    static void set_uniform_value(int program, Texture2D* texture, const char *name){
+        //glActiveTexture(GL_TEXTURE0);
+        texture->bind();
+        //glUniform1i(glGetUniformLocation(program, name), 0);
+    }
+    static void set_uniform_value(int program, glm::vec4 value, const char *name)
     {
-        if (!glIsTexture(texture.m_id))
+        GLint location = glGetUniformLocation(program, name);
+        if (location == -1)
         {
-            CORE_ERROR(std::format("Invalid texture ID!: {}", texture.m_id));
+            CORE_ERROR(std::format("Uniform {} not found in shader program", name));
+            exit(1);
+        }
+        glUniform4f(glGetUniformLocation(program, name), value.x, value.y, value.z, value.w);
+    }
+
+    static void opengl_draw_quad2D(int program, OpenGLVertexBuffer *buffer, glm::mat4 model, glm::mat4 projection_view, Texture2D& texture, Rectangle2D src, glm::vec3 color)
+    {
+        if (!glIsTexture(texture.get_id()))
+        {
+            CORE_ERROR(std::format("Invalid texture ID!: {}", texture.get_id()));
             exit(1);
         }
         // Update texture coordinates in the VBO
@@ -83,5 +108,26 @@ namespace Syris::renderAPI{
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Unuse the shader program
+    }
+    static void set_uniform_value(int program, const char *name, Type type, void *value){
+        switch (type){
+            case Type::vec2:
+                set_uniform_value(program, *(glm::vec2*)value, name);
+                break;
+            case Type::vec3:
+                set_uniform_value(program, *(glm::vec3*)value, name);
+                break;
+            case Type::vec4:
+                set_uniform_value(program, *(glm::vec4*)value, name);
+                break;
+            case Type::mat4:
+                set_uniform_value(program, *(glm::mat4*)value, name);
+                break;
+            case Type::texture2D:
+                set_uniform_value(program, (Texture2D*)value, name);
+                break;
+            default:
+                throw std::runtime_error("type not yet implemented in set uniform value opengl");
+        }
     }
 }

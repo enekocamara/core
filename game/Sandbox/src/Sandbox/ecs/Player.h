@@ -49,36 +49,21 @@ namespace Sandbox::ecs {
             //registry.emplace<CAnimated>(entity, animate);
             return entity;
         }*/
-        inline entt::entity newPlayerEntity(glm::vec2 pos, MovementKeys keys, Syris::texture::Texture2DBundle textureBundle, Syris::EntityManager& entity_manager, Syris::MaterialManager::MaterialID material_id){
+        inline entt::entity newPlayerEntity(glm::vec2 pos,
+                                            MovementKeys keys,
+                                            Syris::Texture2DBundle textureBundle,
+                                            Syris::EntityManager& entity_manager,
+                                            Syris::BatchRendererManager::BR_ID material_id){
 
-            //rendering part
-            TileVertices tile_vertices = TileVertices();
-            entity_shader::RawData vertex_buffer_rd{
-                .data = &tile_vertices,
-                .size = sizeof(TileVertices),
-            };
 
-            TileInstancedData* instance_data = new TileInstancedData();
-            instance_data->tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
-            instance_data->translation = glm::scale(glm::translate(instance_data->translation, glm::vec3(pos, 1.f)), {0.5,0.5,1.f});
-            /*entity_shader::RawData instance_buffer_rd
-                .data = &instance_data,
-                .size = sizeof(TileInstancedData),
-            };*/
-
-            TileIndices tile_indices = TileIndices();
-            Syris::IndexBuffer::CreateInfo index_buffer_info{
-                .indices_count = 6,
-                .indices = tile_indices.vertices.data(),
-                .dynamic = false
-            };
-
+            QuadTexInstancedData instance_data = QuadTexInstancedData();
+            instance_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
+            instance_data.translation = glm::scale(glm::translate(instance_data.translation, glm::vec3(pos, 1.f)), {0.5,0.5,1.f});
 
             //entity system part
             Syris::EntityManager::RenderInfo render_info{
-                .material = material_id,
-                //.size = sizeof(TileInstancedData),
-                .entity_data = instance_data
+                .renderer = material_id,
+                .entity_data = &instance_data
             };
             Syris::EntityManager::EntityInfo info{
                 .render_info = render_info
@@ -93,20 +78,23 @@ namespace Sandbox::ecs {
             registry.emplace<CDir>(player, glm::vec2(0.f,-1.f));
             return player;
         }
-        inline Syris::texture::Texture2DBundle defaultTextureBundle(){
-            return Syris::texture::Texture2DBundle{
+        inline Syris::Texture2DBundle defaultTextureBundle(){
+            return Syris::Texture2DBundle{
                 .src = texture::Player::getPlayerTextureRectangle(texture::Player::Dir::Down, true, 0),
                 .size = {config::render_tile_size, config::render_tile_size},
                     ///        .color = RAYWHITE,
                     ///        .rotation = 0
             };
         }
-        inline void sync(Syris::EntityManager& entity_manager, Syris::MaterialManager& material_manager, Syris::MaterialManager::MaterialID material_id, entt::entity player){            
-            TileInstancedData player_data = TileInstancedData();
+        inline void sync(Syris::EntityManager& entity_manager,
+                         Syris::BatchRendererManager& material_manager,
+                         Syris::BatchRendererManager::BR_ID material_id,
+                         entt::entity player){
+            QuadTexInstancedData player_data = QuadTexInstancedData();
             auto cPos = entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>>(player);
             player_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
             player_data.translation = glm::scale(glm::translate(player_data.translation, glm::vec3(cPos.get().pos, 1.f)), {0.5,0.5,1.0f});
-            Syris::MaterialSetRequest request{
+            Syris::BR_SetRequest request{
                 .entity = player,
                 .data = &player_data
             };

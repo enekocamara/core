@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 project(Syris CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the output directory structure
@@ -39,6 +39,7 @@ target_include_directories(Syris PUBLIC
     ${CMAKE_SOURCE_DIR}/Syris/vendor/spdlog/include
     ${CMAKE_SOURCE_DIR}/Syris/vendor/entt
     ${CMAKE_SOURCE_DIR}/Syris/vendor/stb
+    ${CMAKE_SOURCE_DIR}/Syris/vendor/googletests
     ${CMAKE_SOURCE_DIR}/Syris/src
     # other include directories
 )
@@ -46,7 +47,7 @@ target_include_directories(Syris PUBLIC
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-target_link_libraries(Syris PUBLIC ImGuiDocking Glad glfw spdlog ${Boost_LIBRARIES})
+target_link_libraries(Syris PUBLIC ImGuiDocking Glad glfw spdlog ${Boost_LIBRARIES} gtest)
 
 target_compile_definitions(Syris PRIVATE
     PLATFORM_WINDOWS

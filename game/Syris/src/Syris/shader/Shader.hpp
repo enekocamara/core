@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "Syris/layers/Layer.hpp"
+#include "Syris/shader/Layout.hpp"
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 
 namespace Syris{
@@ -83,7 +84,7 @@ namespace Syris{
                     //std::cout << "Processing glm::vec3" << std::endl;
                     renderAPI::set_uniform_value(program, data, name);
                 }
-                else if constexpr (std::is_same_v<T, texture::Texture2D>){
+                else if constexpr (std::is_same_v<T, Texture2D>){
                     data.bind();
                 }
                 else
@@ -100,20 +101,26 @@ namespace Syris{
     //example
     /*static std::vector<std::string> names = {"ViewProjection", "spriteColor"};
     static IShaderLayout* layout = new ShaderLayout<glm::mat4, glm::vec3>({names.begin(), names.end()});*/
-
+    struct  Uniform{
+        std::string name;
+        void *data;
+        Uniform* pnext;
+    };
     class Shader : public Layer{
         public:
             struct CreateInfo{
                 const char* path;
-                IShaderLayout* layout;
+                //IShaderLayout* layout;
             };
             //Shader(){};
             virtual ~Shader(){};
             static Shader* create_shader(CreateInfo info);
-            virtual void use(void *data) = 0;
-            virtual void set_uniform_value(glm::mat4, const char* name) = 0;
+            virtual void use(Uniform* uniforms) = 0;
+            virtual const Layout& get_attribute_layout() = 0;
+            virtual const Layout& get_uniform_layout() = 0;
+            /*virtual void set_uniform_value(glm::mat4, const char* name) = 0;
             virtual void set_uniform(glm::vec3 val, const char *name) = 0;
-            virtual void set_uniform1i(int texture_index, const char* name) = 0;
+            virtual void set_uniform1i(int texture_index, const char* name) = 0;*/
 //            virtual void on_update(engine_time::Time)override;
             //virtual IShaderLayout& get_shader_layout() = 0;
     };

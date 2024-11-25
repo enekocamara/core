@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 
 #include "Syris/context/GraphicsContext.hpp"
-#include "Syris/renderer/Texture.h"
+#include "Syris/texture/Texture.hpp"
 #include "Syris/shader/Shader.hpp"
 
 #include "AttributeLayoutList.hpp"
@@ -14,6 +14,7 @@
 
 namespace Syris{
     //this will be opengl render buffer later
+    /*
     class RenderBuffer{
         public:
             struct CreateInfo{
@@ -31,11 +32,9 @@ namespace Syris{
             void update_data(void *data);
             //void draw_buffer(Shader* shader, glm::mat4 projection_matrix, texture::Texture2D texture, uint32_t instances);
         private:
-            /*uint32_t size;
-            uint32_t capacity;
-            */
             VertexBuffer* m_vertexBuffer;
             IndexBuffer* m_indexBuffer;
             AttributeLayoutList layouts = {0};
     };
+    */
 }

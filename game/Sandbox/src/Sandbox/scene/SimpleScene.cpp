@@ -8,7 +8,7 @@
 #include "Syris/shader/Shader.hpp"
 #include "Syris/statistics/Components.hpp"
 
-#include "../world_generator/world_generator.hpp"
+//#include "../world_generator/world_generator.hpp"
 #include "../ecs/Components.h"
 #include "../ecs/Tile.h"
 #include "../shaders/simple_scene_layout.h"
@@ -17,15 +17,11 @@
 #include "Sandbox/ecs/Quad.h"
 
 namespace Sandbox{
-    Syris::MaterialManager::MaterialID make_simple_material(Syris::MaterialManager& material_manager, Syris::ShaderManager& shader_manager, Syris::Statistics& statistics){
-        uint32_t shader_id = shader_manager.add_shader(quad_shader::get_shader_info());
-        if (!shader_id){
-            throw std::runtime_error("failed to add shader");
-        }
-
+    void SimpleScene::make_batch_renderer(){
         TileIndices indices = TileIndices();
         TileVertices vertices = TileVertices();
 
+        /*
         using AttCreateInfo = Syris::AttributeLayout::CreateInfo;
         // define per vertex layout
         AttCreateInfo layout_pos{
@@ -45,70 +41,77 @@ namespace Sandbox{
             .size = sizeof(vertices),
             .data = vertices.vertices.data(),
         };
+        */
 
+        Syris::VertexBuffer::SubBufferInfo pos(false, false);
+        pos.push({"aPos", Syris::Type::vec2});
 
-        AttCreateInfo layout_color{
-            .values_count = 3,
-            .value_type = Syris::ValueType::Float,
-            .normalize = false,
-            .perInstance = false,
-        };
-        // per vertex layout list
-        std::array<AttCreateInfo, 1> instance_layouts_info = {layout_color};
-        Syris::AttributeLayoutList instance_attribute_list({instance_layouts_info.begin(), instance_layouts_info.end()}, vertex_attribute_list.attribute_size());
+        Syris::VertexBuffer::SubBufferInfo instance(true, false);
+        instance.push({"aModel", Syris::Type::mat4});
 
-        // define vertex and instance buffer info for render buffer:
-        SubBufferInfo subbufer_color{
-            .layout_list = instance_attribute_list,
-            .size = 0,
-            .data = nullptr,
-        };
-
-        std::array<SubBufferInfo,2> subbuffers= {subbufer_pos, subbufer_color};
-        Syris::VertexBuffer::CreateInfo vertex_buffer_info{
-            .dynamic = false,
-            .buffers_info = {subbuffers.begin(), subbuffers.end()},
-            .statistics = statistics
-        };
+        std::unique_ptr<Syris::BatchRendererLayout> layout = std::make_unique<Syris::BatchRendererLayout>(m_shader_manager.get_shader(m_shader_id), m_statistics);
+        layout->set_subbuffer(pos);
+        layout->set_subbuffer(instance);
+        auto res = layout->finish();
+        if (!res)
+        {
+            throw std::runtime_error(std::format("failed to create ER layout: {}", res.error()));
+        }
 
         Syris::IndexBuffer::CreateInfo index_buffer_info{
             .indices_count = 6,
-            .indices = (uint32_t*)&indices,
+            .indices = (uint32_t *)&indices,
             .dynamic = false
         };
 
-        Syris::Material::CreateInfo material_info{
-            .name = "Simple scene material",
-            .shader_manager = shader_manager, 
-            .shader_id = shader_id,
-            .vertex_buffer_info = vertex_buffer_info,
+        Syris::BatchRenderer::CreateInfo info{
+            .name = "simple scene",
+            .shader_manager = m_shader_manager,
+            .shader_id = m_shader_id,
             .index_buffer_info = index_buffer_info,
-            .instance_count = 0,
-            .statistics = statistics
+            .layout = std::move(layout),
+            .statistics = m_statistics,
         };
-        return material_manager.add_material<TileInstancedData>(material_info);
+        m_batch_renderer_id = m_batch_renderer_manager.add_renderer<glm::mat4>(info);
+        Syris::BR_SetAttributeRequest positions{
+            .values = {vertices.vertices.begin(),vertices.vertices.end() },
+        };
+        m_batch_renderer_manager.get_renderer(m_batch_renderer_id)->set_attribute(positions);
     }
-    SimpleScene::SimpleScene(CreateInfo info) : m_graphics_context(info.context), m_material_manager({ info.statistics }), m_entity_manager({ m_material_manager }), m_camera(info.camera_info) {
-        //const char * vertex_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\simple_vertex_shader.glsl";
-        //const char * fragment_shader_path = "C:\\Users\\eneko\\dev\\asharis\\game\\Sandbox\\shaders\\simple_fragment_shader.glsl";
-        Syris::Statistics::AddModuleInfo mod_info{};
-        auto id = info.statistics.add_module(mod_info);
-        info.statistics.get_registry().emplace<Syris::statistics::CScene>(id, "Simple Scene");
+    SimpleScene::SimpleScene(CreateInfo info)
+        : m_shader_manager(info.shader_manager),
+          m_batch_renderer_manager({ info.statistics }),
+          m_entity_manager({ m_batch_renderer_manager }),
+          m_statistics(info.statistics),
+          m_camera(info.camera_info) {
+        Syris::Statistics::AddModuleInfo mod_info{
+            .render = std::bind(&SimpleScene::render_statistics, this, std::placeholders::_1, std::placeholders::_2)
+        };
+        m_statistic_mod_ID = info.statistics.add_module(mod_info);
+        std::cout << "simple scene ID = " << (uint32_t)m_statistic_mod_ID << '\n';
+        info.statistics.get_registry().emplace<Syris::statistics::CScene>(m_statistic_mod_ID, "Simple Scene");
         
         Syris::Logger::client_info("simple scene being created");
-        m_shader_id = m_graphics_context.get_shader_manager().add_shader(simple_scene::get_shader_info());
-        if (!m_shader_id){
-             throw std::runtime_error("failed to add shader");
+        Syris::Shader::CreateInfo shader_info{
+            .path = "simple_scene"
+        };
+        auto shader_id_res = m_shader_manager.add_shader(shader_info);
+        if (!shader_id_res){
+             throw std::runtime_error(std::format("Failed to add simple scene shader: {}", shader_id_res.error()));
         }
-        auto texture = ecs::Tile::defaultTextureBundle();
-        texture.src = texture::atlas::grass_0;
-        //ecs::Tile::newTile(glm::vec2(0, 0), texture, m_registry, ecs::CTile::TileType::Grass);
-        m_material = make_simple_material(m_material_manager, m_graphics_context.get_shader_manager(), info.statistics);
-        ecs::Quad::newQuad({1.f,0.f,0.f}, m_entity_manager, m_material);
+        m_shader_id = shader_id_res.value();
+        make_batch_renderer();
+        glm::mat4 data(1.f);
+        Syris::BR_AddRequest quad{
+            .entity =(entt::entity)0,
+            .data = &data
+        };
+        m_batch_renderer_manager.get_renderer(m_batch_renderer_id)->add_entity(quad); 
+        //ecs::Quad::newQuad({1.f,0.f,0.f}, m_entity_manager, m_batch_renderer_id);
         Syris::Logger::client_info("simple scene successfully created");
         CHECK_GL_ERROR();
     }
-    void SimpleScene::on_update(Syris::engine_time::Time& time){
+    void SimpleScene::on_update(const Syris::engine_time::Time& time){
         //it now owns the camera
         /*outdated by renderbuffer??*/
         /*
@@ -167,9 +170,16 @@ namespace Sandbox{
         */
 
         //Syris::Shader* shader = m_graphics_context.get_shader_manager().get_shader(m_shader_id);
-        m_material_manager.draw(m_material, nullptr);
+        glm::mat4 cam = m_camera.getCamera().get_view_projection_matrix();
+        Syris::Uniform camera_uniform{
+            .name = "ViewProjection",
+            .data = &cam,
+            .pnext = nullptr,
+        };
+        m_batch_renderer_manager.draw(m_batch_renderer_id, &camera_uniform);
+        
         /*
-        simple_scene::ShaderLayoutTuple uniforms = m_camera.getCamera().get_view_projection_matrix();
+        simple_scene::ShaderLayoutTuple uniforms = 
         m_graphics_context.get_shader_manager().use_shader(m_shader_id, &uniforms);
         m_buffer->bind(0); //m_vertexBuffer->bind(1); m_indexBuffer->bind();
         
