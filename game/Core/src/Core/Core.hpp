@@ -1,22 +1,5 @@
 #pragma once
 #include "Syris/statistics/Statistics.hpp"
+#include "Syris/app/Application.hpp"
 
-class Application{
-    public:
-        Application() {};
-        virtual ~Application() {};
-        virtual void run() = 0;
-};
-
-struct AppInit{
-    Syris::Statistics& statistics;
-};
-
-extern std::unique_ptr<Application> get_client_app(AppInit& app_init);
-
-/*
-int main(int argc, char* argv[])
-{
-    return hpx::local::init(hpx_main, argc, argv);
-}*/
-
+extern std::unique_ptr<Syris::Application> get_client_app(Syris::AppInit& app_init);

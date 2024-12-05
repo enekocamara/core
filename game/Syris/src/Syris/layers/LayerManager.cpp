@@ -1,11 +1,10 @@
 #include "LayerManager.hpp"
 #include <algorithm>
 #include "Syris/log/Log.h"
+#include "Syris/utils/Breakpoint.h"
 namespace Syris{
     LayerManager::LayerManager(){
-        /*m_layers_order.push_back(m_currentID);
-        m_currentID = LayerID(m_currentID + 1);
-        m_layers_map.insert(m_layers.end(), info.layers.begin(), info.layers.end());*/
+        
     }
     void LayerManager::on_update(const engine_time::Time& time){
         for (auto it = m_layers_order.rbegin(); it != m_layers_order.rend(); it++){
@@ -44,9 +43,7 @@ namespace Syris{
             m_layers_map.erase(id_to_replace);
             m_layers_map[id] = layer;
             return id;
-        }else{
-            CORE_ERROR("failed to replace layer");
-            exit(1);
-        }
+        }else
+            BREAK_POINT("failed to replace layer");
     }
 }

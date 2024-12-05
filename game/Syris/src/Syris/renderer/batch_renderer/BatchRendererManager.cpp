@@ -1,5 +1,6 @@
 #include "BatchRendererManager.hpp"
 #include "Syris/statistics/Components.hpp"
+#include "Syris/utils/Assert.h"
 #include "Syris/include/imgui.h"
 
 namespace Syris{
@@ -14,13 +15,16 @@ namespace Syris{
     BatchRendererManager::~BatchRendererManager(){
     }
     
-    void BatchRendererManager::set_entity(BR_ID id,BR_SetRequest& request){
+    void BatchRendererManager::set_entity(BR_ID id,BR_RequestSparse& request){
+        ASSERT(id != 0, "Invalid batch renderer id");
         m_batch_renderers[id]->set_entity(request);
     }
     void BatchRendererManager::draw(BR_ID id, Uniform *uniforms){
+        ASSERT(id != 0, "Invalid batch renderer id");
         m_batch_renderers[id]->draw(uniforms);
     }
     BatchRenderer* BatchRendererManager::get_renderer(BR_ID id){
+        ASSERT(id != 0, "Invalid batch renderer id");
         return m_batch_renderers[id].get();
     }
 

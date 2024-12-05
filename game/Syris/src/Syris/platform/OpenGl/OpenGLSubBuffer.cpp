@@ -6,6 +6,7 @@
 #include "Syris/types/OpenGLToSyrisTypes.h"
 #include "Syris/statistics/Components.hpp"
 #include "Syris/types/RenderTypes.h"
+
 namespace Syris{
     OpenGLSubBuffer::OpenGLSubBuffer(VertexBuffer::SubBufferInfo info, GLuint vao, Statistics& statistics, uint32_t attribute_index_padding)
         : m_vao(vao),
@@ -34,27 +35,36 @@ namespace Syris{
             }
             ImGui::TreePop();
         }
-        if (ImGui::TreeNode("Memory")){
+        std::format("Memory");
+        if (ImGui::TreeNode("Memory"))
+        {
             bind();
             ImGui::Text("Size: %u", m_size);
             ImGui::Text("Capacity: %u", m_capacity);
-            std::vector<std::byte> buffer_data(m_size);
 
-            // Read data from the GPU buffer to the CPU
-            glGetBufferSubData(GL_ARRAY_BUFFER, 0, m_size, buffer_data.data());
+            if(ImGui::TreeNode("In memory values"))
+            {
+                std::vector<std::byte> buffer_data(m_size);
 
-            // Print the buffer data (assuming float data here for demonstration)
-            uint32_t max_iters = m_size / m_info.get_type_size();
-            for (uint32_t iter = 0; iter < max_iters; iter++){
-                uint64_t padding = 0;
-                for (auto& attrib : m_info.get_attributes()){
-                    type::render_type(attrib.type, buffer_data.data() + iter * m_info.get_type_size() + padding); 
-                    padding += dyn_sizeof_type(attrib.type);
+                // Read data from the GPU buffer to the CPU
+                glGetBufferSubData(GL_ARRAY_BUFFER, 0, m_size, buffer_data.data());
+
+                // Print the buffer data (assuming float data here for demonstration)
+                uint32_t max_iters = m_size / m_info.get_type_size();
+                for (uint32_t iter = 0; iter < max_iters; iter++)
+                {
+                    uint64_t padding = 0;
+                    for (auto &attrib : m_info.get_attributes())
+                    {
+                        type::render_type(attrib.type, buffer_data.data() + iter * m_info.get_type_size() + padding);
+                        padding += dyn_sizeof_type(attrib.type);
+                    }
                 }
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                ImGui::TreePop();
             }
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
             ImGui::TreePop();
-        }        
+        }
     }
 
     GLuint OpenGLSubBuffer::gen_buffer(VertexBuffer::SubBufferInfo& info, bool set_attributes, uint64_t size){
@@ -63,7 +73,7 @@ namespace Syris{
         glGenBuffers(1, &buffer_id);
         glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
         if (info.is_dynamic())
-            glBufferData(GL_ARRAY_BUFFER,  size, nullptr, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER,  size, nullptr, GL_STREAM_DRAW);
         else
             glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -151,7 +161,7 @@ namespace Syris{
         //std::cout << "Clearing range offset: " << offset << " size: " << size << '\n';
         //std::cout << "Current size: " << m_info.size << " capacity: " << m_capacity << '\n';
         if (offset + size > m_size){
-            throw std::runtime_error("incorrect offset or size");
+            BREAK_POINT("Incorrect offset or size");
         }
         if (m_size == size) {
            // std::cout << "Opt 1\n";
@@ -172,7 +182,6 @@ namespace Syris{
             glBindBuffer(GL_COPY_WRITE_BUFFER, m_buffer_id);
             glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, m_size - size, offset, size);
             m_size -= size;
-           // std::cout << "After size: " << m_info.size << " capacity: " << m_capacity << '\n';
             return m_size;
         }
         //todo

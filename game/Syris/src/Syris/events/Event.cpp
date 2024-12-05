@@ -3,6 +3,9 @@
 #include "Syris/context/OpenGLContext.hpp"
 namespace Syris{
     void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods){
+        if (ImGui::GetIO().WantCaptureKeyboard){
+            return;
+        }
         OpenGLContext *context = reinterpret_cast<OpenGLContext *>(glfwGetWindowUserPointer(window));
         EventKey key_event(key, scancode, action, mods);
         context->on_event(static_cast<Event*>(&key_event));
@@ -16,6 +19,9 @@ namespace Syris{
 
     void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
     {
+        if (ImGui::GetIO().WantCaptureMouse){
+            return; // Skip game input handling
+        }
         OpenGLContext *context = reinterpret_cast<OpenGLContext *>(glfwGetWindowUserPointer(window));
         EventMouse mouse_event(button, action, mods);
         context->on_event(static_cast<Event*>(&mouse_event));
@@ -25,6 +31,9 @@ namespace Syris{
 
     void cursor_pos_callback(GLFWwindow *window, double xpos, double ypos)
     {
+        if (ImGui::GetIO().WantCaptureMouse){
+            return; // Skip game input handling
+        }
 
         OpenGLContext *context = reinterpret_cast<OpenGLContext *>(glfwGetWindowUserPointer(window));
         EventCursorPos cursor_pos_event(xpos,ypos);
@@ -35,6 +44,9 @@ namespace Syris{
 
     void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     {
+        if (ImGui::GetIO().WantCaptureMouse){
+            return; // Skip game input handling
+        }
 
         OpenGLContext *context = reinterpret_cast<OpenGLContext *>(glfwGetWindowUserPointer(window));
         EventScroll scroll_event(xoffset, yoffset);

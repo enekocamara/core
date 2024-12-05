@@ -80,34 +80,38 @@ namespace Sandbox{
     }
     SimpleScene::SimpleScene(CreateInfo info)
         : m_shader_manager(info.shader_manager),
-          m_batch_renderer_manager({ info.statistics }),
-          m_entity_manager({ m_batch_renderer_manager }),
-          m_statistics(info.statistics),
-          m_camera(info.camera_info) {
+        m_batch_renderer_manager({ info.statistics }),
+        m_entity_manager({ m_batch_renderer_manager }),
+        m_statistics(info.statistics),
+        m_camera(info.camera_info) {
         Syris::Statistics::AddModuleInfo mod_info{
             .render = std::bind(&SimpleScene::render_statistics, this, std::placeholders::_1, std::placeholders::_2)
         };
         m_statistic_mod_ID = info.statistics.add_module(mod_info);
-        std::cout << "simple scene ID = " << (uint32_t)m_statistic_mod_ID << '\n';
+
         info.statistics.get_registry().emplace<Syris::statistics::CScene>(m_statistic_mod_ID, "Simple Scene");
-        
+
         Syris::Logger::client_info("simple scene being created");
         Syris::Shader::CreateInfo shader_info{
             .path = "simple_scene"
         };
         auto shader_id_res = m_shader_manager.add_shader(shader_info);
-        if (!shader_id_res){
-             throw std::runtime_error(std::format("Failed to add simple scene shader: {}", shader_id_res.error()));
+        if (!shader_id_res) {
+            throw std::runtime_error(std::format("Failed to add simple scene shader: {}", shader_id_res.error()));
         }
+        Syris::Logger::client_info("shader compiled");
         m_shader_id = shader_id_res.value();
         make_batch_renderer();
-        glm::mat4 data(1.f);
-        Syris::BR_AddRequest quad{
+        Syris::Logger::client_info("batch renderer made");
+        glm::mat4 mem_data(1.f);
+        std::array<std::pair<std::size_t, void*>, 1> data;
+        data[0] = { 0, &mem_data };
+    
+        Syris::BR_RequestSparse quad{
             .entity =(entt::entity)0,
-            .data = &data
+            .data = {data.begin(), data.end()}
         };
         m_batch_renderer_manager.get_renderer(m_batch_renderer_id)->add_entity(quad); 
-        //ecs::Quad::newQuad({1.f,0.f,0.f}, m_entity_manager, m_batch_renderer_id);
         Syris::Logger::client_info("simple scene successfully created");
         CHECK_GL_ERROR();
     }

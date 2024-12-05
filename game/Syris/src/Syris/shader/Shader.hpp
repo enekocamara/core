@@ -1,7 +1,7 @@
 #pragma once
-#include <boost/mpl/for_each.hpp>
+/*#include <boost/mpl/for_each.hpp>
 #include <boost/mpl/range_c.hpp>
-#include <boost/mpl/int.hpp>
+#include <boost/mpl/int.hpp>*/
 
 #include <string>
 #include <glm/glm.hpp>
@@ -15,6 +15,7 @@
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 
 namespace Syris{
+    /*
     std::string get_shader_name_from_path(std::string& path);
 
     class IShaderLayout{
@@ -97,7 +98,7 @@ namespace Syris{
             std::tuple<Args...> m_values;
             std::vector<std::string> m_var_name;
     };
-
+    */
     //example
     /*static std::vector<std::string> names = {"ViewProjection", "spriteColor"};
     static IShaderLayout* layout = new ShaderLayout<glm::mat4, glm::vec3>({names.begin(), names.end()});*/

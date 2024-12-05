@@ -16,4 +16,9 @@ namespace Syris{
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     } 
+    FrameBuffer::FrameBuffer(GLuint framebbufer_id, glm::ivec2 size){
+        m_framebuffer = framebbufer_id;
+        m_fb_texture = -1;
+        m_size = size; 
+    }
 }

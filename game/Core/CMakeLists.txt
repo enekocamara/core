@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(Core CXX)
 
-find_package(HPX REQUIRED)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -31,14 +29,12 @@ foreach(file ${SOURCES})
     source_group("${directory}" FILES ${file})
 endforeach()
 
-add_library(Core STATIC ${SOURCES})
-target_link_libraries(Core PUBLIC Syris HPX::hpx HPX::wrap_main HPX::iostreams_component)
-target_include_directories(Core PUBLIC
+add_executable(Core ${SOURCES})
+target_link_libraries(Core PRIVATE Sandbox)
+target_include_directories(Core PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/src
 )
-set(ENV{HPX_LOG_LEVEL} "error")
-set(HPX_WITH_LOGGING OFF CACHE BOOL "Disable HPX logging")
-set(HPX_WITH_LOGGING OFF CACHE BOOL "Disable HPX logging" FORCE)
+
 if(MSVC)
     add_compile_options(/MP)
 else()

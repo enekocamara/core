@@ -41,13 +41,12 @@ target_include_directories(Syris PUBLIC
     ${CMAKE_SOURCE_DIR}/Syris/vendor/stb
     ${CMAKE_SOURCE_DIR}/Syris/vendor/googletests
     ${CMAKE_SOURCE_DIR}/Syris/src
+    ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
+    ${CMAKE_SOURCE_DIR}/Syris/vendor/nlohmannJson
     # other include directories
 )
 
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-
-target_link_libraries(Syris PUBLIC ImGuiDocking Glad glfw spdlog ${Boost_LIBRARIES} gtest)
+target_link_libraries(Syris PUBLIC ImGuiDocking Glad glfw spdlog  gtest)
 
 target_compile_definitions(Syris PRIVATE
     PLATFORM_WINDOWS

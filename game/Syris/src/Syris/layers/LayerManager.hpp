@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <span>
 #include "Syris/events/Event.hpp"
-#include <boost/serialization/strong_typedef.hpp>
+//#include <boost/serialization/strong_typedef.hpp>
 namespace Syris{
     using LayerID = uint32_t;
     class LayerManager

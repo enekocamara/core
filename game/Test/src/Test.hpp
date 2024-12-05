@@ -1,11 +1,10 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "Core/Core.hpp"
 #include "Syris/context/GraphicsContext.hpp"
 #include "Syris/statistics/Statistics.hpp"
 #include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "Syris/layers/Layer.hpp"
-
+#include "Syris/app/Application.hpp"
 namespace Test{
     struct TileIndices{
         std::array<uint32_t, 6> vertices;
@@ -40,7 +39,7 @@ namespace Test{
         glm::mat4 model;
         glm::vec3 mat;
     };
-    class TestApp : public Application, public Syris::Layer{
+    class TestApp : public Syris::Application, public Syris::Layer{
         public:
             TestApp(Syris::Statistics& statistics);
             void run() override;

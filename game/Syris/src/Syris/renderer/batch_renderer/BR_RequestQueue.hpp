@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "Syris/renderer/batch_renderer/BR_Requests.h"
-
+#include "Syris/utils/Assert.h"
 namespace Syris{
     template<typename T>
     struct BR_Queue {
@@ -15,14 +15,12 @@ namespace Syris{
     class BR_RequestQueue
     {
     public:
-        void add_request(BR_Request<T> &request)
+        void add_request(BR_Request &request)
         {
             m_entity_to_index[request.entity] = m_request_data.size();
             m_index_to_entity[m_request_data.size()] = request.entity;
-            if (request.data == nullptr)
-                m_request_data.push_back(T());
-            else
-                m_request_data.push_back(*request.data);
+            ASSERT(request.data != nullptr, "request data cant be null");
+            m_request_data.push_back(*request.data);
         }
 
         bool remove_request(entt::entity entity){
@@ -55,12 +53,12 @@ namespace Syris{
 
         BR_Queue<T> get_queue() { return {m_request_data, m_entity_to_index}; }
 
-        bool set_if_find(BR_Request<T> &request){
+        bool set_if_find(BR_Request &request){
             auto it = m_entity_to_index.find(request.entity);
             if (it == m_entity_to_index.end())
                 return false;
-            if (request.data != nullptr) // this needs to be changed asap into its own dataless queue
-                m_request_data[it->second] = *request.data;
+            ASSERT(request.data != nullptr, "Request data cant be null");
+            m_request_data[it->second] = *request.data;
             return true;
         }
 

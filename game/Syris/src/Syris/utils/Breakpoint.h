@@ -1,24 +1,30 @@
 #pragma once
 #include <iostream>
+#include "Syris/log/Log.h"
+
+#ifdef _DEBUG
+#define BREAK_POINT(msg) \
+    do { \
+        CORE_ERROR(std::format("Debug Break: {}", msg)); \
+        __debugbreak(); \
+    } while (false)
+#else
+#define BREAK_POINT(msg) \
+    do { \
+        CORE_ERROR(std::format("BreakPoint: {}", msg)); \
+        exit(69); \
+    } while (false)
+#endif
+
+/*
 
 #ifdef  _DEBUG
 #define BREAK_POINT(msg)\
-        {std::cerr << "Debug Break: " << msg << std::endl; \
+        {CORE_ERROR(std::format("Debug Break: {}",  msg)); \
         __debugbreak();}
 #else
 #define BREAK_POINT(msg) \
-    std::cerr << "Debug Break: " << msg << std::endl; \
-    exit(69);
+    {CORE_ERROR(std::format("BreakPoint: {}",  msg)); \
+    exit(69);}
 #endif
-
-namespace Syris{
-    inline void break_point(const char *message)
-    {
-        std::cerr << "Debug Break: " << message << std::endl;
-#ifdef _DEBUG
-        __debugbreak();
-#else
-        exit(1);
-#endif
-    }
-}
+*/

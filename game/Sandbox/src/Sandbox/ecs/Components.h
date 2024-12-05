@@ -36,21 +36,24 @@ namespace Sandbox::ecs {
             m_mutex.unlock();
             return dummy;
         }
-        void set(T& data){
+        void set(const T& data){
             m_mutex.lock();
             m_data = data;
             m_mutex.unlock();
         }
-        void set(T data){
+        void set(T&& data){
             m_mutex.lock();
             m_data = data;
             m_mutex.unlock();
         }
+        void lock(){m_mutex.lock();}
+        void unlock(){m_mutex.unlock();}
     private:
         T m_data;
         std::mutex m_mutex;
     };
 
+    
     struct MovementKeys{
         int up;
         int down;
@@ -61,9 +64,9 @@ namespace Sandbox::ecs {
         Syris::Rectangle2D rect;
     };
     struct CTileData{
-        float height = 0;
-        float humidity = 0;
-        float heat = 0;
+        glm::f32 height = 0;
+        glm::f32 humidity = 0;
+        glm::f32 heat = 0;
     };
     struct CKeyBinded{
         MovementKeys keys;
@@ -81,6 +84,7 @@ namespace Sandbox::ecs {
     struct CMovementSpeed{float movement_speed;};
     struct CAcceleration { glm::fvec2 value; };
     struct CTile{
+        std::size_t index;
     };
 
     struct CAnimated{
@@ -104,7 +108,8 @@ namespace Sandbox::ecs {
         std::function<void(Syris::EntityManager& entity_manager, entt::entity,const Syris::engine_time::Time& time)> tick;
     };
     struct CTickFast {
-        Syris::FastFunction<void, Syris::EntityManager&, entt::entity, const Syris::engine_time::Time&> tick;
+        using FunctionType = Syris::FastFunction<void(Syris::EntityManager&, entt::entity, const Syris::engine_time::Time&)>;
+        FunctionType tick;
     };
     struct CComposition{
         float life_matter;

@@ -4,6 +4,7 @@
 #include "Type.h"
 #include "Syris/include/OpenGL.h"
 #include "Syris/utils/containers/BiMap.hpp"
+#include "Syris/utils/Breakpoint.h"
 
 namespace Syris{
 
@@ -75,7 +76,7 @@ namespace Syris{
         static const std::string& convert(Type type){
             auto it = types().from<Type>().find(type);
             if (it == types().from<Type>().end())
-                throw std::runtime_error("failed to convert type");
+                BREAK_POINT("failed to convert type");
             return it->second;
         }
         const BiMap<Type, std::string> &get_types() const { return m_types; }

@@ -4,13 +4,11 @@
 #include "Syris/include/imgui.h"
 namespace Syris{
     bool Layout::add_variable(std::string& name, Type type){
-        std::cout << "Adding var [" << name << "]\n";
         m_variables[name] = type;
         m_order.push_back(name);
         return true;
     }
     bool Layout::add_variable(std::string_view name, Type type){
-        std::cout << "Adding var [" << name << "]\n";
         m_variables[std::string(name)] = type;
         m_order.emplace_back(name);
         return true;

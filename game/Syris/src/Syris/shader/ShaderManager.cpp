@@ -14,17 +14,20 @@ namespace Syris{
     }
 
     std::expected<ShaderManager::ShaderID, std::string> ShaderManager::add_shader(Shader::CreateInfo info){
+        std::string real_path = std::format("{}\\{}", m_path_start, info.path);
+        info.path = real_path.c_str();
+        Shader* shader;
         try{
-            std::string real_path = std::format("{}\\{}", m_path_start, info.path);
-            info.path = real_path.c_str();
-            Shader* shader = Shader::create_shader(info);
-            uint32_t id = m_id++;
-            m_shaders[id] = shader;
-            return id;
+            shader = Shader::create_shader(info);
         } catch (std::runtime_error& e){
             CORE_ERROR(std::format("Error compiling shader, {}", e.what()));
             return std::unexpected(e.what());
+        }catch (std::exception &e){
+            BREAK_POINT(std::format("WHAT THE FUCK, {}", e.what()));
         }
+        uint32_t id = m_id++;
+        m_shaders[id] = shader;
+        return id;
     }
     /*
     std::vector<uint32_t> ShaderManager::add_shader(std::span<Shader::CreateInfo> shaders_info){

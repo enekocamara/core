@@ -25,14 +25,29 @@ namespace Sandbox {
     SandboxApp::SandboxApp(SandboxApp::CreateInfo &info)
         : m_graphics_context(Syris::GraphicsContext::new_context(info.gc_info)),
           m_scene_manager({info.app_init.statistics}),
-          m_statistics(info.app_init.statistics)
+          m_statistics(info.app_init.statistics),
+          m_dll_scripts("C:\\Users\\eneko\\dev\\asharis\\game\\build\\Debug\\Scripts.dll")
     {
+        /*
+        const char* glsl_version = "#version 460";//exists in imguilayer
+        if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<Syris::OpenGLWindow*>(m_graphics_context->get_window_handler())->get_window(), true)){
+            CORE_ERROR("failed to initialize ImGui_ImplGlfw for Opengl");
+            exit(1);
+        }
+        if (!ImGui_ImplOpenGL3_Init(glsl_version)){
+            CORE_ERROR("failed to initialize ImGui_ImplOpengl3 with GLSL version");
+            exit(1);
+        }
+        */
         // m_data(SandboxData::CreateInfo{m_registry, info.atlas_path, m_graphics_context, info.camera_info, info.app_init.statistics})
         // scene creation
-        m_scene_simple = m_scene_manager.new_scene(std::make_unique<SimpleScene>(SimpleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics }));
-        m_scene_triangle = m_scene_manager.new_scene(std::make_unique<TriangleScene>(TriangleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics }));
-        m_scene_sandbox = m_scene_manager.new_scene(std::make_unique<SandboxScene>(SandboxScene::CreateInfo{info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics})),
-
+        try{
+            m_scene_simple = m_scene_manager.new_scene(std::make_unique<SimpleScene>(SimpleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics }));
+            m_scene_triangle = m_scene_manager.new_scene(std::make_unique<TriangleScene>(TriangleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics }));
+            m_scene_sandbox = m_scene_manager.new_scene(std::make_unique<SandboxScene>(SandboxScene::CreateInfo{info.atlas_path, m_graphics_context->get_shader_manager(),info.camera_info, info.app_init.statistics,m_thread_pool, *m_graphics_context.get(), m_dll_scripts.get_dll()}));
+        }catch(std::runtime_error& e){
+            BREAK_POINT(std::format("Failed to create scene {}", e.what()));
+        }
         // statistics
         m_scene_manager.add_scene_to_statistics(reinterpret_cast<SandboxScene *>(m_scene_manager.get_scene(m_scene_sandbox))->get_statistic_mod_ID());
         m_scene_manager.add_scene_to_statistics(reinterpret_cast<SimpleScene *>(m_scene_manager.get_scene(m_scene_simple))->get_statistics());
@@ -46,24 +61,21 @@ namespace Sandbox {
         m_graphics_context->get_layer_manager().push_layer(this);
         m_graphics_context->get_layer_manager().push_layer(&info.app_init.statistics);
 
-        const char* glsl_version = "#version 460";//exists in imguilayer
-        if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<Syris::OpenGLWindow*>(m_graphics_context->get_window_handler())->get_window(), true)){
-            CORE_ERROR("failed to initialize ImGui_ImplGlfw for Opengl");
-            exit(1);
-        }
-        if (!ImGui_ImplOpenGL3_Init(glsl_version)){
-            CORE_ERROR("failed to initialize ImGui_ImplOpengl3 with GLSL version");
-            exit(1);
-        }
+
+
     }
 
     SandboxApp::~SandboxApp(){} //{ delete quad; }
 
+    inline std::string dummy(std::string text){
+        return "dummy " + text;
+    }
     void SandboxApp::run() {
         m_time.start();
         while (!m_graphics_context->should_window_close()) {
             m_time.next_frame();
             m_graphics_context->on_update(m_time);
+            m_dll_scripts.check();
         }
         CORE_INFO("window closed\n");
     }
@@ -72,11 +84,29 @@ namespace Sandbox {
     }
     void SandboxApp::on_update(const Syris::engine_time::Time& time){
         set_scene(m_next_scene);
-        ImGui::Begin("SandboxData Settings");
-        ImGui::RadioButton("triangle", (int*)&m_next_scene, m_scene_triangle); ImGui::SameLine();
-        ImGui::RadioButton("simple", (int*)&m_next_scene, m_scene_simple); ImGui::SameLine();
-        ImGui::RadioButton("scene", (int*)&m_next_scene, m_scene_sandbox);
-        ImGui::End();
+        ImGui::ShowDemoWindow();
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::BeginMenu("Scene")){
+                ImGui::RadioButton("triangle", (int *)&m_next_scene, m_scene_triangle);
+                ImGui::RadioButton("simple", (int *)&m_next_scene, m_scene_simple);
+                ImGui::RadioButton("scene", (int *)&m_next_scene, m_scene_sandbox);
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
+        /*
+        ImGui::BeginTabBar("Tabs");
+        if (ImGui::BeginTabItem("Scenes tab")){
+            ImGui::Begin("SandboxData Settings");
+            ImGui::RadioButton("triangle", (int *)&m_next_scene, m_scene_triangle);ImGui::SameLine();
+            ImGui::RadioButton("simple", (int *)&m_next_scene, m_scene_simple);ImGui::SameLine();
+            ImGui::RadioButton("scene", (int *)&m_next_scene, m_scene_sandbox);
+            ImGui::End();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+        */
     }
     void SandboxApp::set_scene(Syris::SceneID scene){
         if (m_current_scene_id != scene){
@@ -91,7 +121,7 @@ namespace Sandbox {
     }
 }
 
-std::unique_ptr<Application> get_client_app(AppInit& app_init) {
+std::unique_ptr<Syris::Application> get_client_app(Syris::AppInit& app_init) {
     Syris::GraphicsContext::CreateInfo gc_info = {
         .layers_info = Syris::LayerManager::CreateInfo{
             .layers = {}},

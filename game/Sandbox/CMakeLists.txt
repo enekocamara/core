@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(Sandbox CXX)
 
-#find_package(HPX REQUIRED)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -53,16 +51,14 @@ endforeach()
 
 
 
-set(HPX_LOGLEVEL 0)
-add_executable(Sandbox ${SOURCES})
-target_link_libraries(Sandbox PRIVATE Core)
+add_library(Sandbox STATIC ${SOURCES})
+target_link_libraries(Sandbox PUBLIC Syris)
 #target_link_libraries(Sandbox PRIVATE Scripts)
-target_include_directories(Sandbox PRIVATE
+target_include_directories(Sandbox PUBLIC
     ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
     ${CMAKE_SOURCE_DIR}/Sandbox/src
 )
-set(HPX_WITH_LOGGING OFF CACHE BOOL "Disable HPX logging" FORCE)
-# Enable multi-processor compilation (if supported by the compiler)
+
 if(MSVC)
     add_compile_options(/MP)
 else()

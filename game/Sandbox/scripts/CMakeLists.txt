@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(Scripts CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
@@ -26,7 +26,30 @@ foreach(file ${SOURCES})
 endforeach()
 
 
+# Get the current date and time
+execute_process(
+  COMMAND date "+%Y%m%d%H%M%S"
+  OUTPUT_VARIABLE CURRENT_DATE_TIME
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set(DLL_NAME "Scripts_${CURRENT_DATE_TIME}.dll")
+
+
 add_library(Scripts SHARED ${SOURCES})
+
+# Set the output name for the DLL
+set_target_properties(Scripts PROPERTIES
+  OUTPUT_NAME ${DLL_NAME}
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
+target_link_libraries(Scripts PRIVATE Sandbox)
+#target_link_libraries(Sandbox PRIVATE Scripts)
+target_include_directories(Scripts PRIVATE
+    ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
+    ${CMAKE_SOURCE_DIR}/Sandbox/src
+)
+
 target_include_directories(Scripts PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 if(MSVC)
     add_compile_options(/MP)

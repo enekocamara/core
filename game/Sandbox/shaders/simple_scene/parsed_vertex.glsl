@@ -12,8 +12,8 @@ layout (location=4) in vec4 aModel_3;
 uniform mat4 ViewProjection;
 void main(){
 	mat4 aModel = mat4(aModel_0,aModel_1,aModel_2,aModel_3);
-    Color = vec3(aModel[0][0], aModel[1][1], aModel[2][2]);
+    Color = vec3(1.0f,0.4f,1.f);
     aModel = mat4(1.f);
-    gl_Position = ViewProjection * aModel   * vec4(aPos, 0.0, 1.0); // Transform the vertex position
+    gl_Position = ViewProjection * aModel  * vec4(aPos, 0.0, 1.0); // Transform the vertex position
 }
 

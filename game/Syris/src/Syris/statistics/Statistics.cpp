@@ -5,10 +5,7 @@
 
 namespace Syris{
     void render_root(entt::entity root, entt::registry& registry){
-        if (ImGui::TreeNode("tree")){
-            ImGui::Text("Content");
-            ImGui::TreePop();
-        }
+        
         for (auto child : registry.get<statistics::CChilds>(root).childs){
             registry.get<statistics::CRender>(child).render(child, registry);
         }

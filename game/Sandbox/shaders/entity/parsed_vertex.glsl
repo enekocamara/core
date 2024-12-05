@@ -16,11 +16,11 @@ void main(){
 	mat4 aModel = mat4(aModel_0,aModel_1,aModel_2,aModel_3);
     gl_Position = uViewProjection * aModel  * vec4(aPos, 0.0, 1.0); // Transform the vertex position
 
-    if (aPos.x == -1.f && aPos.y == 1.f)
+    if (aPos.x == -0.5f && aPos.y == 0.5f)
         TexCoord = aTexCoord.xy; // Top-left
-    else if (aPos.x == 1.f && aPos.y == 1.f)
+    else if (aPos.x == 0.5f && aPos.y == 0.5f)
         TexCoord = aTexCoord.zy; // Top-right
-    else if (aPos.x == 1.f && aPos.y == -1.f)
+    else if (aPos.x == 0.5f && aPos.y == -0.5f)
         TexCoord = aTexCoord.zw; // Bottom-right
     else 
         TexCoord = aTexCoord.xw; // Bottom-left

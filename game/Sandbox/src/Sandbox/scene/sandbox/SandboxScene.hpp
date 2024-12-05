@@ -1,6 +1,5 @@
 #pragma once
 #include <entt.hpp>
-#include <hpx/thread.hpp>
 
 #include "Syris/renderer/RenderBuffer.hpp"
 #include "Syris/scene/Scene.hpp"
@@ -12,10 +11,12 @@
 #include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "Syris/ecs/EntityManager.hpp"
 #include "Syris/statistics/Statistics.hpp"
+#include "Syris/Jobs/ThreadPool.hpp"
+#include "Syris/scripts/DynamicLibraryLoader.hpp"
+
 #include "Sandbox/ecs/CollectableManager.hpp"
 #include "Sandbox/world_generator/World.hpp"
 #include "AsyncToSyncQueue.hpp"
-
 
 namespace Sandbox{
     namespace config{
@@ -36,6 +37,9 @@ namespace Sandbox{
                 Syris::ShaderManager &shader_manager;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
                 Syris::Statistics& statistics;
+                Syris::ThreadPool& thread_pool;
+                Syris::GraphicsContext& graphics_context;
+                Syris::DynamicLibraryLoader& dll;
             };
             SandboxScene(CreateInfo info);
             ~SandboxScene();
@@ -44,10 +48,6 @@ namespace Sandbox{
             bool on_event(Syris::Event* event)override;
             void sim_loop();
             Syris::StatisticModID get_statistic_mod_ID(){return m_statistic_mod_ID;}
-            static constexpr config::MapConfig m_map_config = config::MapConfig{
-                .num_tiles_x = 2,
-                .num_tiles_y = 2
-            };
         private:
 
             void update_data(bool imgui);
@@ -58,6 +58,12 @@ namespace Sandbox{
             Syris::TextureAtlas m_texture_atlas;
            // Syris::RenderBuffer* m_buffer;
             Syris::ShaderManager& m_shader_manager;
+            Syris::ThreadPool& m_thread_pool;
+            Syris::GraphicsContext& m_graphics_context;
+            Syris::DynamicLibraryLoader& m_dll;
+
+
+            glm::uvec2 m_render_window_size = {0,0};
             Syris::OrthographicCameraController m_camera;
             //Syris::BatchRendererManager::ER_IDle_material;
             Syris::BatchRendererManager::BR_ID m_entity_renderer_id;
@@ -75,10 +81,11 @@ namespace Sandbox{
             AsyncToSyncQueue m_async_to_sync_queue;
 
             //sim
-            uint32_t m_sim_thread_count = 3;
+            uint32_t m_sim_thread_count = 4;
             std::atomic_bool m_sim_loop_running = true;
             //Syris::engine_time::Time m_sim_time;
             Syris::engine_time::FPS m_sim_fps;
+            //std::thread m_sim_thread;
 
     };
 }

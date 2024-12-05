@@ -16,7 +16,7 @@ TEST(SampleTest, Addition) {
     EXPECT_EQ(add(-1, 1), 0);
 }
 
-std::unique_ptr<Application> get_client_app(AppInit& app_init)
+std::unique_ptr<Syris::Application> get_client_app(Syris::AppInit& app_init)
 {
     float ratio = 1920.f / 1080.f;
     return std::make_unique<Test::TestApp>(app_init.statistics);
@@ -45,6 +45,7 @@ namespace  Test{
             CLIENT_ERROR(std::format("Failed to create shader:, {}", shader_id_res.error()));
             throw std::runtime_error(shader_id_res.error());
         }
+        
         m_material_manager = std::make_unique<Syris::BatchRendererManager>(Syris::BatchRendererManager::CreateInfo{statistics});
         
         TileIndices indices = TileIndices();
@@ -64,8 +65,10 @@ namespace  Test{
         entity_RL_info.attributes_layout.debug();
         std::cout << "uniforms:\n";
         entity_RL_info.uniforms_layout.debug();
+        std::cout << "done\n";
+        
         std::unique_ptr<Syris::BatchRendererLayout> layout = std::make_unique<Syris::BatchRendererLayout>(entity_RL_info);
-
+        std::cout << "layout done\n";
         Syris::VertexBuffer::SubBufferInfo pos(false, false);
         pos.push({"aPos", Syris::Type::vec2});
         
@@ -77,9 +80,10 @@ namespace  Test{
         layout->set_subbuffer(instance);
         auto res = layout->finish();
         if (!res){
-            CLIENT_ERROR(std::format("Not all attributes were set: {}", res.error()));
+            CLIENT_ERROR(std::format("Not all attributes were set 2: [{}]", res.error()));
             exit(1);
         }
+        std::cout << "layout finished\n";
         TileVertices vertices = TileVertices();
         Syris::BatchRenderer::CreateInfo material_info{
             .name = "test entity renderer",
@@ -91,34 +95,27 @@ namespace  Test{
         };
         m_batch_renderer = Syris::new_batch_renderer<QuadData>(material_info);
         
-        const char* glsl_version = "#version 460";//exists in imguilayer
-        if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<Syris::OpenGLWindow*>(m_graphics_context->get_window_handler())->get_window(), true)){
-            CORE_ERROR("failed to initialize ImGui_ImplGlfw for Opengl");
-            exit(1);
-        }
-        if (!ImGui_ImplOpenGL3_Init(glsl_version)){
-            CORE_ERROR("failed to initialize ImGui_ImplOpengl3 with GLSL version");
-            exit(1);
-        }
+        
         m_graphics_context->get_layer_manager().push_layer(this);
         m_graphics_context->get_layer_manager().push_layer(&m_statistics);
         m_statistics.add_child(m_statistics.get_root(), m_batch_renderer->get_statistics());
-
         Syris::BR_SetAttributeRequest request{
             .values = {vertices.vertices.begin(), vertices.vertices.end()}
         };
         m_batch_renderer->set_attribute(request);
+        
     }
     void TestApp::run(){
         Syris::engine_time::Time time;
         time.start();
-        QuadData data{
-            .model =  glm::scale(glm::mat4(1.f), glm::vec3(0.5f)),
-            .color = glm::vec3(1.f,0.f,1.f),
-        };
-        Syris::BR_AddRequest player{
+        
+        QuadData mem_data = { glm::scale(glm::mat4(1.f), glm::vec3(0.5f)),
+                         glm::vec3(1.f,0.f,1.f) };
+        std::array<std::pair<std::size_t, void*>, 1> data;
+        data[0] = { 0, &mem_data };
+        Syris::BR_RequestSparse player{
             .entity = (entt::entity)0,
-            .data = &data,
+            .data = {data.begin(), data.end()},
         };
         m_batch_renderer->add_entity(player);
         while(!m_graphics_context->should_window_close()){

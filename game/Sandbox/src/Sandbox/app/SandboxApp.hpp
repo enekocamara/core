@@ -1,8 +1,7 @@
 #pragma once
 #include <entt.hpp>
 
-#include <Core/Core.hpp>
-
+#include "Syris/app/Application.hpp"
 #include "Syris/utils/EngineTime.hpp"
 #include "Syris/app/Window.hpp"
 #include "Syris/context/GraphicsContext.hpp"
@@ -14,9 +13,13 @@
 #include "Syris/renderer/RenderBuffer.hpp"
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
 #include "Syris/events/Event.hpp"
-#include "SandboxLayers.hpp"
+#include "Syris/Jobs/ThreadPool.hpp"
 #include "Syris/scene/SceneManager.hpp"
+#include "Syris/scripts/DLL_Watcher.hpp"
+#include "Syris/utils/filesystem/DirWatcher.hpp"
 
+#include "SandboxLayers.hpp"
+#include "Syris/utils/containers/Singleton.hpp"
 
 //data application
 //layers that use that data
@@ -25,20 +28,20 @@
 
 namespace Sandbox{
 
-    class SandboxApp : public Application, Syris::Layer{
+    class SandboxApp : public Syris::Application, Syris::Layer{
     public:
         struct CreateInfo
         {
             const char *atlas_path;
             Syris::GraphicsContext::CreateInfo gc_info;
             Syris::OrthographicCameraController::CreateInfo camera_info;
-            AppInit app_init;
+            Syris::AppInit app_init;
         };
-            void on_update(const Syris::engine_time::Time& time) override;
-            bool on_event(Syris::Event* event) override;
         SandboxApp(CreateInfo &info);
         ~SandboxApp();
         void run();
+        void on_update(const Syris::engine_time::Time &time) override;
+        bool on_event(Syris::Event *event) override;
 
     private:
         void set_scene(Syris::SceneID scene);
@@ -61,5 +64,8 @@ namespace Sandbox{
         //ImGuiLayer m_gui_layer;
         //SandboxLayer *m_layer; // ok, pass &data handle at construction
         Syris::engine_time::Time m_time;
+        Syris::ThreadPool m_thread_pool{6};
+        Syris::DLL_Watcher m_dll_scripts;
+        Syris::DirWatcher
     }; 
 }

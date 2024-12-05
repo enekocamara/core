@@ -9,36 +9,63 @@
 #include "OpenGLUtils.h"
 #include "Syris/renderAPI/OpenGl/OpenGLrenderApi.h"
 #include "Syris/utils/Breakpoint.h"
+#include "Syris/utils/Assert.h"
 
 namespace Syris{
-    AutoShader::AutoShader(CreateInfo info){
-        m_program = glCreateProgram();
-        std::cout << "PATH: " << info.path << "\n";
-        std::string vertex_path = std::format("{}\\vertex.sy", info.path);
-        std::string fragment_path = std::format("{}\\fragment.sy", info.path);
-        std::string vertex_source = utils::read_file(vertex_path.c_str());
-        std::string fragment_source = utils::read_file(fragment_path.c_str());
-        
-            auto parsed_vertex = parse_shader(vertex_source, true);
-            if (!parsed_vertex)
-                throw std::runtime_error(std::format("Failed to parse vertex shader: {}", parsed_vertex.error()));
-            write_file(std::format("{}\\parsed_vertex.glsl", info.path), parsed_vertex.value());
-            auto parsed_fragment = parse_shader(fragment_source, false);
-            if (!parsed_fragment)
-                throw std::runtime_error(std::format("Failed to parse fragment shader: {}", parsed_fragment.error()));
-            write_file(std::format("{}\\parsed_fragment.glsl", info.path), parsed_fragment.value());
-            auto compile_res = compile_shaders_source(m_program, parsed_fragment.value(), parsed_vertex.value());
-            if (!compile_res)
-                throw std::runtime_error(std::format("Failed to compile shaders: {}", compile_res.error()));
+    AutoShader::AutoShader(CreateInfo info):m_info(info){
+        CORE_INFO(std::format("compiling shader: {}", info.path));
+        m_vertex_path = std::format("{}\\vertex.sy", info.path);
+        m_fragment_path = std::format("{}\\fragment.sy", info.path);
+        m_last_change = std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path));
+        auto res = this->compile_shaders();
+        if (!res){
+            BREAK_POINT(std::format("Failed to create autoshader: {}", res.error()));
+        }
+            //throw std::runtime_error(std::format("Failed to create autoshader, {}", res.error()));
+        CORE_INFO("SHADER COMPILED");
+        m_attributes = res.value().m_attributes;
+        m_uniforms = res.value().m_uniforms;
+        m_program = res.value().m_program;
+        CORE_INFO("AUTO SHADER CREATED");
     };
 
-    std::expected<std::string, std::string> AutoShader::parse_shader(std::string& source, bool is_vertex_shader){
+    std::expected<AutoShader::CompiledShaderBundle, std::string> AutoShader::compile_shaders(){
+        CompiledShaderBundle bundle;
+        bundle.m_program = glCreateProgram();
+        
+        std::string vertex_source = utils::read_file(m_vertex_path.c_str()).value();
+        std::string fragment_source = utils::read_file(m_fragment_path.c_str()).value();
+        CORE_INFO("SHADER FILES READ");
+
+        auto parsed_vertex = parse_shader(vertex_source, true, bundle);
+        if (!parsed_vertex)
+            return std::unexpected(std::format("Failed to parse vertex shader: {}", parsed_vertex.error()));
+        CORE_INFO("VERTEX PARSED");
+        auto parsed_fragment = parse_shader(fragment_source, false, bundle);
+        if (!parsed_fragment)
+            return std::unexpected(std::format("Failed to parse fragment shader: {}", parsed_fragment.error()));
+        CORE_INFO("FRAGMENT PARSED");
+        auto compile_res = compile_shaders_source(bundle.m_program, parsed_fragment.value(), parsed_vertex.value());
+        CHECK_GL_ERROR();
+        std::cout << "HELLO";
+        if (!compile_res)
+            return std::unexpected(std::format("Failed to compile shaders: {}", compile_res.error()));
+        std::cout << "????";
+        CORE_INFO("SHADERS COMPILED");
+        write_file(std::format("{}\\parsed_vertex.glsl", m_info.path), parsed_vertex.value());
+        write_file(std::format("{}\\parsed_fragment.glsl", m_info.path), parsed_fragment.value());
+        CORE_INFO("SUCCESS??");
+        return bundle;
+    }
+
+    std::expected<std::string, std::string> AutoShader::parse_shader(std::string& source, bool is_vertex_shader, CompiledShaderBundle& bundle){
         if (!is_vertex_shader)
             return source;//todo
         std::vector<std::string_view> lines = view_split(source, '\n');
         std::string parsed_file;
         bool copy_rest_of_file = false;
         for (auto& line : lines){
+            CORE_INFO("LINE"); 
             if (copy_rest_of_file){
                 parsed_file += line;
                 parsed_file += '\n';
@@ -49,15 +76,17 @@ namespace Syris{
                 parsed_file += '\n';
             }
             else if (line.starts_with("layout")){
-                auto result = parse_layout_line(parsed_file, line);
-                if (!result)
+                auto result = parse_layout_line(parsed_file, line, bundle);
+                if (!result){
+                    CORE_ERROR(std::format("Failed to parse shader layout line", result.error()));
                     return std::unexpected(std::format("Failed to parse shader layout line: {}", result.error()));
+                }
             } else if (line.starts_with("uniform")){
-                auto result = parse_uniform_line(parsed_file, line);
+                auto result = parse_uniform_line(parsed_file, line, bundle);
                 if (!result)
                     return std::unexpected(std::format("Failed to parse shader uniform line: {}", result.error()));
             } else if (line.starts_with("void main()")){
-                auto result = parse_main(parsed_file, line);
+                auto result = parse_main(parsed_file, line, bundle);
                 if (!result)
                     return std::unexpected(std::format("Failed to parse shader main: {}", result.error()));
                 copy_rest_of_file = true;
@@ -66,10 +95,11 @@ namespace Syris{
                 parsed_file += '\n';
             }
         }
+        CORE_INFO("FINISH LOOP");
         return parsed_file;
     }
 
-    std::expected<void, std::string> AutoShader::parse_layout_line(std::string& parsed_file, std::string_view line){
+    std::expected<void, std::string> AutoShader::parse_layout_line(std::string& parsed_file, std::string_view line, CompiledShaderBundle& bundle){
         std::vector<std::string_view> words = view_split(line.substr(0, line.size() -1), " ");//remove ; and split in words
         if (words.size() != 5)
             return std::unexpected(std::format("Incorrect number of words in '{}'. Must be 5", line));
@@ -77,10 +107,11 @@ namespace Syris{
         if (!type || !type::can_be_attribute(type.value())){
             return std::unexpected(std::format("'{}' is either not a type or not a type that can be used as attribute.", words[3]));
         }
-        m_attributes.add_variable(words[4], type.value());
+        bundle.m_attributes.add_variable(words[4], type.value());
+        return std::expected<void, std::string>{};
     }
 
-    std::expected<void, std::string> AutoShader::parse_uniform_line(std::string& parsed_file, std::string_view line){
+    std::expected<void, std::string> AutoShader::parse_uniform_line(std::string& parsed_file, std::string_view line, CompiledShaderBundle& bundle){
         std::vector<std::string_view> words = view_split(line.substr(0, line.size() -1), " ");
         if (words.size() != 3)
             return std::unexpected(std::format("Incorrect number of words in '{}'. Must be 3", line));
@@ -88,14 +119,15 @@ namespace Syris{
         if (!type || !type::can_be_uniform(type.value())){
             return std::unexpected(std::format("'{}' is either not a type or not a type that can be used as attribute.", words[1]));
         }
-        m_uniforms.add_variable(words[2], type.value());
+        bundle.m_uniforms.add_variable(words[2], type.value());
+        return std::expected<void, std::string>{};
     }
 
-    std::expected<void, std::string> AutoShader::parse_main(std::string& parsed_file, std::string_view main_line){
+    std::expected<void, std::string> AutoShader::parse_main(std::string& parsed_file, std::string_view main_line, CompiledShaderBundle& bundle){
         uint32_t attribute_index = 0;
         std::vector<std::tuple<const std::string&, Type, std::vector<std::string>>> uncopled_types;
-        auto& variables = m_attributes.get_vars();
-        for (const std::string& name : m_attributes.get_order()){
+        auto& variables = bundle.m_attributes.get_vars();
+        for (const std::string& name : bundle.m_attributes.get_order()){
             Type type = variables.at(name);
             auto [uncoupled_type, count] = to_glsl_type(type);
             if (count == 1){
@@ -114,7 +146,7 @@ namespace Syris{
 
             }
         }
-        for (const auto& [name, type] : m_uniforms.get_vars()) {
+        for (const auto& [name, type] : bundle.m_uniforms.get_vars()) {
             parsed_file += std::format("uniform {} {};\n", type_to_shader_script_type(type), name);
             attribute_index++;
         }
@@ -129,25 +161,42 @@ namespace Syris{
                 return std::unexpected("only mat4 supported in type uncopling");
             }
         }
+        return std::expected<void, std::string>{};
     }
 
     void AutoShader::use(Uniform* uniforms){
         glUseProgram(m_program);
         uint32_t i = 0;
+        auto& layout = m_uniforms.get_vars();
         while (uniforms != nullptr){
-            auto it = m_uniforms.get_vars().find(uniforms->name);
-            if (it == m_uniforms.get_vars().end()){
-                BREAK_POINT("Uniform name doens't exist in shader uniforms");
-            }
+            ASSERT(uniforms->name.data() != nullptr, "Name must be set");
+            auto it = layout.find(uniforms->name);
+            ASSERT(it != layout.end(), "Uniform name doens't exist in shader uniforms");
+            //todo ASSERT(layout.find(uniforms->name)->second == uniforms->type, "Uniform name doens't exist in shader uniforms");
             renderAPI::set_uniform_value(m_program, uniforms->name.c_str(), it->second, uniforms->data);
             uniforms = uniforms->pnext;
             i++;
         }
-        if (i != m_uniforms.get_vars().size()){
-            BREAK_POINT("Wrong number of uniforms")
-        }
+        ASSERT(i == layout.size(), "Wrong number of uniforms");
         //auto hold = std::make_tuple(m_program, uniforms);
         //m_layout->set(&hold); set uniforms
         CHECK_GL_ERROR();
+    }
+
+
+    void AutoShader::on_update(const engine_time::Time& time){
+        if (m_last_change != std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path))){
+            m_last_change = std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path));
+            CORE_INFO("RECOMPILING SHADER");
+            auto res = compile_shaders();
+            if (!res){
+                CORE_INFO("Failed to refresh shader");
+                return;
+            }
+            m_attributes = res.value().m_attributes;
+            m_uniforms = res.value().m_uniforms;
+            m_program = res.value().m_program;
+            CORE_INFO("SHADER RECOMPILED");
+        }
     }
 }

@@ -24,8 +24,8 @@ namespace Syris{
             BatchRendererLayout& operator=(const BatchRendererLayout& ref) = delete;
             
 
-            std::expected<void, std::string> set_subbuffer(VertexBuffer::SubBufferInfo subbuffer);
-            std::expected<void, std::string> finish();
+            [[nodiscard]] std::expected<void, std::string> set_subbuffer(VertexBuffer::SubBufferInfo subbuffer);
+            [[nodiscard]] std::expected<void, std::string> finish();
             const std::vector<VertexBuffer::SubBufferInfo>& get_subbufers()const{return m_subbuffers;}
             void render_statistics(entt::entity entity, entt::registry& registry);
             StatisticModID get_statistics()const{return m_statistic_mod_ID;}

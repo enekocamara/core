@@ -38,6 +38,7 @@ namespace Sandbox::ecs::Corn {
                 .comsuption_ms = 0.02f,
             });
             id = registry.ctx().get<CollectableManager>().set_collectable(std::move(stages));
+            first = false;
         }
         return CCollectable{
             .id = id,

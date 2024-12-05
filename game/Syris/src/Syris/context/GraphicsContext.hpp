@@ -24,5 +24,6 @@ namespace Syris
         virtual Window* get_window_handler() = 0;
         virtual LayerManager &get_layer_manager() = 0;
         virtual ShaderManager &get_shader_manager() = 0;
+        virtual glm::uvec2 get_current_render_window_size() const = 0;
     };
 }

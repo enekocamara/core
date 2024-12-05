@@ -1,8 +1,9 @@
 #pragma once
 #include <unordered_map>
 #include <span>
+#include <expected>
 #include "Shader.hpp"
-#include <boost/serialization/strong_typedef.hpp>
+//#include <boost/serialization/strong_typedef.hpp>
 #include "Syris/statistics/Statistics.hpp"
 
 namespace Syris{

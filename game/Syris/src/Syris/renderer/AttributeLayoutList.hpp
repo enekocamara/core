@@ -2,7 +2,7 @@
 #include <vector>
 #include <span>
 
-
+/*
 namespace Syris{
     
     enum class ValueType{
@@ -49,9 +49,7 @@ namespace Syris{
             AttributeLayoutList(std::span<AttributeLayout::CreateInfo> layouts, uint32_t attribute_index_padding);
             ~AttributeLayoutList();
             const AttributeLayout& operator[](uint32_t index){return m_layouts[index];}
-            /*
-             *@Brief pushes back a new layout, its attribute index will be the last
-             */
+            
             void push_back(AttributeLayout::CreateInfo layout_info);
             uint32_t size()const {return m_layouts.size();}
             uint32_t attribute_size(){return m_layouts.size() + m_attribute_index_padding;}
@@ -62,3 +60,4 @@ namespace Syris{
             uint32_t m_stride_size = 0;
     };
 }
+*/

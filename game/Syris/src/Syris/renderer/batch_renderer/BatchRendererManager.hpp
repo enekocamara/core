@@ -18,16 +18,17 @@ namespace Syris{
             ~BatchRendererManager();
             BatchRendererManager(const BatchRendererManager& ref) = delete;
 
-            template<typename T>
+            template<typename... Types>
             BR_ID add_renderer(BatchRenderer::CreateInfo& info){
-                std::unique_ptr<BatchRenderer> batch_renderer = new_batch_renderer<T>(info);
+                std::unique_ptr<BatchRenderer> batch_renderer = new_batch_renderer<Types...>(info);
                 m_statistics.add_child(m_statistic_mod, batch_renderer->get_statistics());
-                BR_ID id = m_current_id++;
+                BR_ID id = m_current_id;
+                m_current_id++;
                 m_batch_renderers[id] = std::move(batch_renderer);
                 return id;
             }
 
-            void set_entity(BR_ID id, BR_SetRequest& request);
+            void set_entity(BR_ID id, BR_RequestSparse& request);
             void draw(BR_ID id, Uniform  *uniforms);
             BatchRenderer* get_renderer(BR_ID id);
             StatisticModID get_statistics(){return m_statistic_mod;}

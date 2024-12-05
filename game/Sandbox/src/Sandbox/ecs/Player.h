@@ -50,33 +50,37 @@ namespace Sandbox::ecs {
             return entity;
         }*/
         inline entt::entity newPlayerEntity(glm::vec2 pos,
-                                            MovementKeys keys,
-                                            Syris::Texture2DBundle textureBundle,
-                                            Syris::EntityManager& entity_manager,
-                                            Syris::BatchRendererManager::BR_ID material_id){
+            MovementKeys keys,
+            Syris::Texture2DBundle textureBundle,
+            Syris::EntityManager& entity_manager,
+            Syris::BatchRendererManager::BR_ID material_id) {
 
 
             QuadTexInstancedData instance_data = QuadTexInstancedData();
-            instance_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
-            instance_data.translation = glm::scale(glm::translate(instance_data.translation, glm::vec3(pos, 1.f)), {0.5,0.5,1.f});
+            instance_data.tex_coord = { texture::atlas::player_0.min, texture::atlas::player_0.max };
+            instance_data.translation = glm::translate(instance_data.translation, glm::vec3(pos, 1.f));
 
             //entity system part
+            std::array<std::pair<std::size_t, void*>, 1> entity_data;
+            entity_data[0] = { 0, &instance_data };
             Syris::EntityManager::RenderInfo render_info{
                 .renderer = material_id,
-                .entity_data = &instance_data
+                .request = {entity_data.begin(), entity_data.end()}
             };
             Syris::EntityManager::EntityInfo info{
                 .render_info = render_info
             };
             entt::registry& registry = entity_manager.get_registry();
-            entt::entity player = entity_manager.new_entity(info);
-            registry.emplace<AsyncComponent<CPosition>>(player, pos);
-            registry.emplace<CTexture>(player, textureBundle.src);
-            registry.emplace<CKeyBinded>(player, keys);
-            registry.emplace<CSpeed>(player, glm::vec2(0.f));
-            registry.emplace<CMovementSpeed>(player, 3.f);
-            registry.emplace<CDir>(player, glm::vec2(0.f,-1.f));
-            return player;
+            return entity_manager.new_entity(info, [&entity_manager, pos, textureBundle, keys](entt::entity player) {
+                auto& registry = entity_manager.get_registry();
+                registry.emplace<AsyncComponent<CPosition>>(player, pos);
+                registry.emplace<CTexture>(player, textureBundle.src);
+                registry.emplace<CKeyBinded>(player, keys);
+                registry.emplace<CSpeed>(player, glm::vec2(0.f));
+                registry.emplace<CMovementSpeed>(player, 3.f);
+                registry.emplace<CDir>(player, glm::vec2(0.f, -1.f));
+            });
+
         }
         inline Syris::Texture2DBundle defaultTextureBundle(){
             return Syris::Texture2DBundle{
@@ -93,10 +97,13 @@ namespace Sandbox::ecs {
             QuadTexInstancedData player_data = QuadTexInstancedData();
             auto cPos = entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>>(player);
             player_data.tex_coord = {texture::atlas::player_0.min, texture::atlas::player_0.max};
-            player_data.translation = glm::scale(glm::translate(player_data.translation, glm::vec3(cPos.get().pos, 1.f)), {0.5,0.5,1.0f});
-            Syris::BR_SetRequest request{
+            player_data.translation = glm::translate(player_data.translation, glm::vec3(cPos.get().pos, 1.f));
+            //BREAK_POINT("TODO!");
+            std::array<std::pair<std::size_t, void*>, 1> entity_data;
+            entity_data[0] = { 0, &player_data };
+            Syris::BR_RequestSparse request{
                 .entity = player,
-                .data = &player_data
+                .data = {entity_data.begin(), entity_data.end()},//&player_data
             };
             material_manager.set_entity(material_id, request);
         }

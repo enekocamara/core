@@ -1,25 +1,18 @@
 #pragma once
 #include <entt.hpp>
+#include <span>
 
 namespace Syris
 {
-    template <typename T>
     struct BR_Request
     {
         entt::entity entity;
-        T *data;
-    };
-
-    struct BR_SetRequest
-    {
-        entt::entity entity;
         void *data;
     };
 
-    struct BR_AddRequest
-    {
+    struct BR_RequestSparse{
         entt::entity entity;
-        void *data;
+        std::span<std::pair<std::size_t, void *>>data;
     };
 
     struct BR_RemoveRequest

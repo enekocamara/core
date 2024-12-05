@@ -4,6 +4,7 @@
 
 #include "Syris/texture/Texture.hpp"
 #include "Syris/log/Log.h"
+#include "Syris/utils/Breakpoint.h"
 
 namespace Syris{
     TextureAtlas::TextureAtlas(const char* path) : m_path(path) {}
@@ -15,8 +16,8 @@ namespace Syris{
                 .image_format = GL_RGBA,
                 .wrap_s = GL_REPEAT,
                 .wrap_t = GL_REPEAT,
-                .filter_min = GL_LINEAR,
-                .filter_max = GL_LINEAR
+                .filter_min = GL_NEAREST,
+                .filter_max = GL_NEAREST
         };
         m_texture = Texture2D(m_path, bundle);
     }
@@ -29,10 +30,10 @@ namespace Syris{
             CORE_ERROR(error.c_str());
             throw std::runtime_error(error);
         }
-        if (m_tex_channels != 4){
-            CORE_ERROR(std::format("Error reading texture channels {}", m_tex_channels));
-            exit(1);
-        }
+        if (m_tex_channels != 4)
+            BREAK_POINT(std::format("Error reading texture channels {}", m_tex_channels));
+        
+        m_gl_type = tex_chann_to_openGL_type(m_tex_channels); 
         int rowStride = m_size.x * 4; // 4 bytes per pixel (RGBA)
         std::vector<stbi_uc> flippedPixels(rowStride * m_size.y);
 
@@ -63,25 +64,23 @@ namespace Syris{
         glBindTexture(GL_TEXTURE_2D, 0);
         CORE_INFO(std::format("Texture id: {}", m_id));
     }
-    Texture2D::Texture2D(std::vector<float>& data, glm::ivec2 size){
-        glGenTextures(1, &m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, size.x, size.y, 0, GL_RED, GL_FLOAT, data.data());
-        // Set texture filtering for minification and magnification to GL_NEAREST
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        // (Optional) Set wrap modes to control behavior for UVs outside [0, 1]
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        m_size = size;
-    }
     Texture2D::~Texture2D(){
     }
     void Texture2D::bind(){
         glBindTexture(GL_TEXTURE_2D, this->m_id);
+    }
+    GLuint Texture2D::tex_chann_to_openGL_type(int channel_count)const{
+        switch (channel_count){
+            case 1:
+                return GL_RED;
+            case 2: 
+                return GL_RG;
+            case 3: 
+                return GL_RGB;
+            case 4:
+                return GL_RGBA;
+            default:
+                BREAK_POINT("Invalid channel count"); 
+        }
     }
 }

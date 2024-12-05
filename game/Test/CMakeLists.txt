@@ -30,15 +30,14 @@ foreach(file ${SOURCES})
     source_group("${directory}" FILES ${file})
 endforeach()
 
-set(HPX_LOGLEVEL 0)
 add_executable(Test ${SOURCES})
-target_link_libraries(Test PRIVATE Core)
+target_link_libraries(Test PRIVATE Syris)
 #target_link_libraries(Sandbox PRIVATE Scripts)
 target_include_directories(Test PRIVATE
     ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
     ${CMAKE_SOURCE_DIR}/Test/src
 )
-set(HPX_WITH_LOGGING OFF CACHE BOOL "Disable HPX logging" FORCE)
+
 # Enable multi-processor compilation (if supported by the compiler)
 if(MSVC)
     add_compile_options(/MP)

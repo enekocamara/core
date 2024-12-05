@@ -1,12 +1,11 @@
 #pragma once
-#include "Syris/log/Log.h"
+#include "Syris/utils/Breakpoint.h"
 
 #define CHECK_GL_ERROR() \
-    { \
+    do { \
         GLenum err = glGetError(); \
         if (err != GL_NO_ERROR) \
         { \
-            CORE_ERROR(std::format("OpenGL Error: {}", err));\
-            exit(1);\
+            BREAK_POINT(std::format("OpenGL Error: {}", err));\
         } \
-    }
+    } while(false)

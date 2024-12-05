@@ -83,5 +83,9 @@ namespace Sandbox::texture{
             .min = {nor_x(4), nor_y(plants + 5)},
             .max = {nor_x(5), nor_y(plants + 6)}
         };
+        static constexpr Syris::Rectangle2D chicken = {
+            .min = {nor_x(0), nor_y(chickens)},
+            .max = {nor_x(1), nor_y(chickens + 1)}
+        };
     }
 }; // namespace textures

@@ -1,13 +1,18 @@
 #version 460 core
 
 layout (location=0) in vec2 aPos;
-layout (location=1) in mat4 aModel;
-layout (location=2) in vec3 aMaterial;
 
 uniform mat4 uViewProjection;
-out vec3 fragMat;
-void main()
-{
-    gl_Position = ViewProjection * aModel * vec4(aPos, 0.0, 1.0);
-    fragMat = aMaterial;
+uniform uvec2 uWorldDimmensions;
+uniform sampler2D uTexture;
+
+out vec2 pos;
+
+void main(){
+    vec2 position = vec2(gl_InstanceID % uWorldDimmensions.x, gl_InstanceID / uWorldDimmensions.x);
+    gl_Position = uViewProjection * vec4(aPos + position,0.f,1.f);
+    vec2 vertexPosInTile = aPos + vec2(0.5, 0.5); // Transform [-0.5, 0.5] -> [0, 1]
+    pos = (position + vertexPosInTile) / vec2(uWorldDimmensions); // Map to [0, 1] over entire texture
+    //pos = (aPos + vec2(0.5,0.5) + position) / vec2(uWorldDimmensions.x, uWorldDimmensions.y);
+    //pos.y = 1 - pos.y;
 }

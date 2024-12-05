@@ -1,10 +1,9 @@
+#include "SandboxScene.hpp"
+
 #include <array>
 #include <format>
 #include <vector>
-
-#include <hpx/async.hpp>
-#include <hpx/algorithm.hpp>
-#include <hpx/execution.hpp>
+#include <future>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,14 +13,13 @@
 #include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "Syris/statistics/Components.hpp"
 
-#include "SandboxScene.hpp"
 #include "Sandbox/shaders/entity_shader.h"
-#include "Sandbox/world_generator/WorldGenerator.hpp"
 #include "Sandbox/ecs/Components.h"
 #include "Sandbox/ecs/Tile.h"
 #include "Sandbox/ecs/Bush.h"
 #include "Sandbox/ecs/Player.h"
 #include "Sandbox/scene/helper.h"
+#include "Sandbox/ecs/Chicken.h"
 
 namespace Sandbox{
 
@@ -76,6 +74,9 @@ namespace Sandbox{
         m_entity_manager({ m_material_manager}),
         m_texture_atlas(info.atlas_path),
         m_shader_manager(info.shader_manager),
+        m_thread_pool(info.thread_pool),
+        m_graphics_context(info.graphics_context),
+        m_dll(info.dll),
         m_camera(info.camera_info),
         m_statistics(info.statistics),
         m_sim_fps({"simulation"})
@@ -93,14 +94,6 @@ namespace Sandbox{
 
         Syris::Logger::client_info("sandbox scene being created");
         m_texture_atlas.init();
-        World::CreateInfo world_info{
-            .m_material_manager = m_material_manager,
-            .m_shader_manager = m_shader_manager,
-            .m_entity_manager = m_entity_manager,
-            .world_dimmensions = {200,200},
-            .statistics = info.statistics
-        };
-        m_world = new World(world_info);
                 
         CHECK_GL_ERROR();
         
@@ -114,8 +107,19 @@ namespace Sandbox{
         make_entity_renderer();
         m_entity_manager.get_registry().ctx().emplace<ecs::SER_ID>(m_entity_renderer_id);
         m_entity_manager.get_registry().ctx().emplace<ecs::CollectableManager>();
-
-
+        std::cout << "scene entity renderer id: " << (int)m_entity_renderer_id << '\n';
+        World::CreateInfo world_info = World::CreateInfo{
+            .m_material_manager = m_material_manager,
+            .m_shader_manager = m_shader_manager,
+            .m_entity_manager = m_entity_manager,
+            .chunks = {1,1},
+            .chunk_size = {10,10},
+            .tile_size = {1,1},
+            .statistics = info.statistics,
+            .entity_renderer_id = m_entity_renderer_id,
+            .seed = 0
+        };
+        m_world = new World(world_info);
         ecs::MovementKeys keys =  ecs::MovementKeys{
             .up = GLFW_KEY_W,
             .down = GLFW_KEY_S,
@@ -123,52 +127,52 @@ namespace Sandbox{
             .right = GLFW_KEY_S,
         };
         m_player_id = ecs::Player::newPlayerEntity({0,0}, keys, texture, m_entity_manager, m_entity_renderer_id);
-        
-        Syris::Logger::client_info("sandbox scene successfully created"); 
+        ecs::Chicken::newChickenEntity({0,0}, m_entity_manager, m_entity_renderer_id, m_dll);
+        Syris::Logger::client_info("sandbox scene successfully created");
         //hpx::async(std::bind(&SandboxScene::sim_loop, this));
+        m_thread_pool.enqueue(std::bind(&SandboxScene::sim_loop, this));
     }
 
     void SandboxScene::sim_loop(){
         m_sim_fps.start();
+        /*
         AsyncToSyncQueue::AsyncFunction func{
             .function = std::bind(&Syris::engine_time::FPS::render_frame_count, &m_sim_fps),
             .calls_to_be_consumed = std::nullopt,
-        };
-        //m_async_to_sync_queue.add(func);
-        constexpr bool single_thread = false;
-        // Create a dynamic chunk size with calculated chunk size
+        };*/
+        
+        std::vector<std::future<void>> futures;
         while(m_sim_loop_running){
-            auto tick_group = m_entity_manager.get_registry().group<ecs::CTickFast>();
             m_sim_fps.next_frame();
-            float delta_ms = m_sim_fps.get_time().get_delta_ms(); 
-            auto [cPos, cMovenmentSpeed, cSpeed] = m_entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>, ecs::CMovementSpeed, ecs::CSpeed>(m_player_id);
-            cPos.set({cPos.get().pos + cSpeed.speed * cMovenmentSpeed.movement_speed * delta_ms / 1000.f});
-            //std::cout << "Player: pos[" << cPos.get().pos << "] dir[" << cDir.value << "] speed[" << cSpeed.value << "] with " <<  delta_ms <<"ms\n";
-            if constexpr (single_thread){
-                for (auto entity : tick_group)
-                {
-                    // m_entity_manager.get_registry().get<ecs::CTickFast>(entity).tick(m_entity_manager, entity, m_sim_fps.get_time());
-                    tick_group.get<ecs::CTickFast>(entity).tick(m_entity_manager, entity, m_sim_fps.get_time());
-                }
-            }else{
-                std::size_t num_entities = tick_group.size();
-                std::size_t chunk_size_value = num_entities + m_sim_thread_count - 1 / m_sim_thread_count;
-                hpx::execution::experimental::dynamic_chunk_size chunk_size(chunk_size_value);
-                auto policy = hpx::execution::par.with(chunk_size);
 
-                hpx::for_loop(hpx::execution::par, 0, m_sim_thread_count,
-                    [&](std::size_t chunk_index) {
-                        std::size_t start = chunk_index * chunk_size_value;
-                        std::size_t end = std::min(start + chunk_size_value, num_entities);
+            m_entity_manager.lock_active_mutex();
+            auto tick_group = m_entity_manager.get_registry().group<ecs::CTickFast>();
 
-                        for (std::size_t i = start; i < end; ++i) {
-                            if (i < tick_group.size())
-                                tick_group.get<ecs::CTickFast>(tick_group[i]).tick(m_entity_manager, tick_group[i], m_sim_fps.get_time());
-                        }
-                    }
-                );
+
+            const uint32_t num_entities = tick_group.size();
+            const uint32_t chunk_size_value = (num_entities + m_sim_thread_count - 1) / m_sim_thread_count;
+            futures.reserve(m_sim_thread_count);
+
+            for (uint32_t i = 0; i < m_sim_thread_count; i++)
+            {
+                futures.push_back(m_thread_pool.enqueue([tick_group, i, chunk_size_value, num_entities, this](){
+                        uint32_t start = i * chunk_size_value;
+                        uint32_t end = std::min(start + chunk_size_value, num_entities);
+                        for (uint32_t entt_index = start; entt_index < end; entt_index++){
+                            entt::entity entity = tick_group[entt_index];
+                            //if (m_entity_manager.get_registry().all_of<Syris::ecs::Active>(entity))
+                                tick_group.get<ecs::CTickFast>(entity).tick(m_entity_manager, entity, m_sim_fps.get_time());
+                        } 
+                    }));
             }
-
+            for (auto &future : futures){
+                future.get(); // Wait for each task to complete
+            }
+            auto& op_chunk_system = m_entity_manager.get_chunk_system();
+            if (op_chunk_system)
+                op_chunk_system->sync();
+            futures.clear();
+            m_entity_manager.unlock_active_mutex();
         }
     }
 
@@ -215,11 +219,13 @@ namespace Sandbox{
         float delta_ms = time.get_delta_ms();
         auto [cPos, cMovenmentSpeed, cSpeed] = m_entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>, ecs::CMovementSpeed, ecs::CSpeed>(m_player_id);
         cPos.set({cPos.get().pos + cSpeed.speed * cMovenmentSpeed.movement_speed * delta_ms / 1000.f});
+        //auto [cPos, cMovenmentSpeed, cSpeed] = m_entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>, ecs::CMovementSpeed, ecs::CSpeed>(m_player_id);
         
         ecs::Player::sync(m_entity_manager, m_material_manager, m_entity_renderer_id, m_player_id);
-
-        //ecs::AsyncComponent<ecs::CPosition>& cPos =  m_entity_manager.get_registry().get<ecs::AsyncComponent<ecs::CPosition>>(m_player_id);
-        //ecs::CSpeed& cSpeed = m_entity_manager.get_registry().get<ecs::CSpeed>(m_player_id);
+        if (m_render_window_size != m_graphics_context.get_current_render_window_size()){
+            m_render_window_size = m_graphics_context.get_current_render_window_size();
+            m_camera = Syris::OrthographicCameraController({m_render_window_size.x / (float)m_render_window_size.y, 10.f});
+        }
         m_camera.getCamera().set_position(glm::vec3(cPos.get().pos, 0.f));
 
         auto camera_data = m_camera.getCamera().get_view_projection_matrix();
@@ -235,7 +241,7 @@ namespace Sandbox{
         ImGui::Text("Player pos {%.1f,%.1f}", cPos.get().pos.x, cPos.get().pos.y);
         ImGui::Text("Player speed {%.1f,%.1f}", cSpeed.speed.x, cSpeed.speed.y);
         ImGui::End();
-
+        camera.pnext = nullptr;
         //entity_shader::ShaderLayoutTuple data_player = {m_camera.getCamera().get_view_projection_matrix(), m_texture_atlas.getTexture()};
         Syris::Uniform texture{
             .name = "uTexture",

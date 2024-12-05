@@ -6,6 +6,7 @@
 #include "Syris/statistics/Components.hpp"
 #include "Syris/types/OpenGLToSyrisTypes.h"
 #include "Syris/platform/OpenGl/OpenGLErrors.hpp"
+#include "Syris/utils/Breakpoint.h"
 
 namespace Syris { 
     OpenGLVertexBuffer::OpenGLVertexBuffer(CreateInfo info): m_statistics(info.statistics){
@@ -15,10 +16,8 @@ namespace Syris {
         m_statistic_mod_ID = info.statistics.add_module(mod_info);
         info.statistics.get_registry().emplace<statistics::CVertexBuffer>(m_statistic_mod_ID);
         glGenVertexArrays(1, &m_vertex_array);
-        if (m_vertex_array == NotSet){
-            CORE_ERROR("Failed to generate vertex array");
-            exit(1);
-        }
+        if (m_vertex_array == NotSet)
+            BREAK_POINT("Failed to generate vertex array");
         glBindVertexArray(m_vertex_array);
         m_subbuffers.reserve(info.buffers_info.size());
         uint32_t attribute_index_padding = 0;
@@ -27,9 +26,7 @@ namespace Syris {
             attribute_index_padding += buffer_info.get_attributes().size();
         }
         glBindVertexArray(0);
-        //m_subbuffers[0].append(info.temp.size, info.temp.data);//todo
-        Syris::Logger::client_info("Vertex array created");
-        //print_info(); 
+        CLIENT_INFO("Vertex array created");
     }
 
     void OpenGLVertexBuffer::render_statistics(entt::entity entity, entt::registry& registry){

@@ -5,7 +5,7 @@ namespace Syris{
         : m_attribute_layout(info.attributes_layout),
           m_uniforms_layout(info.uniforms_layout),
           m_statistics(info.statistics){ 
-        std::cout << "DEBUG 2: number of variables" << m_attribute_layout.get_vars().size() << '\n';
+        
         Syris::Statistics::AddModuleInfo mod_info{
             .render = std::bind(&BatchRendererLayout::render_statistics, this, std::placeholders::_1, std::placeholders::_2)};
         m_statistic_mod_ID = info.statistics.add_module(mod_info);
@@ -14,7 +14,6 @@ namespace Syris{
         : m_attribute_layout(shader->get_attribute_layout()),
           m_uniforms_layout(shader->get_uniform_layout()),
           m_statistics(statistics){ 
-        std::cout << "DEBUG: number of variables" << m_attribute_layout.get_vars().size() << '\n';
         Syris::Statistics::AddModuleInfo mod_info{
             .render = std::bind(&BatchRendererLayout::render_statistics, this, std::placeholders::_1, std::placeholders::_2)};
         m_statistic_mod_ID = statistics.add_module(mod_info);
@@ -34,6 +33,7 @@ namespace Syris{
         for (auto& attribute : subbuffer.get_attributes())
             m_attributes_set.insert(attribute.name);
         m_subbuffers.push_back(subbuffer);
+        return std::expected<void, std::string>{};
     }
     std::expected<void, std::string> BatchRendererLayout::finish(){
         if (m_attributes_set.size() != m_attribute_layout.get_vars().size()){
@@ -44,6 +44,7 @@ namespace Syris{
             }
             return std::unexpected(std::format("All attributes where not set in subbuffers: \nAttributes:\n{}", unset_attributes));
         }
+        return std::expected<void, std::string>{};
     }
 
     void BatchRendererLayout::render_statistics(entt::entity entity, entt::registry& registry){

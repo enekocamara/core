@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Syris/log/Log.h"
+#include "Syris/utils/Breakpoint.h"
 #include "Syris/input/KeyCodes.h"
 
 namespace Syris {
@@ -21,10 +22,8 @@ namespace Syris {
             }
         private:
             Input(GLFWwindow* window){
-                if (window == nullptr){
-                    CORE_ERROR("Input constructor called with nullptr window parameter");
-                    throw std::runtime_error("Input constructor called with nullptr window parameter");
-                }
+                if (window == nullptr)
+                    BREAK_POINT("Input constructor called with nullptr window parameter"); 
                 m_initialized = true;
                 m_current_window = window;
             }

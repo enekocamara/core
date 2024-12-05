@@ -20,35 +20,35 @@ namespace Sandbox::ecs::Tile {
         Syris::BatchRendererManager::BR_ID renderer_id;
     };
 
-    static void tick(Syris::EntityManager& entity_manager, entt::entity entity, const Syris::engine_time::Time& time){
-        auto[c_composition, c_position, c_data] =  entity_manager.get_registry().get<CComposition, CPosition, CTileData>(entity);
+    inline void tick(Syris::EntityManager& entity_manager, entt::entity entity, const Syris::engine_time::Time& time){
+        auto[c_composition, c_position, c_data] =  entity_manager.get_registry().get<CComposition, CPosition, AsyncComponent<CTileData>>(entity);
         c_composition.life_matter += time.get_delta_ms() * c_composition.regen_per_ms;
         if (c_composition.life_matter > 80){
             c_composition.life_matter -= 40;
-            return;
-            if (c_data.heat > 0.5f && c_data.humidity > 0.2f && c_data.height < 0.7f)
+            auto data = c_data.get();
+            //if (data.heat > 0.2f && data.humidity > 0.2f && data.height < 0.3 && data.height > 0.f)
+            if (data.height > 0.f)
                 ecs::Corn::new_corn_entity(c_position.pos, entity_manager, entity, time);
-            else if(c_data.humidity > 0.f && c_data.heat > -0.8 && c_data.height > 0.2f)
+            else if(data.humidity > 0.f && data.heat > -0.8 && data.height > 0.5f)
                 ecs::Bush::new_bush_entity(c_position.pos,  entity_manager, entity, time);
         }
     }
 
-    inline entt::entity newTile(TileInstancedData* data, Syris::EntityManager& entity_manager, uint32_t index, float init_life_matter, glm::vec2 pos){
-        // m_material->set_data(data_set);
+    inline entt::entity new_tile(Syris::EntityManager& entity_manager, std::size_t index, float init_life_matter, glm::vec2 pos, CTileData data){
         Syris::EntityManager::RenderInfo render_info{
             .renderer = entity_manager.get_registry().ctx().get<SER_ID>().renderer_id,
-            .entity_data = data,
+            .request = {},
         };
         Syris::EntityManager::EntityInfo info{
             .render_info = render_info};
-        entt::entity entity = entity_manager.new_entity(info);
-        entt::registry &registry = entity_manager.get_registry();
-        registry.emplace<CTile>(entity);
-        registry.emplace<CPosition>(entity, pos);
-        registry.emplace<CTickFast>(entity, tick);
-        registry.emplace<CComposition>(entity, init_life_matter, 0.01f);
-        registry.emplace<CTileData>(entity, *(CTileData*)&data->mat);
-        return entity;
+        return entity_manager.new_entity(info, [&entity_manager, index, pos, init_life_matter, data](entt::entity entity) {
+            auto& registry = entity_manager.get_registry();
+            registry.emplace<CTile>(entity, index);
+            registry.emplace<CPosition>(entity, pos);
+            registry.emplace<CTickFast>(entity, tick);
+            registry.emplace<CComposition>(entity, init_life_matter, 0.01f);
+            registry.emplace<AsyncComponent<CTileData>>(entity, data);
+        });
     }
     
     inline Syris::Texture2DBundle defaultTextureBundle(){
