@@ -1,2 +1,0 @@
-from build run
-cmake -DCMAKE_TOOLCHAIN_FILE=C:\Users\eneko\dev\vcpkg\scripts\buildsystems\vcpkg.cmake ..
