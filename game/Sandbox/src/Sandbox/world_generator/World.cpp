@@ -94,7 +94,14 @@ namespace Sandbox{
         for (std::size_t y = 0; y < m_world_dimmensions.y; y++){
             for(std::size_t x = 0; x < m_world_dimmensions.x; x++){
                 glm::vec3 noise = noise_generator.generate_noise({ x,y });
-                data[idx({x,y})] = ecs::Tile::new_tile(m_entity_manager, y * m_world_dimmensions.x + x, 0, {x, y}, *(ecs::CTileData*)&noise);
+                ecs::Tile::Info info{
+                    .index = (y * m_world_dimmensions.x + x),
+                    .init_life_matter = 0,
+                    .pos = {x,y},
+                    .data = *(ecs::CTileData*)&noise
+                };
+                data[idx({x,y})] = m_entity_manager.new_entity_dll_better<void,ecs::Tile::Info>
+                                                    (m_tile_renderer_id, "tile", info);
             }
         }
         Syris::GridLookUp<entt::entity>::CreateInfo info{
@@ -207,7 +214,8 @@ namespace Sandbox{
 
         ImGui::Begin("Texture Display");
         ImGui::Text("Current seed %d", m_seed);ImGui::SameLine();
-        /*if (ImGui::Button("Recreate world")){
+        /*
+        if (ImGui::Button("Recreate world")){
             m_seed = std::rand();
             create_world(true);
             m_temp_frame_text->render();

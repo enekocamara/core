@@ -81,7 +81,7 @@ namespace Sandbox{
     SimpleScene::SimpleScene(CreateInfo info)
         : m_shader_manager(info.shader_manager),
         m_batch_renderer_manager({ info.statistics }),
-        m_entity_manager({ m_batch_renderer_manager }),
+        m_entity_manager({ m_batch_renderer_manager, info.dll}),
         m_statistics(info.statistics),
         m_camera(info.camera_info) {
         Syris::Statistics::AddModuleInfo mod_info{
@@ -111,7 +111,7 @@ namespace Sandbox{
             .entity =(entt::entity)0,
             .data = {data.begin(), data.end()}
         };
-        m_batch_renderer_manager.get_renderer(m_batch_renderer_id)->add_entity(quad); 
+//        TODO();//m_batch_renderer_manager.get_renderer(m_batch_renderer_id)->add_entity(quad); 
         Syris::Logger::client_info("simple scene successfully created");
         CHECK_GL_ERROR();
     }

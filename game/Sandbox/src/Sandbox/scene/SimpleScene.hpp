@@ -10,7 +10,7 @@
 #include "Syris/renderer/batch_renderer/BatchRendererManager.hpp"
 #include "Syris/ecs/EntityManager.hpp"
 #include "Syris/statistics/Statistics.hpp"
-
+#include "Syris/scripts/DynamicLibraryLoader.hpp"
 namespace Sandbox{
     class SimpleScene : public Syris::Scene, public Syris::Layer{
         public:
@@ -21,6 +21,7 @@ namespace Sandbox{
                 Syris::ShaderManager &shader_manager;
                 Syris::OrthographicCameraController::CreateInfo camera_info;
                 Syris::Statistics& statistics;
+                Syris::DynamicLibraryLoader& dll;
             };
             SimpleScene(CreateInfo info);
             ~SimpleScene();

@@ -89,34 +89,12 @@ namespace Sandbox::ecs::Bush {
             .current_stage = 0
         };
     }
-    
+    /*
     inline entt::entity new_bush_entity(glm::vec2 pos, Syris::EntityManager &entity_manager, entt::entity source, const Syris::engine_time::Time& time)
     {
-        g_number_of_bushes++;
-        /*TileInstancedData *instance_data = new TileInstancedData();
-        instance_data->tex_coord = ;
-        instance_data->translation = glm::scale(glm::translate(instance_data->translation, glm::vec3(pos, 1.f)), {0.5,0.5,1.f});
-
-        // entity system part
-        Syris::EntityManager::RenderInfo render_info{
-            .material = entity_manager.get_registry().ctx().get<SER_ID>().material_id,
-            //.size = sizeof(TileInstancedData),
-            .entity_data = instance_data
-        };
-        Syris::EntityManager::EntityInfo info{
-            .render_info = render_info
-        };
-        entt::registry &registry = entity_manager.get_registry();
-        entt::entity bush = entity_manager.new_entity(info);*/
         return Collectable::new_collectable_entity(pos, get_collectable_info(entity_manager.get_registry()), entity_manager, source, time);
-        /*registry.emplace<CPosition>(bush, pos);
-        registry.emplace<CTexture>(bush, textureBundle.src);
-        registry.emplace<CHasBerrys>(bush, false, time.get_frame_start());
-        registry.emplace<CTickFast>(bush, tick);
-        registry.emplace<CSource>(bush, source, 0.01f);
-        registry.emplace<CInteractable>(bush, "Collect Berries", ecs::CInteractable::InteractionType::Gader,  can_interact ,interact);
-        return bush;*/
     }
+    */
     inline Syris::Texture2DBundle defaultTextureBundle()
     {
         return Syris::Texture2DBundle{

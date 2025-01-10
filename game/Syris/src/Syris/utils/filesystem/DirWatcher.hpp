@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <expected>
+#include <unordered_map>
 
 namespace Syris{
     class DirWatcher{
@@ -33,8 +34,7 @@ namespace Syris{
 
         std::vector<Item> check();
         private:
-            std::string path;
+            std::string m_path;
             Status m_status;
-            std::vector<Item> m_items;
     };
 }

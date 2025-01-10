@@ -93,4 +93,20 @@ namespace Syris::meta{
         using ReturnType = ReturnType_;
         using Arguments = std::tuple<Args...>;
     };
+
+
+// Helper to unpack tuple with indices
+    template <typename Tuple, typename Func, std::size_t... Indices>
+    void for_each_tuple_impl(Tuple &&tuple, Func &&func, std::index_sequence<Indices...>)
+    {
+        (func.template operator()<Indices>(std::get<Indices>(tuple)), ...);
+    }
+
+    // Public interface
+    template <typename Tuple, typename Func>
+    void for_each_tuple(Tuple &&tuple, Func &&func)
+    {
+        constexpr std::size_t N = std::tuple_size_v<std::remove_reference_t<Tuple>>;
+        for_each_tuple_impl(std::forward<Tuple>(tuple), std::forward<Func>(func), std::make_index_sequence<N>{});
+    }
 }

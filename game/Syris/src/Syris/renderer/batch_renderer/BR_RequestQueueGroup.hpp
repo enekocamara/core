@@ -17,7 +17,7 @@ namespace Syris{
     template<typename T>
     concept IsRequest = std::is_same_v<T, BR_Request> || std::is_same_v<T, BR_RequestSparse>;
 
-    template<IsRequest RequestType>
+    template<IsRequest RequestType, typename...Types>
     class BR_RequestQueueGroup{
     public:
         BR_RequestQueueGroup(std::vector<std::size_t> sizes){
@@ -30,9 +30,25 @@ namespace Syris{
         BR_RequestQueueGroup(const BR_RequestQueueGroup &ref) = delete;
         BR_RequestQueueGroup& operator=(const BR_RequestQueueGroup &ref) = delete;
 
-        /*void add_request(BR_Request& request) requires RequestConcept<BR_Request>{
-            TODO();
-        }*/
+        void add_request(BR_Request& request) requires RequestConcept<BR_Request>{
+            std::tuple<Types...>& data = *static_cast<std::tuple<Types...>*>(request.data);
+            meta::for_each_tuple(data, [this, entity = request.entity]<std::size_t Index, typename T>(T& value){
+                BR_Request queue_request{
+                    .entity = entity,
+                    .data = &value
+                };
+                m_queues[Index].add_request(queue_request);
+
+            });/*
+            for (auto [index, data] : request.data){
+                BR_Request queue_request{
+                    .entity = request.entity,
+                    .data = data
+                };
+                m_queues[index].add_request(queue_request);
+            }*/
+            m_requests_count++;
+        }
         void add_request(BR_RequestSparse& request) requires RequestConcept<BR_Request>
         {
             ASSERT(request.data.size() == m_queues.size(), "Data for all queues must be sent");

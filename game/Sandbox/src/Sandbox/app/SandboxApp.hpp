@@ -15,7 +15,7 @@
 #include "Syris/events/Event.hpp"
 #include "Syris/Jobs/ThreadPool.hpp"
 #include "Syris/scene/SceneManager.hpp"
-#include "Syris/scripts/DLL_Watcher.hpp"
+#include "Syris/utils/filesystem/DLL_Watcher.hpp"
 #include "Syris/utils/filesystem/DirWatcher.hpp"
 
 #include "SandboxLayers.hpp"
@@ -66,6 +66,6 @@ namespace Sandbox{
         Syris::engine_time::Time m_time;
         Syris::ThreadPool m_thread_pool{6};
         Syris::DLL_Watcher m_dll_scripts;
-        Syris::DirWatcher
+      //  Syris::DirWatcher
     }; 
 }

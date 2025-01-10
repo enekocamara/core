@@ -26,7 +26,8 @@ namespace Syris{
                 //MemSpan temp;//temporally to fix issues
             };
             virtual ~BatchRenderer(){}
-            virtual void add_entity(BR_RequestSparse& request)= 0;
+            //virtual void add_entity(BR_RequestSparse& request)= 0;
+            virtual void add_entity(BR_Request& request)= 0;
             virtual void set_entity(BR_RequestSparse& request) = 0;
             virtual void remove_entity(BR_RemoveRequest& request) = 0;
             virtual void draw(Uniform *shader_uniforms) = 0;

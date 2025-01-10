@@ -27,6 +27,7 @@ namespace Syris{
     }
 
     /** @brief Manages requests in a thread safe way by pooling request */
+    template<typename...Types>
     class BR_RequestQueueSystem
     {
     public:
@@ -43,7 +44,10 @@ namespace Syris{
         BR_RequestQueueSystem &operator=(const BR_RequestQueueSystem &ref) = delete;
 
         void add_entity(BR_RequestSparse &request){
-            
+            auto[queues, lock] = m_add_queues.get();
+            queues.add_request(request);
+        }
+        void add_entity(BR_Request &request){
             auto[queues, lock] = m_add_queues.get();
             queues.add_request(request);
         }
@@ -158,8 +162,8 @@ namespace Syris{
         }
     private:
         std::vector<std::size_t> m_sizes;
-        MutexGuard<BR_RequestQueueGroup<BR_Request>> m_add_queues;
-        MutexGuard<BR_RequestQueueGroup<BR_RequestSparse>> m_set_queues;
+        MutexGuard<BR_RequestQueueGroup<BR_Request, Types...>> m_add_queues;
+        MutexGuard<BR_RequestQueueGroup<BR_RequestSparse, Types...>> m_set_queues;
         MutexGuard<std::vector<entt::entity>> m_remove_queue;
         MutexGuard<std::vector<float>> m_attributes;
 

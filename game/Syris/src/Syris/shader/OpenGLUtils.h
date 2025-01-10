@@ -5,7 +5,7 @@
 #include <expected>
 #include <exception>
 
-#include "Syris/utils/file/readfile.h"
+#include "Syris/utils/filesystem/readfile.h"
 #include "Syris/include/OpenGL.h"
 namespace Syris{
     inline std::expected<void, std::string> check_compile_errors(unsigned int shader_id)
@@ -34,25 +34,19 @@ namespace Syris{
 
         const char *vertex_source_c = vertex_source.c_str();
         const char *fragment_source_c = fragment_source.c_str();
-        CORE_INFO("COMPILING VERTEX SHADER");
         vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader_id, 1, &vertex_source_c, NULL);
-        CORE_INFO("LOADED");
         glCompileShader(vertex_shader_id);
-        CORE_INFO("COMPILED");
         auto vertex_compile_result = check_compile_errors(vertex_shader_id);
         if (!vertex_compile_result)
             return std::unexpected(std::format("Failed to compile vertex shader: {}", vertex_compile_result.error()));
-        CORE_INFO("VERTEX COMPILED");
         // fragment Shader
         fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment_shader_id, 1, &fragment_source_c, NULL);
         glCompileShader(fragment_shader_id);
-        CORE_INFO("HELLO?");
         auto fragment_compile_result = check_compile_errors(fragment_shader_id);
         if (!fragment_compile_result)
             return std::unexpected(std::format("Failed to compile fragment shader: {}", fragment_compile_result.error()));
-        CORE_INFO("FRAGMENT COMPILED");
 
         glAttachShader(program_id, vertex_shader_id);
         glAttachShader(program_id, fragment_shader_id);
@@ -74,10 +68,8 @@ namespace Syris{
             }else
                 return std::unexpected("failed to link shader program: openGL error: unknown");
         }
-        CORE_INFO("PROGRAM LINKED");
         glDeleteShader(vertex_shader_id);
         glDeleteShader(fragment_shader_id);
-        CORE_INFO("SHADERS CLEANED UP");
         return std::expected<void, std::string>{};
     }
     

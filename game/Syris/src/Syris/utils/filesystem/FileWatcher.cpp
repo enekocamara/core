@@ -1,7 +1,7 @@
 #include "FileWatcher.hpp"
 #include "Syris/log/Log.h"
 #include "Syris/utils/Debug.h"
-#include "Syris/utils/file/readfile.h"
+#include "Syris/utils/filesystem/readfile.h"
 
 namespace Syris{
     FileWatcher::FileWatcher(std::string path):m_path(path){

@@ -71,7 +71,7 @@ namespace Sandbox{
 
     SandboxScene::SandboxScene(CreateInfo info) :
         m_material_manager({info.statistics}),
-        m_entity_manager({ m_material_manager}),
+        m_entity_manager({ m_material_manager, info.dll}),
         m_texture_atlas(info.atlas_path),
         m_shader_manager(info.shader_manager),
         m_thread_pool(info.thread_pool),
@@ -105,7 +105,7 @@ namespace Sandbox{
         m_shader_id = shader_res.value(); 
 
         make_entity_renderer();
-        m_entity_manager.get_registry().ctx().emplace<ecs::SER_ID>(m_entity_renderer_id);
+        m_entity_manager.get_registry().ctx().emplace<ecs::entities::SER_ID>(m_entity_renderer_id);
         m_entity_manager.get_registry().ctx().emplace<ecs::CollectableManager>();
         std::cout << "scene entity renderer id: " << (int)m_entity_renderer_id << '\n';
         World::CreateInfo world_info = World::CreateInfo{
@@ -126,8 +126,10 @@ namespace Sandbox{
             .left = GLFW_KEY_A,
             .right = GLFW_KEY_S,
         };
-        m_player_id = ecs::Player::newPlayerEntity({0,0}, keys, texture, m_entity_manager, m_entity_renderer_id);
-        ecs::Chicken::newChickenEntity({0,0}, m_entity_manager, m_entity_renderer_id, m_dll);
+        m_player_id = m_entity_manager.new_entity<std::tuple<QuadTexInstancedData>(Syris::EntityManager&,entt::entity, glm::vec2&&, ecs::MovementKeys)>(m_entity_renderer_id, &ecs::Player::on_create, glm::vec2{0,0}, keys);
+        //ecs::Chicken::newChickenEntity({0,0}, m_entity_manager, m_entity_renderer_id, m_dll);
+        //m_entity_manager.new_entity_dll<std::tuple<QuadTexInstancedData>(Syris::EntityManager&, entt::entity, glm::vec2)>(m_entity_renderer_id, "chicken", glm::vec2{0,0});//pass init values
+        m_entity_manager.new_entity_dll_better<std::tuple<QuadTexInstancedData>, glm::vec2>(m_entity_renderer_id, "chicken", glm::vec2{0,0});
         Syris::Logger::client_info("sandbox scene successfully created");
         //hpx::async(std::bind(&SandboxScene::sim_loop, this));
         m_thread_pool.enqueue(std::bind(&SandboxScene::sim_loop, this));
@@ -144,10 +146,10 @@ namespace Sandbox{
         std::vector<std::future<void>> futures;
         while(m_sim_loop_running){
             m_sim_fps.next_frame();
-
+            m_entity_manager.update_dll();
+            auto lock = m_entity_manager.get_dll().block_reloading();
             m_entity_manager.lock_active_mutex();
-            auto tick_group = m_entity_manager.get_registry().group<ecs::CTickFast>();
-
+            auto tick_group = m_entity_manager.get_registry().group<Syris::ecs::OnUpdate>();
 
             const uint32_t num_entities = tick_group.size();
             const uint32_t chunk_size_value = (num_entities + m_sim_thread_count - 1) / m_sim_thread_count;
@@ -161,7 +163,7 @@ namespace Sandbox{
                         for (uint32_t entt_index = start; entt_index < end; entt_index++){
                             entt::entity entity = tick_group[entt_index];
                             //if (m_entity_manager.get_registry().all_of<Syris::ecs::Active>(entity))
-                                tick_group.get<ecs::CTickFast>(entity).tick(m_entity_manager, entity, m_sim_fps.get_time());
+                                tick_group.get<Syris::ecs::OnUpdate>(entity).on_update(m_entity_manager, entity, m_sim_fps.get_time());
                         } 
                     }));
             }

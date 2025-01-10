@@ -26,7 +26,7 @@ namespace Sandbox {
         : m_graphics_context(Syris::GraphicsContext::new_context(info.gc_info)),
           m_scene_manager({info.app_init.statistics}),
           m_statistics(info.app_init.statistics),
-          m_dll_scripts("C:\\Users\\eneko\\dev\\asharis\\game\\build\\Debug\\Scripts.dll")
+          m_dll_scripts("C:\\Users\\eneko\\dev\\asharis\\game\\build\\dll\\Debug", "Scripts")
     {
         /*
         const char* glsl_version = "#version 460";//exists in imguilayer
@@ -42,8 +42,8 @@ namespace Sandbox {
         // m_data(SandboxData::CreateInfo{m_registry, info.atlas_path, m_graphics_context, info.camera_info, info.app_init.statistics})
         // scene creation
         try{
-            m_scene_simple = m_scene_manager.new_scene(std::make_unique<SimpleScene>(SimpleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics }));
-            m_scene_triangle = m_scene_manager.new_scene(std::make_unique<TriangleScene>(TriangleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics }));
+            m_scene_simple = m_scene_manager.new_scene(std::make_unique<SimpleScene>(SimpleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics, m_dll_scripts.get_dll()}));
+            m_scene_triangle = m_scene_manager.new_scene(std::make_unique<TriangleScene>(TriangleScene::CreateInfo{ info.atlas_path, m_graphics_context->get_shader_manager(), info.camera_info, info.app_init.statistics}));
             m_scene_sandbox = m_scene_manager.new_scene(std::make_unique<SandboxScene>(SandboxScene::CreateInfo{info.atlas_path, m_graphics_context->get_shader_manager(),info.camera_info, info.app_init.statistics,m_thread_pool, *m_graphics_context.get(), m_dll_scripts.get_dll()}));
         }catch(std::runtime_error& e){
             BREAK_POINT(std::format("Failed to create scene {}", e.what()));

@@ -96,7 +96,7 @@ namespace Syris{
         style.Colors[ImGuiCol_TitleBg] = ImVec4(0, 0, 0, 0);       // Make title bar background invisible
         style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0, 0, 0, 0); // Invisible when active
 
-
+        /*
         Renderer::push_framebuffer(&m_render_framebuffer);
         glViewport(0, 0, m_render_framebuffer.get_size().x, m_render_framebuffer.get_size().y); // Match the size of the framebuffer
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
@@ -105,6 +105,7 @@ namespace Syris{
         m_layer_manager.on_update(time);
 
         ImGui::SetNextWindowBgAlpha(0.0f); // Make the background fully transparent (optional)
+        
         ImGui::Begin("render", nullptr, 0);
 
 
@@ -114,13 +115,18 @@ namespace Syris{
 
         ImGui::End();
         Renderer::pop_framebuffer();
+        */
+
+        m_layer_manager.on_update(time);
+
+        //
 
         style.WindowPadding = oldPadding;
         style.WindowRounding = oldRounding;
         style.Colors[ImGuiCol_TitleBg] = oldBgColor;
         style.Colors[ImGuiCol_TitleBgActive] = oldBgActiveColor;
 
-        m_fps.render_frame_count();
+        //m_fps.render_frame_count();
 
         ImGui::Render();
 

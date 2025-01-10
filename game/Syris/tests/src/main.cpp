@@ -1,8 +1,11 @@
 #include <gtest/gtest.h>
+#include <chrono>
+#include <thread>
 
 #include "Syris/utils/containers/Singleton.hpp"
 #include "Syris/utils/world_generation/ChunkSystem.hpp"
-#include "Syris/utils/file/FileWatcher.hpp"
+#include "Syris/utils/filesystem/FileWatcher.hpp"
+#include "Syris/utils/filesystem/DLL_Watcher.hpp"
 
 TEST(SampleTest, StaticTemplates) {
     Syris::Singleton<int>::init<int>(10);
@@ -14,6 +17,7 @@ TEST(SampleTest, Chunks) {
     EXPECT_EQ(10, Syris::Singleton<int>::get());
 }
 
+/*
 constexpr bool watch_file_test = true;
 TEST(SampleTest, WatchFile) {
     if constexpr (watch_file_test) {
@@ -24,6 +28,19 @@ TEST(SampleTest, WatchFile) {
                 watcher.set_up_to_date();
             }
         }
+    }
+}*/
+
+TEST(SampleTest, WatchDLL) {
+    try{
+        Syris::DLL_Watcher watcher("C:\\Users\\eneko\\dev\\asharis\\game\\Build\\dll\\Debug", "Scripts");
+        while (true){
+            watcher.check();
+            std::this_thread::sleep_for(std::chrono::seconds(3));
+        }
+    }catch(std::exception& e){
+        FAIL() << e.what();
+        return;
     }
 }
 

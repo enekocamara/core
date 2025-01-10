@@ -30,7 +30,7 @@ foreach(file ${SOURCES})
 endforeach()
 
 add_executable(Core ${SOURCES})
-target_link_libraries(Core PRIVATE Sandbox)
+target_link_libraries(Core PUBLIC Sandbox)
 target_include_directories(Core PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/src
 )

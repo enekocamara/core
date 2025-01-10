@@ -2,8 +2,8 @@
 
 #include "AutoShader.hpp"
 #include "Syris/types/Type.h"
-#include "Syris/utils/file/readfile.h"
-#include "Syris/utils/file/writeFile.h"
+#include "Syris/utils/filesystem/readfile.h"
+#include "Syris/utils/filesystem/writeFile.h"
 #include "Syris/types/OpenGLToSyrisTypes.h"
 #include "Syris/utils/std/string_view.h"
 #include "OpenGLUtils.h"
@@ -13,7 +13,6 @@
 
 namespace Syris{
     AutoShader::AutoShader(CreateInfo info):m_info(info){
-        CORE_INFO(std::format("compiling shader: {}", info.path));
         m_vertex_path = std::format("{}\\vertex.sy", info.path);
         m_fragment_path = std::format("{}\\fragment.sy", info.path);
         m_last_change = std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path));
@@ -22,11 +21,9 @@ namespace Syris{
             BREAK_POINT(std::format("Failed to create autoshader: {}", res.error()));
         }
             //throw std::runtime_error(std::format("Failed to create autoshader, {}", res.error()));
-        CORE_INFO("SHADER COMPILED");
         m_attributes = res.value().m_attributes;
         m_uniforms = res.value().m_uniforms;
         m_program = res.value().m_program;
-        CORE_INFO("AUTO SHADER CREATED");
     };
 
     std::expected<AutoShader::CompiledShaderBundle, std::string> AutoShader::compile_shaders(){
@@ -35,26 +32,19 @@ namespace Syris{
         
         std::string vertex_source = utils::read_file(m_vertex_path.c_str()).value();
         std::string fragment_source = utils::read_file(m_fragment_path.c_str()).value();
-        CORE_INFO("SHADER FILES READ");
 
         auto parsed_vertex = parse_shader(vertex_source, true, bundle);
         if (!parsed_vertex)
             return std::unexpected(std::format("Failed to parse vertex shader: {}", parsed_vertex.error()));
-        CORE_INFO("VERTEX PARSED");
         auto parsed_fragment = parse_shader(fragment_source, false, bundle);
         if (!parsed_fragment)
             return std::unexpected(std::format("Failed to parse fragment shader: {}", parsed_fragment.error()));
-        CORE_INFO("FRAGMENT PARSED");
         auto compile_res = compile_shaders_source(bundle.m_program, parsed_fragment.value(), parsed_vertex.value());
         CHECK_GL_ERROR();
-        std::cout << "HELLO";
         if (!compile_res)
             return std::unexpected(std::format("Failed to compile shaders: {}", compile_res.error()));
-        std::cout << "????";
-        CORE_INFO("SHADERS COMPILED");
         write_file(std::format("{}\\parsed_vertex.glsl", m_info.path), parsed_vertex.value());
         write_file(std::format("{}\\parsed_fragment.glsl", m_info.path), parsed_fragment.value());
-        CORE_INFO("SUCCESS??");
         return bundle;
     }
 
@@ -65,7 +55,6 @@ namespace Syris{
         std::string parsed_file;
         bool copy_rest_of_file = false;
         for (auto& line : lines){
-            CORE_INFO("LINE"); 
             if (copy_rest_of_file){
                 parsed_file += line;
                 parsed_file += '\n';
@@ -95,7 +84,6 @@ namespace Syris{
                 parsed_file += '\n';
             }
         }
-        CORE_INFO("FINISH LOOP");
         return parsed_file;
     }
 
@@ -187,7 +175,6 @@ namespace Syris{
     void AutoShader::on_update(const engine_time::Time& time){
         if (m_last_change != std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path))){
             m_last_change = std::max(std::filesystem::last_write_time(m_vertex_path), std::filesystem::last_write_time(m_fragment_path));
-            CORE_INFO("RECOMPILING SHADER");
             auto res = compile_shaders();
             if (!res){
                 CORE_INFO("Failed to refresh shader");
@@ -196,7 +183,6 @@ namespace Syris{
             m_attributes = res.value().m_attributes;
             m_uniforms = res.value().m_uniforms;
             m_program = res.value().m_program;
-            CORE_INFO("SHADER RECOMPILED");
         }
     }
 }

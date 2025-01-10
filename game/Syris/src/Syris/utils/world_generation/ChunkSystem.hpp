@@ -2,8 +2,15 @@
 #include "Syris/utils/containers/GridLookUp.hpp"
 #include "Chunk.hpp"
 #include "Syris/utils/containers/MutexGuard.hpp"
+#include <type_traits>
 
 namespace Syris{
+
+    template<typename T>
+    concept ValidPosition = requires(T t){
+        {t.pos} -> std::convertible_to<glm::vec2>;
+    };
+
     class ChunkSystem{
         private:
             struct MovedEntity{
@@ -28,6 +35,13 @@ namespace Syris{
             //thread safe, it will poll all request and execute them with sync
             void move_entity(glm::vec2 old_world_pos, glm::vec2 new_world_pos, entt::entity); 
             void add_entity(entt::entity entity, glm::vec2 world_position);
+            template<ValidPosition T>
+            bool add_entity_if_implements_t(entt::registry& registry, entt::entity entity){
+                T* pos = registry.try_get<T>(entity);
+                if (pos == nullptr)
+                    return false;
+                add_entity(entity, pos->pos);
+            }
 
             void remove_entity(entt::entity entity);
             void remove_entity(entt::entity entity, glm::vec2 world_position);

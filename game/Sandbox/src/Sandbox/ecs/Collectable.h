@@ -33,44 +33,29 @@ namespace Sandbox::ecs::Collectable {
                         .entity = collectable,
                         .data = {entity_data.begin(), entity_data.end() }//&instance_data
                     };
-                    entity_manager.get_batch_renderer_manager().set_entity(entity_manager.get_registry().ctx().get<SER_ID>().renderer_id, request);
+                    entity_manager.get_batch_renderer_manager().set_entity(entity_manager.get_registry().ctx().get<entities::SER_ID>().renderer_id, request);
                 }
             }
         } else{
             Syris::BR_RemoveRequest request = {collectable};
-            entity_manager.get_batch_renderer_manager().get_renderer(entity_manager.get_registry().ctx().get<SER_ID>().renderer_id)->remove_entity(request);
+            entity_manager.get_batch_renderer_manager().get_renderer(entity_manager.get_registry().ctx().get<entities::SER_ID>().renderer_id)->remove_entity(request);
             entity_manager.delete_entity(collectable);
         }
     }
 
-    inline entt::entity new_collectable_entity(glm::vec2 pos, CCollectable collectable_info, Syris::EntityManager &entity_manager, entt::entity source, const Syris::engine_time::Time& time)
+    inline void on_create(Syris::EntityManager& entity_manager, entt::entity collectable,std::tuple<QuadTexInstancedData>& instance_data, glm::vec2 pos, CCollectable collectable_info, entt::entity source, const Syris::engine_time::Time& time)
     {
-        QuadTexInstancedData instance_data;
         auto stages = entity_manager.get_registry().ctx().get<CollectableManager>().get_collectable(collectable_info.id);
-        instance_data.tex_coord = {stages[collectable_info.current_stage].texture.min, stages[collectable_info.current_stage].texture.max},
-        instance_data.translation = glm::translate(glm::mat4(1.f), glm::vec3(pos, 1.f));
-
-        std::array<std::pair<std::size_t, void*>, 1> data{};
-        data[0] = { 0, &instance_data };
-        // entity system part
-        Syris::EntityManager::RenderInfo render_info{
-            .renderer = entity_manager.get_registry().ctx().get<SER_ID>().renderer_id,
-            .request = {data.begin(), data.end()}
-        };
-        Syris::EntityManager::EntityInfo info{
-            .render_info = render_info
-        };
-        entt::registry &registry = entity_manager.get_registry();
-        //std::cout << "New collectable\n";
-        entt::entity collectable = entity_manager.new_entity(info, [&entity_manager, pos, collectable_info, source](entt::entity collectable){
-            entt::registry& registry = entity_manager.get_registry();
-            registry.emplace<Syris::ecs::ChunkedPosition>(collectable, pos);
-            registry.emplace<CCollectable>(collectable, collectable_info);
-            registry.emplace<CTickFast>(collectable, tick);
-            registry.emplace<CSource>(collectable, source, 0.01f);
-        });
         
+        std::get<0>(instance_data).tex_coord = {stages[collectable_info.current_stage].texture.min, stages[collectable_info.current_stage].texture.max};
+        std::get<0>(instance_data).translation = glm::translate(glm::mat4(1.f), glm::vec3(pos, 1.f));
+
+        entt::registry &registry = entity_manager.get_registry();
+        registry.emplace<Syris::ecs::ChunkedPosition>(collectable, pos);
+        registry.emplace<CCollectable>(collectable, collectable_info);
+        registry.emplace<CTickFast>(collectable, tick);
+        registry.emplace<CSource>(collectable, source, 0.01f);
         //registry.emplace<CInteractable>(collectable, "Collect Berries", ecs::CInteractable::InteractionType::Gader,  can_interact ,interact);
-        return collectable;
+
     }
 };

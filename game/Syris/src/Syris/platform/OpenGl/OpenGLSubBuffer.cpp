@@ -90,7 +90,6 @@ namespace Syris{
         uint32_t attrib_index = m_attribute_index_padding;
         uint64_t stride = 0;
         uint64_t skip_size = 0;
-        CORE_INFO("Setting buffer attributes");
         for (auto& attribute : info.get_attributes()){
             stride += dyn_sizeof_type(attribute.type);
         }

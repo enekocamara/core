@@ -47,7 +47,7 @@ namespace Syris{
         ~OpenGLBatchRenderer(){
         }
 
-        void add_entity(BR_RequestSparse &request) override{
+        void add_entity(BR_Request &request) override{
             m_requests_queues.add_entity(request);
         }
         void set_entity(BR_RequestSparse &request) override{
@@ -250,6 +250,6 @@ namespace Syris{
         std::unordered_map<entt::entity, uint32_t> m_entity_to_index;
         std::unordered_map<uint32_t, entt::entity> m_index_to_entity;
         std::vector<std::size_t> m_type_sizes = get_sizes<Types...>();
-        BR_RequestQueueSystem m_requests_queues;
+        BR_RequestQueueSystem<Types...> m_requests_queues;
     };
 }

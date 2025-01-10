@@ -15,9 +15,14 @@
 #include "CollectableManager.hpp"
 
 namespace Sandbox::ecs {
-    struct SER_ID{
-        Syris::BatchRendererManager::BR_ID renderer_id;
-    };
+
+    namespace entities
+    {
+        struct SER_ID
+        {
+            Syris::BatchRendererManager::BR_ID renderer_id;
+        };
+    }
     template<typename T>
     class AsyncComponent{
     public:
@@ -74,15 +79,15 @@ namespace Sandbox::ecs {
         CKeyBinded(const CKeyBinded& ref): keys(ref.keys){}
     };
     struct CPosition {
-        glm::fvec2 pos;
-        CPosition(glm::fvec2 pos): pos(pos){}
+        glm::vec2 pos;
+        CPosition(glm::vec2 pos): pos(pos){}
         CPosition(const CPosition& ref): pos(ref.pos){}
         CPosition(): pos({0,0}){}
     };
-    struct CDir { glm::fvec2 value; };
+    struct CDir { glm::vec2 value; };
     struct CSpeed { glm::vec2 speed; };
     struct CMovementSpeed{float movement_speed;};
-    struct CAcceleration { glm::fvec2 value; };
+    struct CAcceleration { glm::vec2 value; };
     struct CTile{
         std::size_t index;
     };
@@ -108,6 +113,10 @@ namespace Sandbox::ecs {
         std::function<void(Syris::EntityManager& entity_manager, entt::entity,const Syris::engine_time::Time& time)> tick;
     };
     struct CTickFast {
+        using FunctionType = Syris::FastFunction<void(Syris::EntityManager&, entt::entity, const Syris::engine_time::Time&)>;
+        FunctionType tick;
+    };
+    struct CDLLFastFuntion{
         using FunctionType = Syris::FastFunction<void(Syris::EntityManager&, entt::entity, const Syris::engine_time::Time&)>;
         FunctionType tick;
     };

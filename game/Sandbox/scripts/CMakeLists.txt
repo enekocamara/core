@@ -26,25 +26,23 @@ foreach(file ${SOURCES})
 endforeach()
 
 
-# Get the current date and time
-execute_process(
-  COMMAND date "+%Y%m%d%H%M%S"
-  OUTPUT_VARIABLE CURRENT_DATE_TIME
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-set(DLL_NAME "Scripts_${CURRENT_DATE_TIME}.dll")
+# Get the current date and time to append to the DLL name
+string(TIMESTAMP CURRENT_DATE_TIME "%Y%m%d_%H%M%S")
 
+# Define the custom DLL name with a timestamp
+set(DLL_NAME "Scripts_${CURRENT_DATE_TIME}")
 
 add_library(Scripts SHARED ${SOURCES})
 
 # Set the output name for the DLL
 set_target_properties(Scripts PROPERTIES
-  OUTPUT_NAME ${DLL_NAME}
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+  RUNTIME_OUTPUT_NAME  ${DLL_NAME}
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/dll
 )
 
 target_link_libraries(Scripts PRIVATE Sandbox)
 #target_link_libraries(Sandbox PRIVATE Scripts)
+
 target_include_directories(Scripts PRIVATE
     ${CMAKE_SOURCE_DIR}/Syris/vendor/fastNoise
     ${CMAKE_SOURCE_DIR}/Sandbox/src

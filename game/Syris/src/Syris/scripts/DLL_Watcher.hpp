@@ -4,6 +4,7 @@
 #include "Syris/utils/filesystem/FileWatcher.hpp"
 
 namespace Syris{
+    /*
     class DLL_Watcher{
         public:
             DLL_Watcher() = delete;
@@ -17,4 +18,5 @@ namespace Syris{
             FileWatcher m_file_watcher;
             DynamicLibraryLoader m_dll;
     };
+    */
 }

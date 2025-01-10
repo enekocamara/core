@@ -1,6 +1,7 @@
 #include "DLL_Watcher.hpp"
 
 namespace Syris{
+    /*
     DLL_Watcher::DLL_Watcher(std::string path):m_dll({path}),m_file_watcher(path){
 
     }
@@ -17,4 +18,5 @@ namespace Syris{
         else
             BREAK_POINT("Shouldn't be another event");
     }
+    */
 }

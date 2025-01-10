@@ -21,8 +21,9 @@ set(BUILD_GMOCK OFF CACHE BOOL "Disable Google Mock" FORCE)
 
 add_subdirectory(Sandbox)
 add_subdirectory(Core)
+add_subdirectory(GameEngine)
 add_subdirectory(Sandbox/scripts)
-add_subdirectory(Test)
+#add_subdirectory(Test)
 add_subdirectory(Syris/tests)
 
 add_subdirectory(Syris)

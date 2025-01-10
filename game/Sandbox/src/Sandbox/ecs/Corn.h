@@ -46,8 +46,9 @@ namespace Sandbox::ecs::Corn {
             .current_stage = 0
         };
     }
-    
+    /*
     inline entt::entity new_corn_entity(glm::vec2 pos, Syris::EntityManager &entity_manager, entt::entity source, const Syris::engine_time::Time& time){
         return Collectable::new_collectable_entity(pos, get_collectable_info(entity_manager.get_registry()), entity_manager, source, time);
     }
+    */
 };
