@@ -1,13 +1,10 @@
 #cmake_minimum_required(VERSION 3.30.2)
 cmake_minimum_required(VERSION 3.19)
 # Set the project name and supported languages
-project(game CXX)
-
+project(PROJECT_%PROJECT_NAME% CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
-
-
 
 # Enable multi-processor compilation (if supported by the compiler)
 if(MSVC)
@@ -16,36 +13,31 @@ else()
     add_compile_options(-j$(nproc))
 endif()
 
-
 set(BUILD_GMOCK OFF CACHE BOOL "Disable Google Mock" FORCE)
 
-add_subdirectory(Sandbox)
-add_subdirectory(Core)
-add_subdirectory(GameEngine)
-add_subdirectory(Sandbox/scripts)
-#add_subdirectory(Test)
-add_subdirectory(Syris/tests)
+add_subdirectory(EntryPoint)
 
-add_subdirectory(Syris)
-add_subdirectory(Syris/tests/resources/dll)
-add_subdirectory(Syris/vendor/imgui)
-add_subdirectory(Syris/vendor/imguiDocking)
-add_subdirectory(Syris/vendor/Glad)
-add_subdirectory(Syris/vendor/GLFW)
-add_subdirectory(Syris/vendor/spdlog)
-add_subdirectory(Syris/vendor/googletests)
+add_subdirectory(src)
 
+add_subdirectory(vendor/syris)
+add_subdirectory(vendor/syris/tests/resources/dll)
+add_subdirectory(vendor/syris/vendor/imgui_docking)
+add_subdirectory(vendor/syris/vendor/GLFW)
+add_subdirectory(vendor/syris/vendor/spdlog)
+add_subdirectory(vendor/syris/vendor/googletests)
+
+set(GLAD_SOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/syris/vendor/glad/src" CACHE STRING "Path to glad sources")
+add_subdirectory(vendor/syris/vendor/glad)
 #add_subdirectory(Syris/vendor/googletests)
 
 set_target_properties(glfw PROPERTIES FOLDER "vendor/GLFW3")
 set_target_properties(uninstall PROPERTIES FOLDER "vendor/GLFW3")
 set_target_properties(update_mappings PROPERTIES FOLDER "vendor/GLFW3")
-set_target_properties(ImGui PROPERTIES FOLDER "vendor")
-set_target_properties(ImGuiDocking PROPERTIES FOLDER "vendor")
-set_target_properties(Glad PROPERTIES FOLDER "vendor")
+set_target_properties(im_gui PROPERTIES FOLDER "vendor")
+set_target_properties(glad PROPERTIES FOLDER "vendor")
 set_target_properties(spdlog PROPERTIES FOLDER "vendor")
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
 
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EntryPoint)
 
 function(set_target_properties_for_subdirectory subdir folder_name)
   get_property(targets DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir} PROPERTY BUILDSYSTEM_TARGETS)

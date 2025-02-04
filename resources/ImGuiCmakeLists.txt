@@ -1,0 +1,39 @@
+cmake_minimum_required(VERSION 3.14)
+
+project(im_gui CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set the output directory structure
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+
+file(GLOB SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_submodule/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_submodule/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/git_submodule/*.h
+)
+
+# Automatically organize files in Visual Studio
+foreach(file ${SOURCES})
+    # Get relative path and convert to Windows style
+    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" relative_path ${file})
+    string(REPLACE "/" "\\" relative_path ${relative_path})
+    get_filename_component(directory ${relative_path} DIRECTORY)
+    
+    # Create a source group for each directory
+    source_group("${directory}" FILES ${file})
+endforeach()
+
+add_library(im_gui STATIC ${SOURCES})
+target_include_directories(im_gui PUBLIC
+    ${CMAKE_SOURCE_DIR}
+)
+
+if(MSVC)
+    add_compile_options(/MP)
+else()
+    add_compile_options(-j$(nproc))
+endif() 

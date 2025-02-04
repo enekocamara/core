@@ -1,4 +1,4 @@
-#include "Core/Core.hpp"
+#include "EntryPoint/EntryPoint.hpp"
 #include <time.h>
 
 #include <gtest/gtest.h>

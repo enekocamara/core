@@ -11,11 +11,23 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands{
     ///create new project
-    New(NewProject)
+    New(NewProject),
+    ///builds project
+    Build(BuildProject),
+    ///glad test
+    Glad(Glad),
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct NewProject{
     #[arg(short = 'n', long)]
     pub name : String
+}
+
+#[derive(Args)]
+pub struct BuildProject{
+}
+
+#[derive(Args)]
+pub struct Glad{
 }
