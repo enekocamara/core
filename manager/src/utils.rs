@@ -1,6 +1,10 @@
-use std::path::PathBuf;
+use std::env::current_dir;
+use std::fmt::format;
+use std::path::{PathBuf, Path};
 use fs_extra::dir::{self,CopyOptions};
 use std::fs;
+use std::process::Command;
+use regex::Regex;
 
 //not losing my time with this heavily based on this code
 //https://stackoverflow.com/questions/38406793/why-is-capitalizing-the-first-letter-of-a-string-so-convoluted-in-rust
@@ -21,4 +25,21 @@ pub fn copy_dir_rec(src : &PathBuf, dst : &PathBuf) -> Result<u64, fs_extra::err
     options.copy_inside = true; // Copy contents inside the folder
     // Copy the directory
     dir::copy(src, dst, &options)
+}
+
+pub fn insert_after_flag(text : &mut String, flag : &str, text_to_be_inserted : &str) -> Result<(), String>{
+    if let Some(flag_pos) = text.find(flag){
+        text.insert_str(flag_pos + flag.len(), text_to_be_inserted);
+        return Ok(())
+    }
+    Err(format!("'{flag}' not found in string"))
+}
+
+pub fn get_cmake_project_name(path_to_cmake_dir : PathBuf) -> Result<String, String>{
+    let cmake_content = fs::read_to_string(path_to_cmake_dir.join("CMakeLists.txt")).map_err(|e| format!("Failed to read cmakefile: {e}"))?;
+    let re = Regex::new(r#"project\(\s*([^\s\)]+)"#).unwrap();
+    re.captures(&cmake_content)
+        .ok_or(format!("Failed to find project(*)"))?
+        .get(1).map(|m| m.as_str().to_string())
+        .ok_or(format!("Failed to get project name"))
 }

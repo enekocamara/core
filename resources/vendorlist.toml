@@ -1,0 +1,22 @@
+[vendor]
+glad = "hola"
+asio = { git_url = "https://github.com/chriskohlhoff/asio", include_path = "asio/include"}
+entt = {git_url = "https://github.com/skypjack/entt", include_path = "single_include"}
+fastNoise = {curl_url = "https://github.com/Auburn/FastNoiseLite/blob/master/Cpp/FastNoiseLite.h"}
+glfw = { git_url = "https://github.com/glfw/glfw", include_path = "include"}
+glm = {git_url = "https://github.com/g-truc/glm"}
+goodletests = {git_url = "https://github.com/google/googletest"}
+imgui_docking = {git_url="https://github.com/ocornut/imgui", git_branch="docking"}
+lohmanjson = {git_url = "https://github.com/nlohmann/json", include_path="include"}
+spdlog = { git_url = "https://github.com/gabime/spdlog", include_path = "include"}
+                
+#glad = "hola"
+#asio = { source = {git_url = "https://github.com/chriskohlhoff/asio" }, include_path = "asio/include"}
+#entt = {source = {git_url = "https://github.com/skypjack/entt" }, include_path = "include"}
+#fastNoise = {source = {curl_url = "https://github.com/Auburn/FastNoiseLite/blob/master/Cpp/FastNoiseLite.h"}}
+#glfw = { source = {git_url = "https://github.com/glfw/glfw"}, include_path = "include"}
+#glm ={source ={git_url = "https://github.com/g-truc/glm"}}
+#goodletests = {source = {git_url = "https://github.com/google/googletest"}}
+#imgui_docking = {source = {git_url="https://github.com/ocornut/imgui", git_branch="docking"}}
+#lohmanjson = {source = {git_url = "https://github.com/nlohmann/json"}, include_path="include"}
+#spdlog = { source = {git_url = "https://github.com/gabime/spdlog"}, include_path = "include"}

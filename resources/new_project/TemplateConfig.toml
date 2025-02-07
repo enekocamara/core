@@ -1,0 +1,5 @@
+project = "%PROJECT_NAME%"
+target = "%PROJECT_NAME%"
+
+[targets]
+%PROJECT_NAME% = "executable"
