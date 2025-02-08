@@ -15,8 +15,6 @@ pub enum Commands{
     #[command(subcommand)]
     Syris(SyrisCommands),
     ///config check
-    Config(Config),
-    ///makes a cmakelists
     New(NewProject),
     ///adds a library
     Add(AddLibrary),
@@ -33,6 +31,12 @@ pub enum SyrisCommands{
     ///builds project
     Build(BuildProject)
     
+}
+
+#[derive(Args, Clone)]
+pub struct NewProject{
+    #[arg(short = 'n', long)]
+    pub name : String
 }
 #[derive(Args, Clone)]
 pub struct AddLibrary{
@@ -51,11 +55,6 @@ pub struct NewSyrisProject{
     #[arg(short = 'n', long)]
     pub name : String
 }
-#[derive(Args, Clone)]
-pub struct NewProject{
-    #[arg(short = 'n', long)]
-    pub name : String
-}
 
 #[derive(Args)]
 pub struct BuildProject{
@@ -64,9 +63,3 @@ pub struct BuildProject{
 #[derive(Args)]
 pub struct Glad{
 }
-
-#[derive(Args)]
-pub struct Config{
-    
-}
-

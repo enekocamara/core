@@ -1,21 +1,19 @@
-use indicatif::{MultiProgress,ProgressBar, ProgressStyle};
-use tokio::time::{ sleep, Duration};
-use std::fmt::format;
-use std::{fs, path};
-use std::path::{PathBuf, Path};
+use indicatif::MultiProgress;
+use std::fs;
+use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;
-use std::result::Result;
 use std::collections::HashMap;
 use serde::{Deserialize,Serialize};
 use git2::{Repository, Submodule};
+use scopeguard::defer;
 
 use crate::spinner::Spinner;
-use crate::config::{Config, ConfigFile, Vendor, VendorSpec, VendorSourceGit, VendorSourceCurl, VendorSource, CmakeModule};
+use crate::config::{Config, ConfigFile, Vendor, VendorSourceCurl, VendorSource};
 use crate::args::{NewProject, NewSyrisProject, AddLibrary, RemoveLibrary};
-use crate::{new_project, utils};
+use crate::{Result,utils};
 
-fn remove_vendor_git_submodule<'re>(name : &str, project_root : &Path) -> Result<(), String>{
+fn remove_vendor_git_submodule<'re>(name : &str, project_root : &Path) -> Result<()>{
     let output = Command::new("git")
         .args(["submodule", "deinit", "-f", format!("vendor/{name}").as_str()])
         .current_dir(project_root)
@@ -48,7 +46,9 @@ fn remove_vendor_git_submodule<'re>(name : &str, project_root : &Path) -> Result
     fs::remove_dir_all(&path_to_remove).map_err(|e| format!("Failed to remove dir {:?}: {e}", path_to_remove))?;
     Ok(())
 }
-fn add_vendor_git_submodule<'re>(git_repo : &'re Repository, name : &str, url : &str, branch : Option<&str>, project_root : &Path) -> Result<Submodule<'re>, String>{
+fn add_vendor_git_submodule<'re>(git_repo : &'re Repository, name : &str, url : &str, branch : Option<&str>, project_root : &Path, multi : Arc<MultiProgress>) -> Result<Submodule<'re>>{
+    let spinner = Spinner::new(format!("Adding library {name}: git add submodule..."), Some(multi.clone()));
+    defer!(spinner.finish(););
     let output = {
         if let Some(branch) = branch{
             Command::new("git")
@@ -57,7 +57,6 @@ fn add_vendor_git_submodule<'re>(git_repo : &'re Repository, name : &str, url : 
                 .output()
                 .map_err(|e| format!("Failed to run command: {e}"))?
         }else{
-            println!("Repot path {:?}",git_repo.path());
             Command::new("git")
                 .args(["submodule", "add", url, format!("vendor/{name}").as_str()])
                 .current_dir(project_root)
@@ -68,6 +67,7 @@ fn add_vendor_git_submodule<'re>(git_repo : &'re Repository, name : &str, url : 
     if !output.status.success(){
         Err(format!("Failed to add git submodule {name}: {}", String::from_utf8_lossy(&output.stderr)))?
     }
+    spinner.change_message(format!("Adding library {name}: git init update submodule..."));
     let output = {
         Command::new("git")
             .args(["submodule", "update", "--init", "--recursive"])
@@ -78,10 +78,12 @@ fn add_vendor_git_submodule<'re>(git_repo : &'re Repository, name : &str, url : 
     if !output.status.success(){
         Err(format!("Failed to init git submodule {name}: {}", String::from_utf8_lossy(&output.stderr)))?
     }
-    git_repo.find_submodule(format!("vendor/{name}").as_str()).map_err(|e| format!("Failed to find submodule {name}: {e}"))
+    git_repo.find_submodule(format!("vendor/{name}").as_str()).map_err(|e| format!("Failed to find submodule {name}: {e}").into())
 }
 
-pub async fn update_vendor(config : Config, config_file : Option<ConfigFile>, multi : Arc<MultiProgress>) -> Result<(), String>{
+pub async fn update_vendor(config : Config, config_file : Option<ConfigFile>, multi : Arc<MultiProgress>) -> Result<()>{
+    let spinner = Spinner::new("Updating vendor...", Some(multi.clone()));
+    defer!(spinner.finish(););
     let config_file = match config_file {
         Some(config_file) => config_file,
         None => {
@@ -111,25 +113,27 @@ pub async fn update_vendor(config : Config, config_file : Option<ConfigFile>, mu
         for current_vendor_lib in &current_vendor_libraries{
             if !vendor.contains_key(current_vendor_lib){
                 if let Ok(submodule) = git_repo.find_submodule(format!("vendor/{}", &current_vendor_lib).as_str()){
+                    spinner.change_message(format!("Updating vendor: Removing library {}...", current_vendor_lib));
                     let output = Command::new("git")
                         .args(["submodule", "deinit", "-f", "--", format!("submodule.vendor/{current_vendor_lib}").as_str()])
                         .current_dir(&config.project_root)
                         .output()
-                        .map_err(|e| format!("failed to run command"))?;
+                        .map_err(|e| format!("Failed to run command: {e}"))?;
 
                     if !output.status.success(){
-                        return Err(format!("Failed to deinit submodule {current_vendor_lib}: {}", String::from_utf8_lossy(&output.stderr)));
+                        Err(format!("Failed to deinit submodule {current_vendor_lib}: {}", String::from_utf8_lossy(&output.stderr)))?;
                     }
                     
                     let output = Command::new("git")
                         .args(["config", "f", ".git/config", "--remove-section", format!("submodule.vendor/{current_vendor_lib}").as_str()])
                         .current_dir(&config.project_root)
                         .output()
-                        .map_err(|e| format!("failed to run command"))?;
+                        .map_err(|e| format!("failed to run command: {e}"))?;
                     
                     if !output.status.success(){
-                        return Err(format!("Failed to remove submodule {current_vendor_lib} from git config: {}", String::from_utf8_lossy(&output.stderr)));
+                        Err(format!("Failed to remove submodule {current_vendor_lib} from git config: {}", String::from_utf8_lossy(&output.stderr)))?;
                     }
+                    spinner.change_message("Updating vendor...");
                 }
                 fs::remove_dir_all(config.project_root.join("vendor").join(current_vendor_lib)).map_err(|e| format!("Failed to remove {current_vendor_lib} vendor: {e}"))?;
             }
@@ -138,7 +142,7 @@ pub async fn update_vendor(config : Config, config_file : Option<ConfigFile>, mu
             if !current_vendor_libraries.contains(name){
                 match &specs{
                     Vendor::GitUrl(git_url) => {
-                        add_vendor_git_submodule(&git_repo, name, &git_url, None, &config.project_root)?;
+                        add_vendor_git_submodule(&git_repo, name, &git_url, None, &config.project_root, multi.clone())?;
                     }
                     Vendor::Spec(spec) => match &spec.source{
                         VendorSource::Curl(curl) => match curl {
@@ -146,7 +150,7 @@ pub async fn update_vendor(config : Config, config_file : Option<ConfigFile>, mu
                             VendorSourceCurl::CurlUrls{curl_urls} =>{todo!("implement curl")}
                         }
                         VendorSource::Git(git) =>{
-                            add_vendor_git_submodule(&git_repo, name, &git.git_url, git.git_branch.as_deref(), &config.project_root)?;
+                            add_vendor_git_submodule(&git_repo, name, &git.git_url, git.git_branch.as_deref(), &config.project_root, multi.clone())?;
                         }
                     }
                 }
@@ -156,7 +160,7 @@ pub async fn update_vendor(config : Config, config_file : Option<ConfigFile>, mu
     Ok(())
 }
 
-pub async fn remove_library(config : Config, library : RemoveLibrary, multi : Arc<MultiProgress>) -> Result<(),String>{
+pub async fn remove_library(config : Config, library : RemoveLibrary, multi : Arc<MultiProgress>) -> Result<()>{
     let config_source = fs::read_to_string(config.project_root.join("config.yaml")).map_err(|e| format!("Failed to read config.yaml"))?;
     let config_file : ConfigFile = serde_yaml::from_str(&config_source).map_err(|e| format!("Failed to parse config.yaml: {e}"))?;
     if let Some(vendor) = &config_file.vendor{
@@ -178,22 +182,30 @@ pub async fn remove_library(config : Config, library : RemoveLibrary, multi : Ar
             }
         }
     }else {
-        return Err(format!("Failed to remove {}, not found", library.name));
+        Err(format!("Failed to remove {}, not found", library.name))?;
     }
     Ok(())
 }
-pub async fn add_library_to_config(config : Config, library : AddLibrary, multi : Arc<MultiProgress>) -> Result<(),String>{
+pub async fn add_library_to_config(config : Config, library : AddLibrary, multi : Arc<MultiProgress>) -> Result<()>{
+    let add_library_spinner = Spinner::new(format!("Adding library {}", library.name), Some(multi.clone()));
+    defer!{add_library_spinner.finish();}
+    let tasks_spinner = Spinner::new(format!("Reading vendorlists file {}", library.name), Some(multi.clone()));
+    defer!{tasks_spinner.finish();};
+
     let vendor_list = fs::read_to_string(config.asharis_root.join("resources").join("vendorlist.yaml"))
-        .map_err(|e| format!("failed to open vendorlist.yaml file"))?;
+        .map_err(|e| format!("failed to open vendorlist.yaml file: {e}"))?;
 
     #[derive(Debug, Deserialize, Serialize)]
     struct VendorList{
         vendor : HashMap<String, Vendor>
     }
     
+    tasks_spinner.change_message("parsing vendor lists");
     let libraries : VendorList = serde_yaml::from_str(&vendor_list)
         .map_err(|e| format!("Failed to parse vendor list: {e}"))?;
+    tasks_spinner.change_message(format!("looking for {} in vendor lists", &library.name));
     if let Some((lib_name, specs)) = libraries.vendor.get_key_value(&library.name){
+        tasks_spinner.change_message(format!("Library found: adding library config to core.yaml"));
         let config_file = fs::read_to_string(config.project_root.join("config.yaml"))
             .map_err(|e| format!("Failed to open config.yaml: {e}"))?;
         let mut parsed_config_file : ConfigFile = serde_yaml::from_str(&config_file)
@@ -203,15 +215,19 @@ pub async fn add_library_to_config(config : Config, library : AddLibrary, multi 
         let modified_config_file = serde_yaml::to_string(&parsed_config_file).map_err(|e| format!("failed to parse new config file: {e}"))?;
         fs::write(config.project_root.join("config.yaml"), modified_config_file)
             .map_err(|e| format!("failed to write new config.yaml: {e}"))?;
+
+        tasks_spinner.change_message(format!("Library found: updating vendor"));
+        tasks_spinner.finish();
+        add_library_spinner.change_message(format!("Adding library {}: Library found", library.name));
         update_vendor(config.clone(), Some(parsed_config_file), multi).await?;
         generate_cmake_from_conf(config).await.map_err(|e|format!("Failed to generate updated cmakefile: {e}"))?;
     }else {
-        return Err(format!("Failed to find library in vendor list. try adding it yoursel in the config.yaml file under [vendor]"))
+        Err(format!("Failed to find library in vendor list. Try adding it yoursel in the config.yaml file under [vendor]"))?
     }
     Ok(())
 }
 
-pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<(),String>{
+pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("initializing syris",Some(multi));
     let syris_url = "https://github.com/enekocamara/Syris";
     let syris_folder = config.project_root.join("vendor").join("syris");
@@ -222,7 +238,7 @@ pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<
         .output()
         .map_err(|e| format!("failed to run command {}", e))?;
     if !output.status.success(){
-        return Err(format!("failed to add submodule {}", String::from_utf8_lossy(&output.stderr)));
+        Err(format!("failed to add submodule {}", String::from_utf8_lossy(&output.stderr)))?;
     }
 
 //    println!("Submodule updates...");
@@ -234,7 +250,7 @@ pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<
         .map_err(|e| format!("failed to run command {}", e))?;
 
     if !output.status.success(){
-        return Err(format!("failed to add submodule {}", String::from_utf8_lossy(&output.stderr)));
+        Err(format!("failed to add submodule {}", String::from_utf8_lossy(&output.stderr)))?;
     }
 
     //GIT
@@ -261,7 +277,7 @@ pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<
     Ok(())
 }
 
-pub async fn init_entry_point(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>)->Result<(), String>{
+pub async fn init_entry_point(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>)->Result<()>{
     let spinner = Spinner::new("initializing entry point", Some(multi));
     spinner.change_message("setting entrypoint...");
     let entry_point_src = config.asharis_root.join("resources").join("EntryPoint").join("src");
@@ -277,7 +293,7 @@ pub async fn init_entry_point(config : Config, project : NewSyrisProject, multi 
     Ok(())
 }
 
-pub async fn init_vs_conf(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<(), String>{
+pub async fn init_vs_conf(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("setting vs conf...", Some(multi.clone()));
     let vs_conf_src = config.asharis_root.join(".vscode");
     utils::copy_dir_rec(&vs_conf_src, &config.project_root).map_err(|e| format!("Failed to copy /.vscode config: {e}"))?;
@@ -285,7 +301,7 @@ pub async fn init_vs_conf(config : Config, project : NewSyrisProject, multi : Ar
     Ok(())
 }
 
-pub async fn init_source(config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<(), String>{
+pub async fn init_source(config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner  = Spinner::new("setting src contents...", Some(multi.clone()));
     fs::create_dir(config.project_root.join("src").join(&project.name)).map_err(|e| format!("Failed to create src dir: {e}"))?;
     let template_main_src = config.asharis_root.join("resources").join("new_project").join("TemplateMain.cpp");
@@ -300,7 +316,7 @@ pub async fn init_source(config : Config, project : NewProject, multi : Arc<Mult
     spinner.finish();
     Ok(())
 }
-pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<(), String>{
+pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner  = Spinner::new("setting src contents...", Some(multi.clone()));
     fs::create_dir(config.project_root.join("src").join(&project.name)).map_err(|e| format!("Failed to create src dir: {e}"))?;
     let project_cmakelists_file_src = config.asharis_root.join("resources").join("Template").join("TemplateCMakeLists.txt");
@@ -332,7 +348,7 @@ pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi
     Ok(())
 }
 
-pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> Result<(), String>{
+pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> Result<()>{
     // Step 1: Create and activate the virtual environment
     let spinner = Spinner::new("generating glad files", Some(multi));
     //println!("Creating virtual environment...");
@@ -345,7 +361,7 @@ pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> R
         .output()
         .map_err(|e| format!("Failed to run command: {e}"))?;
     if !outupt.status.success(){
-        return Err("failed to create python env".to_string());
+        Err("failed to create python env")?;
     }
 
     // Step 2: Install glad2 in the virtual environment
@@ -356,7 +372,7 @@ pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> R
         .output()
         .map_err(|e| format!("Failed to run command: {e}"))?;
     if !output.status.success(){
-        return Err("failed to create python env".to_string());
+        Err("failed to create python env")?;
     }
 
     // Step 3: Run glad2 to generate files
@@ -367,7 +383,7 @@ pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> R
         .output()
         .map_err(|e| format!("Failed to run command: {e}"))?;
     if !output.status.success(){
-        return Err(format!("failed to generate glad2, [{}]", String::from_utf8_lossy(&output.stderr)));
+        Err(format!("failed to generate glad2, [{}]", String::from_utf8_lossy(&output.stderr)))?;
     }
 
     // Step 4: Clean up or notify user
@@ -381,7 +397,7 @@ pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> R
     Ok(())
 }
 
-pub async fn generate_cmake_from_conf(config : Config) -> Result<(), String>{
+pub async fn generate_cmake_from_conf(config : Config) -> Result<()>{
     let cmake_template_contents =  fs::read_to_string(config.asharis_root.join("resources").join("TemplateCmakeLists.txt")).map_err(|e| format!("failed to open TemplateCmakeLists.txt"))?;
     let config_contents = fs::read_to_string(config.project_root.join("config.yaml")).map_err(|e| format!("failed to open conf.yaml"))?;
     let config_file : ConfigFile = serde_yaml::from_str(&config_contents).map_err(|e| {format!("failed to parse conf.yaml file: {e}")})?;
@@ -397,7 +413,7 @@ pub async fn generate_cmake_from_conf(config : Config) -> Result<(), String>{
                 format!("add_executable({} ${{SOURCES}})", config_file.project, )
             }
             other => {
-                return Err(format!("target type unavailable {}, use static_library, dynamic_library or executable.", other));
+                return Err(format!("target type unavailable {}, use static_library, dynamic_library or executable.", other).into());
             },
         }
     };

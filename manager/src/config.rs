@@ -2,11 +2,14 @@ use std::path::PathBuf;
 use std::env;
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use serde::de::{Visitor, MapAccess, Error};
+use serde::de::{Visitor, MapAccess};
+use serde::de::Error as SerdeError;
 use std::fmt::{self, format};
 use std::fs;
 
 use crate::utils::{self, get_cmake_project_name};
+
+use crate::Result;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ConfigFile{
@@ -48,7 +51,7 @@ impl ConfigFile{
             Vec::new()
         }
     }
-    pub fn get_all_cmake_modules(&self, project_root : &PathBuf) -> Result<Vec<CmakeModule>, String>{
+    pub fn get_all_cmake_modules(&self, project_root : &PathBuf) -> Result<Vec<CmakeModule>>{
         let mut modules = Vec::new();
         if let Some(vendor) = &self.vendor{
             for module in vendor.keys(){
@@ -140,7 +143,7 @@ impl fmt::Display for VendorSourceError {
 }
 
 impl<'de> Deserialize<'de> for VendorSource{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
         where
             D: serde::Deserializer<'de> {
         struct VendorSourceVisitor;
@@ -149,7 +152,7 @@ impl<'de> Deserialize<'de> for VendorSource{
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 formatter.write_str("use git_url or curl_url(s), not both")
             }
-            fn visit_map<A>(self,mut map: A) -> Result<Self::Value, A::Error>
+            fn visit_map<A>(self,mut map: A) -> core::result::Result<Self::Value, A::Error>
                 where
                     A: MapAccess<'de>, {
                 let mut git_url = None;
@@ -204,7 +207,7 @@ pub struct Config{
 }
 
 impl Config{
-    pub fn new() -> Result<Config, String>{
+    pub fn new() -> Result<Config>{
         let asharis_root : PathBuf = PathBuf::from(env::var("ASHARIS_ROOT").map_err(|e| format!("failed to find ASHARIS_ROOT in environment variables: {:?}", e))?);
         let project_root = env::current_dir().map_err(|e| format!("environment variable pwd not set: {}", e))?;
         Ok(Config {

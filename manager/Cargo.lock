@@ -76,20 +76,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "asharis"
-version = "0.1.0"
-dependencies = [
- "clap",
- "fs_extra",
- "git2",
- "indicatif",
- "regex",
- "serde",
- "serde_yaml",
- "tokio",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -202,6 +188,21 @@ dependencies = [
  "once_cell",
  "unicode-width",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "core"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "fs_extra",
+ "git2",
+ "indicatif",
+ "regex",
+ "scopeguard",
+ "serde",
+ "serde_yaml",
+ "tokio",
 ]
 
 [[package]]
