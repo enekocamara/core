@@ -1,0 +1,44 @@
+modules:
+    glad :
+        curl_url : https://raw.githubusercontent.com/enekocamara/GladGen/refs/heads/main/glad_gen.py
+        cmd :
+            exec : python.exe
+            args : ["glad_gen.py"]
+        include_path : src/include
+        cmake:
+            gen : true
+            sources_path : src
+    asio : 
+        git_url : https://github.com/chriskohlhoff/asio
+        include_path : asio/include
+    entt :
+        git_url : https://github.com/skypjack/entt
+        include_path : include
+    fast_noise :
+        curl_urls : 
+            - https://raw.githubusercontent.com/Auburn/FastNoiseLite/refs/heads/master/Cpp/FastNoiseLite.h
+            - https://raw.githubusercontent.com/Auburn/FastNoiseLite/refs/heads/master/LICENSE
+    glfw : 
+        git_url : https://github.com/glfw/glfw
+    include_path : include
+    glm : https://github.com/g-truc/glm
+    googletests : 
+        git_url : https://github.com/google/googletest
+    imgui_docking : 
+        git_url: https://github.com/ocornut/imgui
+        git_branch : docking
+        git_path : imgui
+        cmake:
+            gen : true
+            recursive_glob : false
+            sources_path : imgui
+    nlohmann_json : 
+        git_url : https://github.com/nlohmann/json
+        include_path : include
+    spdlog : 
+        git_url : https://github.com/gabime/spdlog
+        include_path : include
+    stb_image:
+        curl_urls:
+            - https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
+            - https://raw.githubusercontent.com/nothings/stb/refs/heads/master/LICENSE
