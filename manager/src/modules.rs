@@ -142,16 +142,16 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
                     let cmake_template = CMakeTemplate::new(&config);
                     let path = config.project_root.join("modules").join(name);
                     //include  path is for main cmakelists not for generated one
-                    /*let path_vec = match &spec.include_path{
+                    let path_vec = match &cmake.include_path{
                         Some(path) => {
                             Some(vec![path.clone()])
                         }
                         None => None
-                    }; */
+                    }; 
                     cmake_template.generate_to_file(config, path,&GeneratePattern{
                         project_name : name,
                         add_command : "static_library",
-                        include_paths: None,//path_vec.as_ref(),
+                        include_paths: path_vec.as_ref(),
                         link_modules : None,
                         subdirectories : None,
                         sources_path : cmake.sources_path.as_deref(),

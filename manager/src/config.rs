@@ -124,7 +124,9 @@ pub struct Cmake{
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recursive_glob : Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub sources_path : Option<String>
+    pub sources_path : Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_path : Option<String>
 }
 
 /*
