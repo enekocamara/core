@@ -2,10 +2,11 @@ use std::env::current_dir;
 use std::fmt::format;
 use std::path::{PathBuf, Path};
 use fs_extra::dir::{self,CopyOptions};
-use std::fs;
+use std::fs::{self, File};
 use std::process::Command;
 use regex::Regex;
-
+use reqwest::blocking::get;
+use url::Url;
 use crate::Result;
 
 //not losing my time with this heavily based on this code
@@ -44,4 +45,24 @@ pub fn get_cmake_project_name(path_to_cmake_dir : PathBuf) -> Result<String>{
         .ok_or(format!("Failed to find project(*)"))?
         .get(1).map(|m| m.as_str().to_string())
         .ok_or(format!("Failed to get project name").into())
+}
+
+pub fn curl_url(url : &str, path : &PathBuf) -> Result<()>{
+    // Parse the URL to get the file name
+    let url = Url::parse(url)?;
+    let filename = url.path_segments()
+        .and_then(|segments| segments.last())
+        .ok_or("Failed to extract filename from URL")?;
+
+    let filepath = path.join(filename);
+
+    // Download the file
+    let mut response = get(url.as_str())?;
+    if !fs::exists(&path)?{
+        fs::create_dir(&path)?;
+    }
+    let mut file = File::create(&filepath)?;
+    std::io::copy(&mut response, &mut file)?;
+
+    Ok(())
 }

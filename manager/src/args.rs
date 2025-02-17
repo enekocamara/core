@@ -1,3 +1,5 @@
+use std::default;
+
 use clap::{Parser,Subcommand,Args};
 use serde::Deserialize;
 
@@ -14,12 +16,26 @@ pub enum Commands{
     ///syris related commands
     #[command(subcommand)]
     Syris(SyrisCommands),
-    ///config check
+    ///creates a new project and directory
     New(NewProject),
-    ///adds a library
-    Add(AddLibrary),
-    ///removes a library
-    Remove(RemoveLibrary),
+    ///initializes directory for a  project
+    Init,
+    ///adds a module
+    Add(AddModule),
+    ///removes a module
+    Remove(RemoveModule),
+    //builts projcet Debug default
+    Build(BuildProject),
+    //builds cmake
+    CmakeBuild,
+    //runs project (builds if necesary) Debug default
+    Run(RunProject),
+    //cleans project from build files
+    Clean,
+    //lists current modules
+    List,
+    //lists available modules
+    ListAvailable,
     //updates cmakelists
     Update,
 }
@@ -39,13 +55,29 @@ pub struct NewProject{
     pub name : String
 }
 #[derive(Args, Clone)]
-pub struct AddLibrary{
+pub struct BuildProject{
+    #[arg(short = 't', long)]
+    pub target : Option<String>
+}
+impl Default for BuildProject{
+    fn default() -> BuildProject{
+        BuildProject{target : None}
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct RunProject{
+    #[arg(short = 't', long)]
+    pub target : Option<String>
+}
+#[derive(Args, Clone)]
+pub struct AddModule{
     #[arg(short = 'n', long)]
     pub name : String
 }
 
 #[derive(Args, Clone)]
-pub struct RemoveLibrary{
+pub struct RemoveModule{
     #[arg(short = 'n', long)]
     pub name : String
 }
@@ -54,10 +86,6 @@ pub struct RemoveLibrary{
 pub struct NewSyrisProject{
     #[arg(short = 'n', long)]
     pub name : String
-}
-
-#[derive(Args)]
-pub struct BuildProject{
 }
 
 #[derive(Args)]
