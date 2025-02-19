@@ -17,13 +17,13 @@ mod cmake;
 mod syris;
 
 
-use args::{Cli, Commands, SyrisCommands};
+use args::{Cli, Commands, RemoveModule, SyrisCommands};
 use scopeguard::defer;
 use spinner::Spinner;
-use config::Config;
+use config::{Config, ConfigFile};
 use tasks::{generate_cmake_from_conf, new_project, build_project, run_project, build_cmake_project, clean_project, init_project};
 use syris::new_syris_project;
-use modules::{add_module, remove_module};
+use modules::{add_module, get_available_modules, remove_module};
 use clap::Parser;
 
 use indicatif::MultiProgress;
@@ -61,10 +61,24 @@ async fn main() -> Result<()>{
             clean_project(&config, multi)?;
         }
         Commands::List => {
-            todo!()
+            let config_file = ConfigFile::new_from_file(&config)?;
+            if let Some(modules) = &config_file.modules{
+                for name in modules.keys(){
+                    println!("{name}");
+                }
+            }
+        }
+        Commands::ListInstalled => {
+            let modules = config.get_all_installed_modules()?;
+            for name in modules{
+                println!("{name}");
+            }
         }
         Commands::ListAvailable => {
-            todo!()
+            let available_modules = get_available_modules(&config)?;
+            for name in available_modules.keys(){
+                println!("{name}");
+            }
         }
         Commands::Update => {
             if let Err(e) = generate_cmake_from_conf(&config) {
@@ -77,8 +91,20 @@ async fn main() -> Result<()>{
             }
         }
         Commands::Remove(module)=>{
-            if let Err(e) = remove_module(config, &module, multi){
-                Err(format!("Failed to remove module {}:{e}", module.name))?;
+            let mut config_file = ConfigFile::new_from_file(&config).map_err(|e| format!("Failed to remove modules: {e}"))?;
+            match &module{
+                RemoveModule::Name { name } => {
+                    if let Err(e) = remove_module(&config, name, multi, &mut config_file){
+                        Err(format!("Failed to remove module {}:{e}", name))?;
+                    }
+                }
+                RemoveModule::All => {
+                    if let Some(modules) = config_file.modules.clone(){
+                        for (name, _) in &modules{
+                            remove_module(&config, name, multi.clone(), &mut config_file)?;
+                        }
+                    }
+                }
             }
         }
         Commands::Syris(syris_command) => match syris_command{

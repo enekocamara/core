@@ -43,3 +43,4 @@ modules:
         curl_urls:
             - https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
             - https://raw.githubusercontent.com/nothings/stb/refs/heads/master/LICENSE
+    syris : https://github.com/enekocamara/Syris

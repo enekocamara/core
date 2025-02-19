@@ -1,14 +1,14 @@
 use std::path::PathBuf;
 use std::env;
 use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
-use serde::de::{Visitor, MapAccess};
-use serde::de::Error as SerdeError;
 use std::fmt::{self, format};
 use std::fs;
 
+use serde::{Deserialize, Serialize};
+use serde::de::{Visitor, MapAccess};
+use serde::de::Error as SerdeError;
+use git2::Repository;
 use crate::utils::{self, get_cmake_project_name};
-
 use crate::Result;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -22,7 +22,9 @@ pub struct ConfigFile{
     pub modules : Option<HashMap<String, Module>>,
 
     #[serde(skip)]
-    path : PathBuf
+    path : PathBuf,
+    #[serde(skip)]
+    childs : Vec<ConfigFile>
 }
 
 pub struct CmakeModule{
@@ -31,16 +33,29 @@ pub struct CmakeModule{
 }
 
 impl ConfigFile{
-    pub fn new_from_file(config : &Config) -> Result<ConfigFile>{
-        let file_source = fs::read_to_string(config.project_root.join("config.yaml"))
+    pub fn new_from_path(config : &Config, path : &PathBuf) -> Result<ConfigFile>{
+        let file_source = fs::read_to_string(path)
             .map_err(|e| format!("Failed to read config.yaml: {e}"))?;
         let mut file = serde_yaml::from_str::<ConfigFile>(&file_source).map_err(|e| format!("Failed to parse config.yaml: {e}"))?;
-        file.path = config.project_root.join("config.yaml");
+
+        //check if modules have config files if so integrate
+        if let Some(modules) = &file.modules{
+            for name in modules.keys(){
+                let module_config_path = config.project_paths.modules.join(&name).join("config.yaml");
+                if fs::exists(&module_config_path).unwrap(){
+                    file.childs.push(ConfigFile::new_from_path(config, &module_config_path)?);
+                }
+            }
+        }
+        file.path = path.clone();
         Ok(file)
+    }
+    pub fn new_from_file(config : &Config) -> Result<ConfigFile>{
+        ConfigFile::new_from_path(config, &config.project_paths.config_file)
     }
     pub fn write(self : &Self) -> Result<()>{
         let source = serde_yaml::to_string(self)?;
-        fs::write(&self.path, source)?;
+        fs::write(&self.path, source).map_err(|e| format!("Failed to overwrite config.yaml: {e}"))?;
         Ok(())
     }
     pub fn get_all_git_submodules<'a>(&'a self) -> Vec<&'a str>{
@@ -56,6 +71,29 @@ impl ConfigFile{
                             ModuleSource::Curl(_)=>{}
                             ModuleSource::Git(_)=>{
                                 submodules.push(name.as_str());
+                            }
+                        }
+                    }
+                }
+            }
+            submodules
+        }else {
+            Vec::new()
+        }
+    }
+    pub fn get_all_git_submodules_pair<'a>(&'a self) -> Vec<(&'a String, &'a Module)>{
+        if let Some(modules) = &self.modules{
+            let mut submodules = Vec::new();
+            for (name, module) in modules{
+                match module{
+                    Module::GitUrl(_) => {
+                        submodules.push((name, module));
+                    }
+                    Module::Spec(specs) => {
+                        match specs.source {
+                            ModuleSource::Curl(_)=>{}
+                            ModuleSource::Git(_)=>{
+                                submodules.push((name, module))
                             }
                         }
                     }
@@ -95,6 +133,42 @@ pub struct Build{
 pub enum Module{
     GitUrl(String),
     Spec(ModuleSpec)
+}
+
+impl Module{
+    pub fn get_git_path(self : &Self) -> Option<&str>{
+        match self{
+            Module::GitUrl(_) => None,
+            Module::Spec(spec) => match &spec.source {
+                ModuleSource::Curl(_) => None,
+                ModuleSource::Git(git) => git.git_path.as_deref()
+            }
+        }
+    }
+    pub fn get_git_name(self : &Self, name : &str) -> Option<String>{
+        match self{
+            Module::GitUrl(_) => Some(format!("modules/{name}")),
+            Module::Spec(spec) => match &spec.source{
+                ModuleSource::Git(git) => {
+                    if let Some(git_path) = &git.git_path{
+                        return Some(format!("modules/{name}/{git_path}"))
+                    }
+                    Some(format!("modules/{name}"))
+                }
+                ModuleSource::Curl(_) => None
+            }
+        }
+    }
+    pub fn is_git(self : &Self) -> bool{
+        match self{
+            Module::GitUrl(_) => true,
+            Module::Spec(spec) => match &spec.source{
+                ModuleSource::Git(_) => true,
+                ModuleSource::Curl(_) => false
+            }
+
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -245,7 +319,7 @@ impl<'de> Deserialize<'de> for ModuleSource{
 #[derive(Clone)]
 pub struct Config{
     pub asharis_root : PathBuf,
-    pub project_root : PathBuf,
+    pub project_paths : ProjectPaths,
     pub project_name_flag : &'static str,
     pub project_name_first_upper_flag : &'static str,
     pub cmake_add_command_flag : &'static str,
@@ -256,13 +330,30 @@ pub struct Config{
     pub cmake_glob_type_flag : &'static str,
 }
 
+#[derive(Clone)]
+pub struct ProjectPaths{
+    pub root : PathBuf,
+    pub build : PathBuf,
+    pub output : PathBuf,
+    pub config_file : PathBuf,
+    pub modules : PathBuf,
+    pub src : PathBuf
+}
+
 impl Config{
     pub fn new() -> Result<Config>{
         let asharis_root : PathBuf = PathBuf::from(env::var("ASHARIS_ROOT").map_err(|e| format!("failed to find ASHARIS_ROOT in environment variables: {:?}", e))?);
         let project_root = env::current_dir().map_err(|e| format!("environment variable pwd not set: {}", e))?;
         Ok(Config {
             asharis_root,
-            project_root,
+            project_paths : ProjectPaths{
+                root : project_root.clone(),
+                build : project_root.join("build"),
+                output : project_root.join("output"),
+                config_file : project_root.join("config.yaml"),
+                modules : project_root.join("modules"),
+                src : project_root.join("src")
+            },
             project_name_flag : "%PROJECT_NAME%",
             project_name_first_upper_flag : "%PROJECT_NAME_FIRST_UPPER%",
             cmake_add_command_flag : "%ADD%",
@@ -272,5 +363,20 @@ impl Config{
             cmake_sources_path_flag : "%SOURCES_PATH%",
             cmake_glob_type_flag : "%GLOB_TYPE%"
         })
+    }
+    pub fn get_git2_repo(self : &Self) -> Result<Repository>{
+        Repository::open(&self.project_paths.root).map_err(|e| format!("Failed to open git repository: {e}").into())
+    }
+    pub fn get_all_installed_modules(self : &Self)->Result<Vec<String>>{
+        let mut modules = Vec::new();
+        for entry in fs::read_dir(&self.project_paths.modules)?{
+            let entry = entry?;
+            if entry.metadata()?.is_dir(){
+                if let Some(name) = entry.file_name().to_str(){
+                    modules.push(name.to_string());
+                }
+            }
+        }
+        Ok(modules)
     }
 }

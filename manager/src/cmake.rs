@@ -79,7 +79,7 @@ impl CMakeTemplate{
                 "\n{}",
                 subdirectories
                     .iter()
-                    .map(|m| format!("add_subdirectory(modules/{m})"))
+                    .map(|m| format!("add_subdirectory(${{CMAKE_SOURCE_DIR}}/modules/{m})"))
                     .collect::<Vec<_>>()
                     .join("\n")
             );

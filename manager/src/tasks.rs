@@ -25,12 +25,12 @@ pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, m
             ConfigFile::new_from_file(&config)?
         }
     };
-    if !fs::exists(config.project_root.join("modules"))?{
-        fs::create_dir(config.project_root.join("modules"))?;
+    if !fs::exists(&config.project_paths.modules)?{
+        fs::create_dir(&config.project_paths.modules)?;
     }
-    let modules_dir_list = fs::read_dir(config.project_root.join("modules")).map_err(|e| format!("Failed to read directory modules: {e}"))?;
+    let modules_dir_list = fs::read_dir(&config.project_paths.modules).map_err(|e| format!("Failed to read directory modules: {e}"))?;
     let mut current_modules_libraries = Vec::new();
-    let git_repo = Repository::open(&config.project_root).map_err(|e| format!("Failed to open git repository: {e}"))?;
+    let git_repo = Repository::open(&config.project_paths.root).map_err(|e| format!("Failed to open git repository: {e}"))?;
     let submodules = git_repo.submodules().map_err(|e| format!("Failed to get git submodules: {e}"))?;
     for entry in modules_dir_list{
         let entry = entry.map_err(|e| format!("Failed to read entry: {e}"))?;
@@ -48,7 +48,7 @@ pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, m
                     spinner.change_message(format!("Updating modules: Removing module {}...", current_modules_lib));
                     let output = Command::new("git")
                         .args(["submodule", "deinit", "-f", "--", format!("submodule.modules/{current_modules_lib}").as_str()])
-                        .current_dir(&config.project_root)
+                        .current_dir(&config.project_paths.root)
                         .output()
                         .map_err(|e| format!("Failed to run command: {e}"))?;
 
@@ -58,7 +58,7 @@ pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, m
                     
                     let output = Command::new("git")
                         .args(["config", "f", ".git/config", "--remove-section", format!("submodule.modules/{current_modules_lib}").as_str()])
-                        .current_dir(&config.project_root)
+                        .current_dir(&config.project_paths.root)
                         .output()
                         .map_err(|e| format!("failed to run command: {e}"))?;
                     
@@ -67,12 +67,12 @@ pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, m
                     }
                     spinner.change_message("Updating modules...");
                 }
-                fs::remove_dir_all(config.project_root.join("modules").join(current_modules_lib)).map_err(|e| format!("Failed to remove {current_modules_lib} modules: {e}"))?;
+                fs::remove_dir_all(config.project_paths.modules.join(current_modules_lib)).map_err(|e| format!("Failed to remove {current_modules_lib} modules: {e}"))?;
             }
         }
         for (name, module) in modules{
             if !current_modules_libraries.contains(name){
-                add_module_to_modules_dir(name.as_str(), module, &git_repo, &config, &config_file, multi.clone())?;
+                add_module_to_modules_dir(name.as_str(), module, &git_repo, &config, multi.clone())?;
             }
         }
     }
@@ -83,19 +83,19 @@ pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, m
 pub async fn init_vs_conf(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("setting vs conf...", Some(multi.clone()));
     let vs_conf_src = config.asharis_root.join(".vscode");
-    utils::copy_dir_rec(&vs_conf_src, &config.project_root).map_err(|e| format!("Failed to copy /.vscode config: {e}"))?;
+    utils::copy_dir_rec(&vs_conf_src, &config.project_paths.root).map_err(|e| format!("Failed to copy /.vscode config: {e}"))?;
     spinner.finish();
     Ok(())
 }
 
 pub async fn init_source(config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner  = Spinner::new("setting src contents...", Some(multi.clone()));
-    fs::create_dir(config.project_root.join("src").join(&project.name)).map_err(|e| format!("Failed to create src dir: {e}"))?;
+    fs::create_dir(config.project_paths.src.join(&project.name)).map_err(|e| format!("Failed to create src dir: {e}"))?;
     let template_main_src = config.asharis_root.join("resources").join("new_project").join("TemplateMain.cpp");
-    let template_main_dst = config.project_root.join("src").join(&project.name).join("main.cpp");
+    let template_main_dst = config.project_paths.src.join(&project.name).join("main.cpp");
     fs::copy(template_main_src,template_main_dst ).map_err(|e| format!("Failed to copy template main.cpp to src/{}/main.cpp: {e}", &project.name))?;
     let project_config_file_src = config.asharis_root.join("resources").join("new_project").join("TemplateConfig.yaml");
-    let project_config_file_dst = config.project_root.join("config.yaml");
+    let project_config_file_dst = &config.project_paths.config_file;
     let contents = fs::read_to_string(project_config_file_src).map_err(|e| format!("Failed to read config.yaml: {e}"))?;
 
     let modified_content = contents.replace(config.project_name_flag, &project.name);
@@ -109,7 +109,7 @@ pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> R
     let spinner = Spinner::new("generating glad files", Some(multi));
     //println!("Creating virtual environment...");
     let folders_to_glad = ["modules", "syris", "modules", "glad"];
-    let path_to_glad = folders_to_glad.iter().fold(config.project_root.clone(), |path, folder| path.join(folder));
+    let path_to_glad = folders_to_glad.iter().fold(config.project_paths.root.clone(), |path, folder| path.join(folder));
     spinner.change_message("creating python venv");
     let outupt = Command::new("python")
         .args(["-m", "venv", "venv"])
@@ -166,15 +166,15 @@ pub fn generate_cmake_from_conf(config : &Config) -> Result<()>{
                     if let Some(include_path) = &spec.include_path{
                         cmake_include_paths.push(format!("{name}/{include_path}"));
                     }else{
-                        cmake_include_paths.push(format!("/modules/{name}"));
+                        cmake_include_paths.push(name.clone());
                     }
             }
             return true;
         });
     }
-    let cmake_modules = config_file.get_all_cmake_modules(&config.project_root)?
+    let cmake_modules = config_file.get_all_cmake_modules(&config.project_paths.root)?
         .iter().map(|m| m.module_name.clone()).collect::<Vec<_>>();
-    let cmake_link_modules = config_file.get_all_cmake_modules(&config.project_root)?
+    let cmake_link_modules = config_file.get_all_cmake_modules(&config.project_paths.root)?
         .iter().map(|m| m.project_name.clone()).collect::<Vec<_>>();
 /*    let target_link_libraries : String = cmake_modules
         .iter()
@@ -182,8 +182,8 @@ pub fn generate_cmake_from_conf(config : &Config) -> Result<()>{
         .collect::<Vec<_>>()
         .join("\n");*/
     let cmake_template = CMakeTemplate::new(&config);
-    cmake_template.generate_to_file(config, config.project_root.clone(),
-        &GeneratePattern{
+    cmake_template.generate_to_file(config, config.project_paths.root.clone(),
+        &GeneratePattern{   
             project_name : &config_file.project,
             add_command : config_file.builds.get(&config_file.project).ok_or("library not in builds")?.as_str(),
             include_paths: Some(&cmake_include_paths),
@@ -196,31 +196,30 @@ pub fn generate_cmake_from_conf(config : &Config) -> Result<()>{
 }
 
 pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result<()>{
-    let name : String = if let Some(name) = config.project_root.iter().last(){
+    let name : String = if let Some(name) = config.project_paths.root.iter().last(){
         name.to_string_lossy().into_owned()
     } else {
         Err("Failed to get project name")?
     };
     let project_spinner = Spinner::new(format!("Initializing project {}...", &name), Some(multi.clone()));
     let tasks_spinner = Spinner::new("Creating project dir...", Some(multi.clone()));
-    if !config.project_root.exists(){
+    if !config.project_paths.root.exists(){
         Err("Error directory doens't exists")?;
     }
     tasks_spinner.change_message("creating src dir...");
-    let src_folder = config.project_root.join("src");
-    fs::create_dir(&src_folder)?;
+    fs::create_dir(&config.project_paths.src)?;
     
     tasks_spinner.change_message("initializing git...");
     let output = Command::new("git")
         .arg("init")
-        .current_dir(&config.project_root)
+        .current_dir(&config.project_paths.root)
         .output()?;
     if !output.status.success(){
         Err("Failed to initialize git")?;
     }
     tasks_spinner.change_message("adding gitignore...");
     let gitignore_src = config.asharis_root.join("resources").join(".gitignore");
-    let gitignore_dst = config.project_root.join(".gitignore");
+    let gitignore_dst = config.project_paths.root.join(".gitignore");
     fs::copy(gitignore_src, gitignore_dst)?;
 
     init_source(config.clone(), NewProject{name : name.clone()}, multi.clone()).await?;
@@ -237,26 +236,25 @@ pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result
 pub async fn new_project(mut config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
     let project_spinner = Spinner::new(format!("Creating project {}...", &project.name), Some(multi.clone()));
     let tasks_spinner = Spinner::new("Creating project dir...", Some(multi.clone()));
-    config.project_root = config.project_root.join(PathBuf::from(&project.name));
-    if config.project_root.exists(){
+    config.project_paths.root = config.project_paths.root.join(PathBuf::from(&project.name));
+    if config.project_paths.root.exists(){
         Err("Error already exists")?;
     }
-    fs::create_dir(&config.project_root)?;
+    fs::create_dir(&config.project_paths.root)?;
     tasks_spinner.change_message("creating src dir...");
-    let src_folder = config.project_root.join("src");
-    fs::create_dir(&src_folder)?;
+    fs::create_dir(&config.project_paths.src)?;
     
     tasks_spinner.change_message("initializing git...");
     let output = Command::new("git")
         .arg("init")
-        .current_dir(&config.project_root)
+        .current_dir(&config.project_paths.root)
         .output()?;
     if !output.status.success(){
         Err("Failed to initialize git")?;
     }
     tasks_spinner.change_message("adding gitignore...");
     let gitignore_src = config.asharis_root.join("resources").join(".gitignore");
-    let gitignore_dst = config.project_root.join(".gitignore");
+    let gitignore_dst = config.project_paths.root.join(".gitignore");
     fs::copy(gitignore_src, gitignore_dst)?;
 
     init_source(config.clone(), project.clone(), multi.clone()).await?;
@@ -273,13 +271,13 @@ pub async fn new_project(mut config : Config, project : NewProject, multi : Arc<
 pub fn build_cmake_project(config : &Config, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("Generating cmake build files", Some(multi));
     defer!(spinner.finish(););
-    if !fs::exists(config.project_root.join("build"))?{
-        fs::create_dir(config.project_root.join("build"))?;
+    if !fs::exists(&config.project_paths.build)?{
+        fs::create_dir(&config.project_paths.build)?;
     }
     
     let output = Command::new("cmake")
         .args(["..", "-G", "Visual Studio 17 2022", "-A", "x64"])
-        .current_dir(&config.project_root.join("build"))
+        .current_dir(&config.project_paths.build)
         .output()?;
     if !output.status.success(){
         Err(format!("failed to to build cmake project, {}", String::from_utf8_lossy(&output.stderr)))?;
@@ -289,9 +287,8 @@ pub fn build_cmake_project(config : &Config, multi : Arc<MultiProgress>) -> Resu
 }
 
 pub fn build_project(config : &Config, build : BuildProject, multi : Arc<MultiProgress>) -> Result<()>{
-    let build_dir = config.project_root.join("build");
-    if !fs::exists(&build_dir)?{
-        fs::create_dir(&build_dir)?;
+    if !fs::exists(&config.project_paths.build)?{
+        fs::create_dir(&config.project_paths.build)?;
     }
     let target = match build.target{
         Some(target) => match target.as_str(){
@@ -303,7 +300,7 @@ pub fn build_project(config : &Config, build : BuildProject, multi : Arc<MultiPr
     };
     let status = Command::new("cmake")
         .args(["--build", ".", "--config", target])
-        .current_dir(&build_dir)
+        .current_dir(&config.project_paths.build)
         .status()?;
     if !status.success(){
         Err(format!("Failed to build project: {:?}", status))?
@@ -326,7 +323,7 @@ pub fn run_project(config : &Config, project : RunProject, multi : Arc<MultiProg
     let mut command = String::from("./");
     command.push_str(&executable_path.to_string_lossy());
     let status = Command::new(command.as_str())
-        .current_dir(&config.project_root)
+        .current_dir(&config.project_paths.root)
         .status().map_err(|e| format!("failed to run 'run' command: {e}"))?;
     if !status.success(){
         Err(format!("Failed to run project cmd: {:?}", status))?
@@ -336,11 +333,11 @@ pub fn run_project(config : &Config, project : RunProject, multi : Arc<MultiProg
 
 }
 pub fn clean_project(config : &Config, multi : Arc<MultiProgress>) -> Result<()>{
-    if fs::exists(config.project_root.join("build"))?{
-        fs::remove_dir_all(config.project_root.join("build"))?;
+    if fs::exists(&config.project_paths.build)?{
+        fs::remove_dir_all(&config.project_paths.build)?;
     }
-    if fs::exists(config.project_root.join("output"))?{
-        fs::remove_dir_all(config.project_root.join("output"))?;
+    if fs::exists(&config.project_paths.output)?{
+        fs::remove_dir_all(&config.project_paths.output)?;
     }
     Ok(())
 }

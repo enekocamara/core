@@ -23,6 +23,7 @@ pub enum Commands{
     ///adds a module
     Add(AddModule),
     ///removes a module
+    #[command(subcommand)]
     Remove(RemoveModule),
     //builts projcet Debug default
     Build(BuildProject),
@@ -34,6 +35,8 @@ pub enum Commands{
     Clean,
     //lists current modules
     List,
+    ///lists all installed modules
+    ListInstalled,
     //lists available modules
     ListAvailable,
     //updates cmakelists
@@ -76,10 +79,12 @@ pub struct AddModule{
     pub name : String
 }
 
-#[derive(Args, Clone)]
-pub struct RemoveModule{
-    #[arg(short = 'n', long)]
-    pub name : String
+#[derive(Subcommand, Clone)]
+pub enum RemoveModule{
+    Name{
+        name : String
+    },
+    All
 }
 
 #[derive(Args, Clone)]
