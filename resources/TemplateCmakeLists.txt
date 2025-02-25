@@ -43,7 +43,7 @@ target_include_directories(%PROJECT_NAME% PUBLIC
 
 target_link_libraries(%PROJECT_NAME% PUBLIC %LINK_MODULES%)
 
-#target_compile_definitions(%PROJECT_NAME% PRIVATE %COMPILE_DEFINITIONS%)
+target_compile_definitions(%PROJECT_NAME% PRIVATE %COMPILE_DEFINITIONS%)
 
 # Enable multi-processor compilation (if supported by the compiler)
 if(MSVC)
