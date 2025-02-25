@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use git2::{Repository, Submodule};
 use indicatif::MultiProgress;
-use serde::de::IntoDeserializer;
+use colored::*;
 use serde::{Serialize,Deserialize};
 use scopeguard::defer;
 
@@ -17,8 +17,7 @@ use crate::Result;
 use crate::config::{Config, ConfigFile, Module, ModuleSource, ModuleSourceCurl, ModuleSourceError};
 use crate::utils;
 use crate::args::{AddModule,RemoveModule};
-use crate::generate_cmake_from_conf;
-use crate::cmake::{CMakeTemplate,GeneratePattern};
+use crate::cmake::{self,GeneratePattern};
 
 pub fn remove_git_submodule<'re>(name : &str, git_path : Option<&str>, project_root : &Path) -> Result<()>{
     let path = match git_path{
@@ -70,7 +69,7 @@ pub fn remove_git_submodule<'re>(name : &str, git_path : Option<&str>, project_r
     Ok(())
 }
 pub fn add_git_submodule<'re>(git_repo : &'re Repository, name : &str, git_path : Option<&str>, url : &str, branch : Option<&str>, project_root : &Path, multi : Arc<MultiProgress>) -> Result<Submodule<'re>>{
-    let spinner = Spinner::new(format!("Adding module {name}: git add submodule..."), Some(multi.clone()));
+    let spinner = Spinner::new(format!("{} module {}: git add submodule...", "Adding".green(), name.blue()), Some(multi.clone()));
     defer!(spinner.finish(););
     let path = match git_path{
         Some(path) => format!("modules/{name}/{path}"),
@@ -92,9 +91,9 @@ pub fn add_git_submodule<'re>(git_repo : &'re Repository, name : &str, git_path 
         }
     };
     if !output.status.success(){
-        Err(format!("Failed to add git submodule {name}: {}", String::from_utf8_lossy(&output.stderr)))?
+        Err(format!("Failed to add git submodule {}: {}", name.blue(), String::from_utf8_lossy(&output.stderr)))?
     }
-    spinner.change_message(format!("Adding module {name}: git init update submodule..."));
+    spinner.change_message(format!("{} module {}: git init update submodule...", "Adding".green(), name.blue()));
     let output = {
         Command::new("git")
             .args(["submodule", "update", "--init"])
@@ -103,9 +102,9 @@ pub fn add_git_submodule<'re>(git_repo : &'re Repository, name : &str, git_path 
             .map_err(|e| format!("Failed to run command: {e}"))?
     };
     if !output.status.success(){
-        Err(format!("Failed to init git submodule {name}: {}", String::from_utf8_lossy(&output.stderr)))?
+        Err(format!("Failed to init git submodule {}: {}", name.blue(), String::from_utf8_lossy(&output.stderr)))?
     }
-    git_repo.find_submodule(path.as_str()).map_err(|e| format!("Failed to find submodule {name}: {e}").into())
+    git_repo.find_submodule(path.as_str()).map_err(|e| format!("Failed to find submodule {}: {e}", name.blue()).into())
 }
 
 pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repository, config : &Config,  multi : Arc<MultiProgress>)->Result<()>{
@@ -145,7 +144,9 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
             }
             if let Some(cmake) = &spec.cmake{
                 if let Some(true) = cmake.gen{
-                    let cmake_template = CMakeTemplate::new(&config);
+                    if fs::exists(config.project_paths.modules.join(name).join("config.yaml"))?{
+                        Err(format!("Module {name} has a config.yaml. Cmake custom generation is not compatible with modules that use config.yaml"))?
+                    }
                     let path = config.project_paths.modules.join(name);
                     //include  path is for main cmakelists not for generated one
                     let path_vec = match &cmake.include_path{
@@ -154,20 +155,22 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
                         }
                         None => None
                     }; 
-                    cmake_template.generate_to_file(config, path,&GeneratePattern{
+                    cmake::generate_to_file(config, path,&GeneratePattern{
                         project_name : name,
                         add_command : "static_library",
                         include_paths: path_vec.as_ref(),
                         link_modules : None,
                         subdirectories : None,
                         sources_path : cmake.sources_path.as_deref(),
-                        recursive_glob : cmake.recursive_glob
+                        recursive_glob : cmake.recursive_glob,
+                        cmp_def : None
                     }).map_err(|e| format!("Failed to generate cmake_file: {e}"))?;
                 }
             }
         }
     };
     //early return only if its not git. if so we need to add them recursively and handle core module dependencies
+
     if !module.is_git(){
         return Ok(())
     }
@@ -188,6 +191,7 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
         return Ok(())
     }
     let module_config_file = ConfigFile::new_from_path(config, &path_to_config_file)?;
+    cmake::generate_to_file_from_path(config, &config.project_paths.modules.join(name))?;
     //need to figure out which ones are git submodules and which are core modules
     //let git_repo = config.get_git2_repo()?;
     let git_submodule = git_repo.find_submodule(module.get_git_name(name).unwrap().as_str()).map_err(|e|format!("Failed to find submodule {name}: {e}"))?;
@@ -242,16 +246,16 @@ pub fn get_available_modules(config : &Config) -> Result<HashMap<String, Module>
 }
 
 pub fn add_module_to_config(config : &Config, module : &AddModule, multi : Arc<MultiProgress>) -> Result<Module>{
-    let add_module_spinner = Spinner::new(format!("Adding module {}", module.name), Some(multi.clone()));
+    let add_module_spinner = Spinner::new(format!("{} module {}", "Adding".green(),  module.name.blue()), Some(multi.clone()));
     defer!{add_module_spinner.finish();}
     let tasks_spinner = Spinner::new(format!("Getting available modules"), Some(multi.clone()));
     defer!{tasks_spinner.finish();};
 
     let available_modules = get_available_modules(config)?;
-    tasks_spinner.change_message(format!("looking for {} in modules lists", &module.name));
+    tasks_spinner.change_message(format!("looking for {} in modules lists", &module.name.blue()));
     if let Some((name, module)) =   available_modules.get_key_value(&module.name){
-        tasks_spinner.change_message(format!("module found: adding module config to core.yaml"));
-        let mut config_file = ConfigFile::new_from_file(&config).map_err(|e| format!("failed to read config_file: {e}"))?;
+        tasks_spinner.change_message(format!("{} found: adding module config to core.yaml", name.blue()));
+        let mut config_file = ConfigFile::new_from_file(&config).map_err(|e| format!("Failed to read config_file: {e}"))?;
         let modules_map = config_file.modules.get_or_insert(HashMap::new());
         modules_map.insert(name.to_string(), module.clone());
         config_file.write()?;
@@ -264,39 +268,56 @@ pub fn add_module_to_config(config : &Config, module : &AddModule, multi : Arc<M
         */
         Ok(module.clone())
     }else {
-        Err(format!("Failed to find module in modules list. Try adding it yoursel in the config.yaml file under [modules]"))?
+        Err(format!("Failed to find {} in modules list. Try adding it yoursel in the config.yaml file under [modules]", &module.name.blue()))?
     }
 }
 
-pub fn add_module(config : Config, add_module : &AddModule, multi : Arc<MultiProgress>) -> Result<()>{
+pub fn add_module(config : &Config, add_module : &AddModule, multi : Arc<MultiProgress>) -> Result<()>{
     let module = add_module_to_config(&config, &add_module, multi.clone())
         .map_err(|e| format!("Failed to add module to config: {e}"))?;
     let git_repo = Repository::open(&config.project_paths.root)?;
     let config_file = ConfigFile::new_from_file(&config)?;
     add_module_to_modules_dir(add_module.name.as_str(), &module, &git_repo, &config, multi)
         .map_err(|e| format!("Failed to add module to modules dir: {e}"))?;
-    generate_cmake_from_conf(&config).map_err(|e|format!("Failed to generate updated cmakefile: {e}"))?;
+    //generate_cmake_from_conf(&config).map_err(|e|format!("Failed to generate updated cmakefile: {e}"))?;
+    println!("{} {} module added.", "Success".green(), add_module.name.blue());
     Ok(())
 }
-pub fn remove_module(config : &Config, name : &String, multi : Arc<MultiProgress>, config_file : & mut ConfigFile) -> Result<()>{
-    if let Ok(mut module_config_file) = ConfigFile::new_from_path(config, &config.project_paths.modules.join(name).join("config.yaml")){
+
+pub fn remove_module(config : &Config, name : &String, multi : Arc<MultiProgress>, config_file : &mut ConfigFile) -> Result<()>{
+    remove_module_from_dir(config, name, multi.clone(), config_file)?;
+    remove_module_from_config(name, config_file)?;
+    Ok(())
+}
+
+pub fn remove_module_from_dir(config : &Config, name : &String, multi : Arc<MultiProgress>, config_file : &ConfigFile) -> Result<()>{
+    let main_config_file = ConfigFile::new_from_file(config)?;
+    match main_config_file.get_module_reference_count(name) {
+        0 => Err(format!("Failed to find {name} in any config_file modules"))?,
+        1 => {},//continue with module deletion, its not any module's dependency
+        _ => {
+            println!("multiple references to {name}. will not be removed");
+            return Ok(())
+        },
+    }
+    if !fs::exists(config.project_paths.modules.join(name))?{
+        println!("module {name} was already removed from modules");
+        return Ok(())
+    }
+    if let Ok(module_config_file) = ConfigFile::new_from_path(config, &config.project_paths.modules.join(name).join("config.yaml")){
         if let Some(modules) = module_config_file.modules.clone(){
             println!("Removing {name} dependency modules: {:?}", modules.keys());
             for module in modules.keys(){
-                remove_module(config, module, multi.clone(), &mut module_config_file)?;
+                remove_module_from_dir(config, module, multi.clone(), &module_config_file)?;
             }
-        }else{
-            println!("Failed");
         }
-    }else{
-        println!("Failed");
     }
-    if let Some(modules) = &mut config_file.modules{
+    if let Some(modules) = &config_file.modules{
         if let Some(specs) = modules.get(name){
             match &specs{
                 Module::GitUrl(_) => {
                     remove_git_submodule(name, None,&config.project_paths.root)?;
-                },
+                }
                 Module::Spec(specs) => {
                     match &specs.source{
                         ModuleSource::Curl(_) => {
@@ -308,8 +329,22 @@ pub fn remove_module(config : &Config, name : &String, multi : Arc<MultiProgress
                     }
                 }
             }
+        } else {
+            Err(format!("Failed to remove {}, not found", name))?;
+        }
+    }else {
+        Err(format!("Failed to remove {}, not found", name))?;
+    }
+    Ok(())
+}
+
+pub fn remove_module_from_config(name : &String,config_file : & mut ConfigFile) -> Result<()>{
+    if let Some(modules) = &mut config_file.modules{
+        if modules.contains_key(name){
             modules.remove(name);
             config_file.write()?;
+        }else{
+            Err(format!("Failed to remove {}, not found", name))?;
         }
     }else {
         Err(format!("Failed to remove {}, not found", name))?;

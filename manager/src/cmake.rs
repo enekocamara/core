@@ -2,11 +2,12 @@ use std::{fs, path::PathBuf};
 
 use tokio::io::copy_bidirectional_with_sizes;
 
-use crate::config::Config;
+use crate::config::{Config, ConfigFile, Module};
 use crate::Result;
-pub struct CMakeTemplate{
+
+/*pub struct CMakeTemplate{
     path_to_template : PathBuf,
-}
+}*/
 
 pub struct GeneratePattern<'a>{
     pub project_name : &'a str,
@@ -15,19 +16,70 @@ pub struct GeneratePattern<'a>{
     pub link_modules : Option<&'a Vec<String>>,
     pub subdirectories : Option<&'a  Vec<String>>,
     pub sources_path : Option<&'a str>,
-    pub recursive_glob : Option<bool>
+    pub recursive_glob : Option<bool>,
+    pub cmp_def : Option<Vec<String>>
+}
+fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
+    config.asharis_root.join("resources").join("TemplateCMakeLists.txt")
 }
 
-impl CMakeTemplate{
-    pub fn new(config : &Config) -> CMakeTemplate{
-        CMakeTemplate{
-            path_to_template : config.asharis_root.join("resources").join("TemplateCMakeLists.txt")
-        }
+//impl CMakeTemplate{
+//    pub fn new(config : &Config) -> CMakeTemplate{
+//        CMakeTemplate{
+//            path_to_template : config.asharis_root.join("resources").join("TemplateCMakeLists.txt")
+//        }
+//    }
+    pub fn generate_to_file_from_path(config : &Config, path_to_dir : &PathBuf) -> Result<()>{
+        fs::write(path_to_dir.join("CMakeLists.txt"), generate_to_string_from_path(config, path_to_dir)?)?;
+        Ok(())
     }
 
-    pub fn generate_to_string(self: &Self, config : &Config,  pattern : &GeneratePattern)
+    pub fn generate_to_string_from_path(config : &Config, path_to_dir : &PathBuf) -> Result<String>{
+        let config_file = ConfigFile::new_from_path(config, &path_to_dir.join("config.yaml"))?;
+        let mut cmake_include_paths : Vec<String>  = Vec::new();
+        if let Some(modules) = &config_file.modules {
+            modules.iter().all(|(name, module)| {
+                match module{
+                    Module::GitUrl(_) => {
+                        cmake_include_paths.push(name.clone());
+                    }
+                    Module::Spec(spec) => 
+                        if let Some(include_path) = &spec.include_path{
+                            cmake_include_paths.push(format!("{name}/{include_path}"));
+                        }else{
+                            cmake_include_paths.push(name.clone());
+                        }
+                }
+                return true;
+            });
+        }
+        let cmake_modules = config_file.get_all_cmake_modules(&config.project_paths.root)?
+            .iter().map(|m| m.module_name.clone()).collect::<Vec<_>>();
+        let cmake_link_modules = config_file.get_all_cmake_modules(&config.project_paths.root)?
+            .iter().map(|m| m.project_name.clone()).collect::<Vec<_>>();
+/*    let target_link_libraries : String = cmake_modules
+        .iter()
+        .map(|module| module.project_name.as_str() )
+        .collect::<Vec<_>>()
+        .join("\n");*/
+        let cmake_file_string = generate_to_string(config,
+            &GeneratePattern{   
+                project_name : &config_file.project,
+                add_command : config_file.builds.get(&config_file.project).ok_or("library not in builds")?.as_str(),
+                include_paths: Some(&cmake_include_paths),
+                link_modules : Some(&cmake_link_modules),
+                subdirectories : Some(&cmake_modules),
+                sources_path : None,
+                recursive_glob : None,
+                cmp_def : config_file.cmp_defs.clone()
+           })?;
+       Ok(cmake_file_string)
+
+    }
+
+    pub fn generate_to_string(config : &Config,  pattern : &GeneratePattern)
          -> Result<String>{
-        let source = fs::read_to_string(&self.path_to_template)?;
+        let source = fs::read_to_string(get_path_to_template_cmakelists(config))?;
 
         let mut modified = source
             .replace(&config.project_name_flag, pattern.project_name);
@@ -88,12 +140,17 @@ impl CMakeTemplate{
             modified = modified.replace(config.cmake_add_subdirectories_flag, "");
         }
 
+        if let Some(cmp_defs) = &pattern.cmp_def{
+            modified = modified.replace(config.cmake_compile_definitions_flag, cmp_defs.join(" ").as_str());
+        }else{
+            modified = modified.replace(config.cmake_compile_definitions_flag, "");
+        }
+
         Ok(modified)
     }
-    pub fn generate_to_file(self: &Self, config : &Config, file_path : PathBuf, pattern : &GeneratePattern)
+    pub fn generate_to_file(config : &Config, file_path : PathBuf, pattern : &GeneratePattern)
         -> Result<()>{
-        let contents = self.generate_to_string(config, pattern)?;
+        let contents = generate_to_string(config, pattern)?;
         fs::write(file_path.join("CMakeLists.txt"), contents)?;
         Ok(())
     }
-}

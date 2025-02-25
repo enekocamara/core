@@ -1,6 +1,7 @@
 use std::env::current_dir;
 use std::fmt::format;
 use std::path::{PathBuf, Path};
+use clap::error;
 use fs_extra::dir::{self,CopyOptions};
 use std::fs::{self, File};
 use std::process::Command;
@@ -16,11 +17,13 @@ pub fn first_uppercase(s: &str) -> String {
     c.next().unwrap().to_uppercase().collect::<String>() + c.as_str()
 }
 pub fn copy_dir_rec(src : &PathBuf, dst : &PathBuf) -> Result<u64>{
+    use fs_extra::error as fsx_error;
     if !src.exists() {
-        Err(fs_extra::error::Error::new(fs_extra::error::ErrorKind::NotFound, std::format!("{:?} not found", src).as_str()))?;
+        Err(fsx_error::Error::new(fsx_error::ErrorKind::NotFound, std::format!("{:?} not found", src).as_str()))?;
     }
     if !dst.exists() {
-        fs::create_dir(dst).map_err(|e| fs_extra::error::Error::new(fs_extra::error::ErrorKind::Other, std::format!("failed to create dst dir {}", e).as_str()))?;
+        fs::create_dir(dst)
+            .map_err(|e| fsx_error::Error::new(fsx_error::ErrorKind::Other, std::format!("failed to create dst dir {}", e).as_str()))?;
     }
     // Define copy options
     let mut options = CopyOptions::new();

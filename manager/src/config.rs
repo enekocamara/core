@@ -1,8 +1,10 @@
 use std::path::PathBuf;
 use std::env;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::{self, format};
 use std::fs;
+use std::hash::{Hash, Hasher};
+use std::process::Child;
 
 use serde::{Deserialize, Serialize};
 use serde::de::{Visitor, MapAccess};
@@ -20,6 +22,8 @@ pub struct ConfigFile{
     pub build_ops : Option<HashMap<String, Build>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules : Option<HashMap<String, Module>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cmp_defs : Option<Vec<String>>,
 
     #[serde(skip)]
     path : PathBuf,
@@ -27,9 +31,18 @@ pub struct ConfigFile{
     childs : Vec<ConfigFile>
 }
 
+#[derive(PartialEq)]
 pub struct CmakeModule{
     pub module_name : String,
     pub project_name : String
+}
+
+impl Eq for CmakeModule{}
+
+impl Hash for CmakeModule{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.module_name.hash(state);
+    }
 }
 
 impl ConfigFile{
@@ -54,7 +67,7 @@ impl ConfigFile{
         ConfigFile::new_from_path(config, &config.project_paths.config_file)
     }
     pub fn write(self : &Self) -> Result<()>{
-        let source = serde_yaml::to_string(self)?;
+        let source = serde_yaml::to_string(self).map_err(|e| format!("Failed to parse to string: {e}"))?;
         fs::write(&self.path, source).map_err(|e| format!("Failed to overwrite config.yaml: {e}"))?;
         Ok(())
     }
@@ -104,21 +117,58 @@ impl ConfigFile{
             Vec::new()
         }
     }
-    pub fn get_all_cmake_modules(&self, project_root : &PathBuf) -> Result<Vec<CmakeModule>>{
-        let mut cmake_modules = Vec::new();
+    pub fn get_all_cmake_modules(&self, project_root : &PathBuf) -> Result<HashSet<CmakeModule>>{
+        let mut cmake_modules = HashSet::new();
         if let Some(modules) = &self.modules{
             for module in modules.keys(){
                 let cmake_path = project_root.join("modules").join(module).join("CMakeLists.txt");
                 if fs::exists(&cmake_path).map_err(|e| format!("Failed to check if cmake exists: {e}"))?{
                     
-                    cmake_modules.push(CmakeModule{
+                    cmake_modules.insert(CmakeModule{
                         module_name : module.clone(),
                         project_name : get_cmake_project_name(project_root.join("modules").join(module)).map_err(|e| format!("Failed to get cmake project name for {module}: {e}"))?
                     });
                 }
             }
         }
+        for child in &self.childs{
+            let child_modules = child.get_all_cmake_modules(project_root)?;
+            for child_mod in child_modules{
+                cmake_modules.insert(child_mod);
+            }
+        }
         Ok(cmake_modules)
+    }
+    pub fn get_all_submodules_pair(self : &Self, recurse : bool) -> HashMap<String, Module>{
+        let mut modules = if let Some(modules) = &self.modules{
+            modules.clone()
+        }else{
+            HashMap::new()
+        };
+        if recurse{
+            for child in &self.childs{
+                let child_modules = child.get_all_submodules_pair(true);
+                for (name, module) in child_modules{
+                    modules.insert(name, module);
+                }
+            }
+        }
+        modules
+    }
+
+    pub fn get_module_reference_count(self : &Self, to_find : &str) -> u32{
+        let mut count = 0;
+        if let Some(modules) = &self.modules{
+            if modules.contains_key(to_find){
+                count += 1;
+            }
+            for child in &self.childs{
+                count += child.get_module_reference_count(to_find);
+            }
+            count
+        }else {
+            return 0;
+        }
     }
 }
 
@@ -328,6 +378,7 @@ pub struct Config{
     pub cmake_add_subdirectories_flag : &'static str,
     pub cmake_sources_path_flag : &'static str,
     pub cmake_glob_type_flag : &'static str,
+    pub cmake_compile_definitions_flag : &'static str,
 }
 
 #[derive(Clone)]
@@ -361,7 +412,8 @@ impl Config{
             cmake_link_modules_flag : "%LINK_MODULES%",
             cmake_add_subdirectories_flag : "%ADD_SUBDIRECTORIES%",
             cmake_sources_path_flag : "%SOURCES_PATH%",
-            cmake_glob_type_flag : "%GLOB_TYPE%"
+            cmake_glob_type_flag : "%GLOB_TYPE%",
+            cmake_compile_definitions_flag : "%COMPILE_DEFINITIONS%"
         })
     }
     pub fn get_git2_repo(self : &Self) -> Result<Repository>{
@@ -378,5 +430,29 @@ impl Config{
             }
         }
         Ok(modules)
+    }
+    pub fn get_all_installed_modules_pair(self : &Self)->Result<HashMap<String, Module>>{
+        let mut modules = HashMap::new();
+        let config_file = ConfigFile::new_from_file(self)?;
+        let config_tree_modules = config_file.get_all_submodules_pair(true);
+        for entry in fs::read_dir(&self.project_paths.modules)?{
+            let entry = entry?;
+            if entry.metadata()?.is_dir(){
+                if let Some(name) = entry.file_name().to_str(){
+                    if let Some((name, module)) = config_tree_modules.get_key_value(name){
+                        modules.insert(name.clone(), module.clone());
+                    } 
+                }
+            }
+        }
+        Ok(modules)
+    }
+    pub fn change_root(self : &mut Self, root : PathBuf){
+        self.project_paths.root = root;
+        self.project_paths.build = self.project_paths.root.join("build");
+        self.project_paths.output = self.project_paths.root.join("output");
+        self.project_paths.config_file = self.project_paths.root.join("config.yaml");
+        self.project_paths.modules =  self.project_paths.root.join("modules");
+        self.project_paths.src = self.project_paths.root.join("src")
     }
 }

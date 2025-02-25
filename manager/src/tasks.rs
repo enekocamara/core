@@ -1,19 +1,25 @@
-use std::{fs, iter};
-use std::process::{Command, Output};
+use std::{fs, iter, option};
+use std::process::{Command, Output, Stdio};
 use std::sync::Arc;
 use std::path::PathBuf;
+use std::time::Instant;
+use std::io::{self, BufRead, Read, Write};
+use std::thread;
 
 use git2::Repository;
 use scopeguard::defer;
 use indicatif::MultiProgress;
+use colored::*;
+use tokio::time;
+use tokio::time::error::Elapsed;
 
 
-use crate::spinner::Spinner;
+use crate::spinner::{Spinner, MultiText};
 use crate::config::{Config, ConfigFile, Module};
 use crate::args::{NewProject, NewSyrisProject, BuildProject, RunProject};
 use crate::{Result,utils};
 use crate::modules::{add_module_to_modules_dir};
-use crate::cmake::{CMakeTemplate, GeneratePattern};
+use crate::cmake::{self, GeneratePattern};
 
 
 pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, multi : Arc<MultiProgress>) -> Result<()>{
@@ -153,6 +159,7 @@ pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> R
     Ok(())
 }
 
+/*
 pub fn generate_cmake_from_conf(config : &Config) -> Result<()>{
     let config_file = ConfigFile::new_from_file(&config)?;
     let mut cmake_include_paths : Vec<String>  = Vec::new();
@@ -194,7 +201,7 @@ pub fn generate_cmake_from_conf(config : &Config) -> Result<()>{
         })?;
     Ok(())
 }
-
+*/
 pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result<()>{
     let name : String = if let Some(name) = config.project_paths.root.iter().last(){
         name.to_string_lossy().into_owned()
@@ -226,7 +233,7 @@ pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result
 
     tasks_spinner.finish();
     //MAIN CMAKELISTS
-    generate_cmake_from_conf(&config).map_err(|e| format!("Failed to generate cmake: {e}"))?;
+    cmake::generate_to_file_from_path(&config, &config.project_paths.root).map_err(|e| format!("Failed to generate cmake: {e}"))?;
 
     build_cmake_project(&config, multi.clone())?;
     project_spinner.finish();
@@ -236,7 +243,7 @@ pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result
 pub async fn new_project(mut config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
     let project_spinner = Spinner::new(format!("Creating project {}...", &project.name), Some(multi.clone()));
     let tasks_spinner = Spinner::new("Creating project dir...", Some(multi.clone()));
-    config.project_paths.root = config.project_paths.root.join(PathBuf::from(&project.name));
+    config.change_root(config.project_paths.root.join(PathBuf::from(&project.name)));
     if config.project_paths.root.exists(){
         Err("Error already exists")?;
     }
@@ -261,10 +268,11 @@ pub async fn new_project(mut config : Config, project : NewProject, multi : Arc<
 
     tasks_spinner.finish();
     //MAIN CMAKELISTS
-    generate_cmake_from_conf(&config).map_err(|e| format!("Failed to generate cmake: {e}"))?;
+    cmake::generate_to_file_from_path(&config, &config.project_paths.root).map_err(|e| format!("Failed to generate cmake: {e}"))?;
 
     build_cmake_project(&config, multi.clone())?;
     project_spinner.finish();
+    println!("{}. Project {} created.", "Success".green(), project.name.blue());
     Ok(())
 }
 
@@ -281,12 +289,20 @@ pub fn build_cmake_project(config : &Config, multi : Arc<MultiProgress>) -> Resu
         .output()?;
     if !output.status.success(){
         Err(format!("failed to to build cmake project, {}", String::from_utf8_lossy(&output.stderr)))?;
-
     }
     Ok(())
 }
 
-pub fn build_project(config : &Config, build : BuildProject, multi : Arc<MultiProgress>) -> Result<()>{
+
+#[derive(PartialEq)]
+pub enum BuildProjectOpts{
+    Silent,
+    SilentIfOkey,
+    WriteOutputAlways
+}
+
+pub fn build_project(config : &Config, build : BuildProject, multi : Arc<MultiProgress>, config_file : &ConfigFile, options : BuildProjectOpts) -> Result<()>{
+    let start = Instant::now();
     if !fs::exists(&config.project_paths.build)?{
         fs::create_dir(&config.project_paths.build)?;
     }
@@ -298,18 +314,44 @@ pub fn build_project(config : &Config, build : BuildProject, multi : Arc<MultiPr
         }
         None => "Debug"
     };
-    let status = Command::new("cmake")
-        .args(["--build", ".", "--config", target])
-        .current_dir(&config.project_paths.build)
-        .status()?;
-    if !status.success(){
-        Err(format!("Failed to build project: {:?}", status))?
+    println!("{} {} [target: {}]", "Building".green(), config_file.project.blue(), target);
+
+    match options{
+        BuildProjectOpts::SilentIfOkey => {
+            let output = Command::new("cmake")
+                .args(["--build", ".", "--config", target])
+                .current_dir(&config.project_paths.build)
+                .output()?;
+            if !output.status.success(){
+                Err(format!("{} to build {}:\n{}", "Failed".red(), config_file.project.blue(), String::from_utf8_lossy(&output.stdout)))?;
+            }
+        }
+        BuildProjectOpts::WriteOutputAlways => {
+            let status = Command::new("cmake")
+                .args(["--build", ".", "--config", target])
+                .current_dir(&config.project_paths.build)
+                .status()?;
+            if !status.success(){
+                Err(format!("Failed to build project: \n{:?}", status.code()))?;
+            }
+        }
+        BuildProjectOpts::Silent => {
+            let _ = Command::new("cmake")
+                .args(["--build", ".", "--config", target])
+                .current_dir(&config.project_paths.build)
+                .status()?;
+        }
+    }
+    let elapsed = start.elapsed();
+    if options != BuildProjectOpts::Silent{
+        println!("{} {} built [target: {}] in {:#?}", "Success".green(), config_file.project.blue(), target, elapsed);
     }
     Ok(())
 
 }
 pub fn run_project(config : &Config, project : RunProject, multi : Arc<MultiProgress>) -> Result<()>{
-    build_project(config, BuildProject{target : project.target.clone()}, multi.clone())?;
+    let config_file = ConfigFile::new_from_file(&config)?;
+    build_project(config, BuildProject{target : project.target.clone()}, multi.clone(), &config_file, BuildProjectOpts::SilentIfOkey)?;
     let target = match project.target{
         Some(target) => match target.as_str(){
             "Debug" => "Debug",
@@ -318,26 +360,34 @@ pub fn run_project(config : &Config, project : RunProject, multi : Arc<MultiProg
         }
         None => "Debug"
     };
-    let config_file = ConfigFile::new_from_file(&config)?;
-    let executable_path = PathBuf::from("output").join("bin").join(target).join(config_file.project);
+    let executable_path = PathBuf::from("output").join("bin").join(target).join(&config_file.project);
     let mut command = String::from("./");
     command.push_str(&executable_path.to_string_lossy());
+    println!("{} program {}", "Running".green(), &config_file.project.blue());
+    let start = Instant::now();
     let status = Command::new(command.as_str())
         .current_dir(&config.project_paths.root)
         .status().map_err(|e| format!("failed to run 'run' command: {e}"))?;
-    if !status.success(){
-        Err(format!("Failed to run project cmd: {:?}", status))?
-    }
+    let execution_time = start.elapsed();
+    /*
+    println!("{} runnning program {}. Duration: {:#?}", "Finished".green(), &config_file.project.blue(), execution_time);
+
+    if status.code().unwrap() > 0{
+        println!("{}: {}", "Exit code".red(), status.code().unwrap());
+    }else{
+        println!("{}: {}", "Exit code".green(), status.code().unwrap());
+    }*/
     Ok(())
-
-
 }
-pub fn clean_project(config : &Config, multi : Arc<MultiProgress>) -> Result<()>{
+pub fn clean_project(config : &Config, config_file : &ConfigFile, multi : Arc<MultiProgress>) -> Result<()>{
+    let spinner = Spinner::new(format!("{} {}", "Cleaning".green(), config_file.project.blue()), Some(multi.clone()));
+    defer!(spinner.finish(););
     if fs::exists(&config.project_paths.build)?{
         fs::remove_dir_all(&config.project_paths.build)?;
     }
     if fs::exists(&config.project_paths.output)?{
         fs::remove_dir_all(&config.project_paths.output)?;
     }
+    spinner.finish();
     Ok(())
 }

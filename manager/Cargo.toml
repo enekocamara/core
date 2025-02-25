@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.24", features = ["derive"]}
+colored = "3.0.0"
+derive_more = {version = "2.0.1", features = ["full"]}
 fs_extra = "1.3.0"
 git2 = "0.20.0"
 indicatif = "0.17.11"
