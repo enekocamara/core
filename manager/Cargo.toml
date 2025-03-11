@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.5.24", features = ["derive"]}
+clap = { version = "4.5.30", features = ["derive", "cargo"]}
 colored = "3.0.0"
 derive_more = {version = "2.0.1", features = ["full"]}
 fs_extra = "1.3.0"

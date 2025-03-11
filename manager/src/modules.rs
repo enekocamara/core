@@ -1,7 +1,5 @@
-use std::fmt::format;
-use std::hash::Hash;
-use std::process::{Command, Output};
-use std::path::{Path,PathBuf};
+use std::process::Command;
+use std::path::Path;
 use std::fs;
 use std::sync::Arc;
 use std::collections::HashMap;
@@ -14,9 +12,9 @@ use scopeguard::defer;
 
 use crate::Spinner;
 use crate::Result;
-use crate::config::{Config, ConfigFile, Module, ModuleSource, ModuleSourceCurl, ModuleSourceError};
+use crate::config::{Config, ConfigFile, Module, ModuleSource, ModuleSourceCurl};
 use crate::utils;
-use crate::args::{AddModule,RemoveModule};
+use crate::args::{AddModule,BinaryType};
 use crate::cmake::{self,GeneratePattern};
 
 pub fn remove_git_submodule<'re>(name : &str, git_path : Option<&str>, project_root : &Path) -> Result<()>{
@@ -157,7 +155,7 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
                     }; 
                     cmake::generate_to_file(config, path,&GeneratePattern{
                         project_name : name,
-                        add_command : "static_library",
+                        add_command : BinaryType::StaticLibrary,
                         include_paths: path_vec.as_ref(),
                         link_modules : None,
                         subdirectories : None,
@@ -205,11 +203,9 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
     //initialize modules that are both git and found in the config file
     for git_submodule in git_submodule_repo.submodules()?{
         let git_submodule_name = git_submodule.name().ok_or(format!("submodule name is not valid UTF-8"))?;
-        let mut is_a_config_module = false;
         for (config_submodule_name, config_module) in &config_file_git_submodules{
             let pathed_config_module_name = config_module.get_git_name(config_submodule_name).unwrap();
             //check if submodule is from config.yaml
-            is_a_config_module = true;
             if pathed_config_module_name.as_str() == git_submodule_name{
                 if let Ok(_) = git_repo.find_submodule(git_submodule_name){
                     println!("Module {git_submodule_name} is already part of the main project git submodules")
@@ -276,10 +272,8 @@ pub fn add_module(config : &Config, add_module : &AddModule, multi : Arc<MultiPr
     let module = add_module_to_config(&config, &add_module, multi.clone())
         .map_err(|e| format!("Failed to add module to config: {e}"))?;
     let git_repo = Repository::open(&config.project_paths.root)?;
-    let config_file = ConfigFile::new_from_file(&config)?;
     add_module_to_modules_dir(add_module.name.as_str(), &module, &git_repo, &config, multi)
         .map_err(|e| format!("Failed to add module to modules dir: {e}"))?;
-    //generate_cmake_from_conf(&config).map_err(|e|format!("Failed to generate updated cmakefile: {e}"))?;
     println!("{} {} module added.", "Success".green(), add_module.name.blue());
     Ok(())
 }
@@ -287,6 +281,7 @@ pub fn add_module(config : &Config, add_module : &AddModule, multi : Arc<MultiPr
 pub fn remove_module(config : &Config, name : &String, multi : Arc<MultiProgress>, config_file : &mut ConfigFile) -> Result<()>{
     remove_module_from_dir(config, name, multi.clone(), config_file)?;
     remove_module_from_config(name, config_file)?;
+    cmake::generate_to_file_from_path(config, &config.project_paths.root)?;
     Ok(())
 }
 
@@ -349,6 +344,5 @@ pub fn remove_module_from_config(name : &String,config_file : & mut ConfigFile) 
     }else {
         Err(format!("Failed to remove {}, not found", name))?;
     }
-    
     Ok(())
 }

@@ -22,9 +22,11 @@ modules:
     glfw : 
         git_url : https://github.com/glfw/glfw
         include_path : include
+        link_name : glfw
     glm : https://github.com/g-truc/glm
     googletests : 
         git_url : https://github.com/google/googletest
+        link_name : gtest
     imgui_docking : 
         git_url: https://github.com/ocornut/imgui
         git_branch : docking

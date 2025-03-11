@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Instant};
+use std::{fs, sync::Arc};
 
 mod error;
 
@@ -14,12 +14,11 @@ mod cmake;
 mod syris;
 
 
-use args::{BuildProject, Cli, Commands, RemoveModule, SyrisCommands};
+use args::{Cli, SyrisCommands, TargetCommands};
 use colored::Colorize;
 use scopeguard::defer;
 use spinner::Spinner;
 use config::{Config, ConfigFile};
-use tasks::{build_cmake_project, build_project, clean_project, init_project, new_project, run_project, BuildProjectOpts};
 use syris::new_syris_project;
 use modules::{add_module, get_available_modules, remove_module};
 use clap::Parser;
@@ -38,105 +37,178 @@ async fn try_main() -> Result<()>{
     let config : Config = Config::new()?;
     let multi = Arc::new(MultiProgress::new());
     match cli.command{
-        Commands::New(project) => {
-            if let Err(e) = new_project(config, project, multi).await{
+        args::Commands::New(project) => {
+            if let Err(e) = tasks::new_project(config, project, multi).await{
                 Err(format!("Failed to create new project: {e}"))?;
             };
         }
-        Commands::Init => {
-            if let Err(e) = init_project(config,  multi).await{
+        args::Commands::Init => {
+            if let Err(e) = tasks::init_project(config,  multi).await{
                 Err(format!("Failed to create new project: {e}"))?;
             };
         }
-        Commands::Build(build) => {
+        args::Commands::Build(options) => {
             let config_file = ConfigFile::new_from_file(&config)?;
-            let start = Instant::now();
-            if let Err(e) = build_project(&config, build.clone(), multi, &config_file, BuildProjectOpts::WriteOutputAlways){
+            if let Err(e) = tasks::build_project(&config, &options, multi, &config_file, tasks::BuildProjectOpts::WriteOutputAlways){
                 Err(format!("Failed to build: {e}"))?;
             };
-            let elapsed = start.elapsed();
-            //println!("{}: {} built [target {:#?}] in {:#?}", "Success".green(), config_file.project, build.target, elapsed);
         }
-        Commands::Run(run) => {
-            if let Err(e) = run_project(&config, run, multi){
+        args::Commands::Run(options) => {
+            if let Err(e) = tasks::run_project(&config, &options, multi){
                 Err(format!("Failed to run project: {e}"))?;
             };
         }
-        Commands::CmakeBuild =>{
-            build_cmake_project(&config, multi)?;
+        args::Commands::CmakeBuild =>{
+            tasks::build_cmake_project(&config, multi)?;
         }
-        Commands::Clean =>{
+        args::Commands::Clean =>{
             let config_file = ConfigFile::new_from_file(&config)?;
-            if let Err(e) = clean_project(&config,&config_file, multi){
+            if let Err(e) = tasks::clean_project(&config,&config_file, multi){
                 println!("{} to clean {}: Reason:\n\t{}", "Failed".red(), config_file.project.blue(), e);
             }else{
                 println!("{} {}", "Cleaned".green(), config_file.project.blue());
             }
         }
-        Commands::List => {
-            let config_file = ConfigFile::new_from_file(&config)?;
-            if let Some(modules) = &config_file.modules{
-                for name in modules.keys(){
+        args::Commands::Module(module_command) => match module_command{
+            args::ModuleCommands::List => {
+                let config_file = ConfigFile::new_from_file(&config)?;
+                if let Some(modules) = &config_file.modules{
+                    for name in modules.keys(){
+                        println!("  * {}", name.blue());
+                    }
+                }
+            }
+            args::ModuleCommands::ListAll => {
+                let modules = config.get_all_installed_modules()?;
+                for name in modules{
                     println!("  * {}", name.blue());
                 }
             }
-        }
-        Commands::ListInstalled => {
-            let modules = config.get_all_installed_modules()?;
-            for name in modules{
-                println!("  * {}", name.blue());
+            args::ModuleCommands::ListAvailable => {
+                let available_modules = get_available_modules(&config)?;
+                for name in available_modules.keys(){
+                    println!("  * {}", name.blue());
+                }
+            }
+            args::ModuleCommands::Add(module) => {
+                if let Err(e) = add_module(&config, &module, multi.clone()){
+                    Err(format!("Failed to add module {}: {e}", module.name))?;
+                }
+                let _ = tasks::build_cmake_project(&config, multi);
+            }
+            args::ModuleCommands::Remove(module) => {
+                let mut config_file = ConfigFile::new_from_file(&config)
+                    .map_err(|e| format!("Failed to remove module {}: {e}", module.name.blue()))?;
+                if let Err(e) = remove_module(&config, &module.name, multi, &mut config_file){
+                    Err(format!("Failed to remove module {}:{e}", module.name.blue()))?;
+                }
+                println!("{} module {} removed.", "Success".green(), module.name.blue());
+            }
+            args::ModuleCommands::RemoveAll => {
+                let mut config_file = ConfigFile::new_from_file(&config)
+                    .map_err(|e| format!("Failed to remove modules: {e}"))?;
+                let mut removed_modules =  Vec::new();
+                if let Some(modules) = config_file.modules.clone(){
+                    for (name, _) in &modules{
+                        remove_module(&config, name, multi.clone(), &mut config_file)?;
+                        removed_modules.push(name.clone());
+                    }
+                    println!("{} modules [{}] removed.", "Success".green(), removed_modules.iter().map(|module_name| module_name.blue().to_string()).collect::<Vec<String>>().join(", "));
+                }else{
+                    println!("No modules to be removed");
+                }
             }
         }
-        Commands::ListAvailable => {
-            let available_modules = get_available_modules(&config)?;
-            for name in available_modules.keys(){
-                println!("  * {}", name.blue());
+        args::Commands::Target(target) => match &target{
+            TargetCommands::Add(target)=>{
+               tasks::add_target(&config, target)?;
+            },
+            TargetCommands::Remove(target)=>{
+                todo!();
+            },
+            TargetCommands::RemoveAll=>{
+                todo!()
+            }
+            TargetCommands::Current { name } => {
+                let mut config_file = ConfigFile::new_from_file(&config)?;
+                if config_file.current_target == *name{
+                    println!("{} is already the current target", name.blue());
+
+                }else if config_file.targets.contains_key(name){
+                    config_file.current_target = name.clone();
+                    config_file.write()?;
+                    println!("{} {} is now the current target", "Success".green(), name.blue());
+                }else{
+                    Err(format!("Target {} not found in targets.\n\tAvailable targets: [{}]", name.blue(),
+                        config_file.targets.iter().map(|(name, _)| name.blue().to_ascii_lowercase()).collect::<Vec<_>>().join(",")))?
+                }
             }
         }
-        Commands::Update => {
-            if let Err(e) = cmake::generate_to_file_from_path(&config, &config.project_paths.root) {
+        args::Commands::Update => {
+            if let Err(e) = cmake::generate_to_file_from_path(&config, &config.cmd_path) {
                 Err(format!("Failed to create config file {e}"))?;
             }
         }
-        Commands::Add(module) => {
-            if let Err(e) = add_module(&config, &module, multi.clone()){
-                Err(format!("Failed to add module {}: {e}", module.name))?;
-            }
-            let _ = build_cmake_project(&config, multi);
-        }
-        Commands::Remove(module)=>{
-            let mut config_file = ConfigFile::new_from_file(&config)
-                .map_err(|e| format!("Failed to remove modules: {e}"))?;
-            match &module{
-                RemoveModule::Name { name } => {
-                    if let Err(e) = remove_module(&config, name, multi, &mut config_file){
-                        Err(format!("Failed to remove module {}:{e}", name))?;
-                    }
-                    println!("{} module {} removed.", "Success".green(), name.blue());
-                }
-                RemoveModule::All => {
-                    let mut removed_modules =  Vec::new();
-                    if let Some(modules) = config_file.modules.clone(){
-                        for (name, _) in &modules{
-                            remove_module(&config, name, multi.clone(), &mut config_file)?;
-                            removed_modules.push(name.clone());
-                        }
-                        println!("{} modules [{}] removed.", "Success".green(), removed_modules.iter().map(|module_name| module_name.blue().to_string()).collect::<Vec<String>>().join(", "));
-                    }else{
-                        println!("No modules to be removed");
-                    }
-                }
-            }
-        }
-        Commands::Syris(syris_command) => match syris_command{
+        args::Commands::Syris(syris_command) => match syris_command{
             SyrisCommands::New(new_command)=>{
                 let spiner  = Spinner::new("creating project", Some(multi.clone()));
                 defer!(spiner.finish(););
                 new_syris_project(config, new_command, multi.clone()).await?;
             },
             SyrisCommands::Build(_) => {
-                build_cmake_project(&config, multi.clone())?;
+                tasks::build_cmake_project(&config, multi.clone())?;
             },
+        }
+        args::Commands::Cmd { module_name, cmd_name , args} => {
+            let config_file = ConfigFile::new_from_file(&config)?;
+            if let Some(module_config_file) = config_file.get_config_file(&module_name){
+                if let Some(commands) = &module_config_file.command{
+                    if let Some(command) = commands.get(&cmd_name){
+                        command.run(&config, &module_config_file.get_dir_path(), args)
+                            .map_err(|e| format!("Failed to run command {cmd_name}: {e}"))?
+                    } else {
+                        Err(format!("Project {} has no command named {}", module_name.blue(), cmd_name))?
+                    }
+                }else{
+                    Err(format!("Project {} has no commands", module_name.blue()))?
+                }
+            }else{
+                Err(format!("Project {} not found", module_name.blue()))?
+            }
+        }
+        args::Commands::Test => {
+            todo!();
+            let config_file = ConfigFile::new_from_file(&config)?;
+            let testing_dir = config.project_paths.root.join("Testing");
+            if !fs::exists(&testing_dir)?{
+                fs::create_dir(&testing_dir)?;
+            }
+            let _ = std::process::Command::new("ctest")
+                .args(["-C", "Debug", "--test-dir"])
+                .current_dir(&config.project_paths.build)
+                .status()?;
+            let log_file = config.project_paths.build.join("Testing").join("Temporary").join("LastTest.log");
+            let log_file_dst = config.project_paths.root.join("Testing").join("LastTest.log");
+            if !fs::exists(&log_file)?{
+                Err(format!("Log file was not generated at: {:?}", log_file))?
+            }
+            fs::copy(log_file, log_file_dst)?;
+        }
+        args::Commands::TestAll => {
+            let testing_dir = config.project_paths.root.join("Testing");
+            if !fs::exists(&testing_dir)?{
+                fs::create_dir(&testing_dir)?;
+            }
+            let _ = std::process::Command::new("ctest")
+                .args(["-C", "Debug"])
+                .current_dir(&config.project_paths.build)
+                .status()?;
+            let log_file = config.project_paths.build.join("Testing").join("Temporary").join("LastTest.log");
+            let log_file_dst = config.project_paths.root.join("Testing").join("LastTest.log");
+            if !fs::exists(&log_file)?{
+                Err(format!("Log file was not generated at: {:?}", log_file))?
+            }
+            fs::copy(log_file, log_file_dst)?;
         }
     }
     Ok(())

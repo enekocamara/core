@@ -71,7 +71,7 @@ pub async fn init_entry_point(config : Config, project : NewSyrisProject, multi 
 
     let contents = fs::read_to_string(entry_point_cmakelists_file_src).map_err(|e| format!("Failed to read entrypoint cmakelists: {e}"))?;
 
-    let modified_content = contents.replace(config.project_name_flag, &project.name);
+    let modified_content = contents.replace(config.flags.project_name, &project.name);
 
     fs::write(entry_point_cmakelists_file_dst, modified_content).map_err(|e| format!("failed to write modified entrypoint cmakelists file: {e}"))?;
     Ok(())
@@ -84,7 +84,7 @@ pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi
     let project_cmakelists_file_dst = config.project_paths.src.join("CMakeLists.txt");
     let contents = fs::read_to_string(project_cmakelists_file_src).map_err(|e| format!("Failed to read src cmakelists.txt: {e}"))?;
 
-    let modified_content = contents.replace(config.project_name_flag, &project.name);
+    let modified_content = contents.replace(config.flags.project_name, &project.name);
     fs::write(project_cmakelists_file_dst, modified_content).map_err(|e| format!("Failed to write modified src cmakelists: {e}"))?;
 
     let project_name_first_upper_flag = "%PROJECT_NAME_FIRST_UPPER%";
@@ -95,7 +95,7 @@ pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi
     let contents = fs::read_to_string(template_hpp_file_src).map_err(|e| format!("Failed to read template hpp file: {e}"))?;
 
     let modified_content = contents.replace(project_name_first_upper_flag, &project_name_first_upper);
-    let modified_content = modified_content.replace(config.project_name_flag, &project.name);
+    let modified_content = modified_content.replace(config.flags.project_name, &project.name);
 //    println!("Path : {}App.hpp", &project_name_first_upper);
     fs::write(template_hpp_file_dst, modified_content).map_err(|e| format!("Failed to write modified template hpp file: {e}"))?;
 
@@ -104,7 +104,7 @@ pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi
     let contents = fs::read_to_string(template_cpp_file_src).map_err(|e| format!("Failed to read template cpp file: {e}"))?;
 
     let modified_content = contents.replace(project_name_first_upper_flag, &project_name_first_upper);
-    let modified_content = modified_content.replace(config.project_name_flag, &project.name);
+    let modified_content = modified_content.replace(config.flags.project_name, &project.name);
     fs::write(template_cpp_file_dst, modified_content).map_err(|e| format!("failed to write modified template cpp file: {e}"))?;
     Ok(())
 }
@@ -182,7 +182,7 @@ pub async fn new_syris_project(mut config : Config, project : NewSyrisProject, m
 
     let contents = fs::read_to_string(main_cmakelists_file_src)?;
 
-    let modified_content = contents.replace(&config.project_name_flag, &project.name);
+    let modified_content = contents.replace(&config.flags.project_name, &project.name);
 
     fs::write(main_cmakelists_file_dst, modified_content)?;
 
