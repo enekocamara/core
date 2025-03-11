@@ -1,5 +1,5 @@
 use indicatif::{MultiProgress,ProgressBar, ProgressStyle};
-use tokio::time::{ sleep, Duration};
+use tokio::time::Duration;
 use std::sync::Arc;
 use std::borrow::Cow;
 pub struct Spinner{

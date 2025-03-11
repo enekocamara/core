@@ -1,10 +1,6 @@
-use std::env::current_dir;
-use std::fmt::format;
-use std::path::{PathBuf, Path};
-use clap::error;
+use std::path::PathBuf;
 use fs_extra::dir::{self,CopyOptions};
 use std::fs::{self, File};
-use std::process::Command;
 use regex::Regex;
 use reqwest::blocking::get;
 use url::Url;
@@ -16,6 +12,7 @@ pub fn first_uppercase(s: &str) -> String {
     let mut c = s.chars();
     c.next().unwrap().to_uppercase().collect::<String>() + c.as_str()
 }
+
 pub fn copy_dir_rec(src : &PathBuf, dst : &PathBuf) -> Result<u64>{
     use fs_extra::error as fsx_error;
     if !src.exists() {

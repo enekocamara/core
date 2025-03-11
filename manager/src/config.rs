@@ -1,34 +1,79 @@
 use std::path::PathBuf;
 use std::env;
 use std::collections::{HashMap, HashSet};
-use std::fmt::{self, format};
+use std::fmt;
 use std::fs;
 use std::hash::{Hash, Hasher};
-use std::process::Child;
 
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use serde::de::{Visitor, MapAccess};
 use serde::de::Error as SerdeError;
 use git2::Repository;
-use crate::utils::{self, get_cmake_project_name};
+
+use crate::args::BinaryType;
+use crate::utils;
 use crate::Result;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ConfigFile{
     pub project : String,
-    pub build : String,
-    pub builds : HashMap<String, String>,
+    pub current_target : String,
+    pub targets : HashMap<String, BinaryType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub build_ops : Option<HashMap<String, Build>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modules : Option<HashMap<String, Module>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cmp_defs : Option<Vec<String>>,
-
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub command : Option<HashMap<String, ClapSerdeCommand>>,
     #[serde(skip)]
     path : PathBuf,
     #[serde(skip)]
     childs : Vec<ConfigFile>
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ClapSerdeCommand{
+    program : String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    args : Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    current_dir_self : Option<bool>
+}
+
+impl ClapSerdeCommand{
+    pub fn run(&self, config : &Config, path_to_config_file : &PathBuf, runtime_args : Option<Vec<String>>) -> Result<()>{
+        let mut command_str = format!("cmd C/ {}", &self.program);
+        let mut command = std::process::Command::new("cmd");
+        command.arg("/C")
+            .arg(&self.program);
+    
+        if let Some(command_args) = &self.args{
+            command.args(command_args);
+            command_str.push_str(command_args.join(" ").as_str());
+        }
+        if let Some(runtime_args) = runtime_args{
+            command.args(&runtime_args);
+            command_str.push_str(runtime_args.join(" ").as_str());
+        }
+        let directory = {
+            if matches!(self.current_dir_self, None | Some(false)){
+                command.current_dir(&config.project_paths.root);
+                &config.project_paths.root
+            }else{
+                command.current_dir(&path_to_config_file);
+                &path_to_config_file
+            }
+        };
+
+        let status = command.status()?;
+        if !status.success(){
+            Err(format!("Exit code: {:?}\nRun `{}` from `{:?}`", status.code(), command_str, directory))?
+        }
+        Ok(())
+    }
 }
 
 #[derive(PartialEq)]
@@ -65,6 +110,14 @@ impl ConfigFile{
     }
     pub fn new_from_file(config : &Config) -> Result<ConfigFile>{
         ConfigFile::new_from_path(config, &config.project_paths.config_file)
+    }
+    pub fn get_path(&self) -> &PathBuf{
+        &self.path
+    }
+    pub fn get_dir_path(&self) -> PathBuf{
+        let mut hold = self.path.clone();
+        hold.pop();
+        hold
     }
     pub fn write(self : &Self) -> Result<()>{
         let source = serde_yaml::to_string(self).map_err(|e| format!("Failed to parse to string: {e}"))?;
@@ -120,13 +173,20 @@ impl ConfigFile{
     pub fn get_all_cmake_modules(&self, project_root : &PathBuf) -> Result<HashSet<CmakeModule>>{
         let mut cmake_modules = HashSet::new();
         if let Some(modules) = &self.modules{
-            for module in modules.keys(){
-                let cmake_path = project_root.join("modules").join(module).join("CMakeLists.txt");
+            for (name, module) in modules{
+                let cmake_path = project_root.join("modules").join(name).join("CMakeLists.txt");
                 if fs::exists(&cmake_path).map_err(|e| format!("Failed to check if cmake exists: {e}"))?{
                     
                     cmake_modules.insert(CmakeModule{
-                        module_name : module.clone(),
-                        project_name : get_cmake_project_name(project_root.join("modules").join(module)).map_err(|e| format!("Failed to get cmake project name for {module}: {e}"))?
+                        module_name : name.clone(),
+                        project_name : {
+                            if let Some(link_name) = module.get_link_name(){
+                                link_name
+                            }else{
+                                utils::get_cmake_project_name(project_root.join("modules").join(name))
+                                    .map_err(|e| format!("Failed to get cmake project name for {name}: {e}"))?
+                            }
+                        }
                     });
                 }
             }
@@ -169,6 +229,24 @@ impl ConfigFile{
         }else {
             return 0;
         }
+    }
+
+    pub fn get_config_file(self: &Self, name : &str) -> Option<&ConfigFile>{
+        if self.project == *name{
+            return Some(self)
+        }
+        self.childs.iter().find(|module_config_file| module_config_file.project == *name)
+    }
+    pub fn get_module_path<'a>(&'a self, name : &str) -> Result<&'a PathBuf>{
+        if self.project == *name{
+            return Ok(&self.path)
+        }
+        return self.childs.iter().find_map(|module_config_file|{
+            if module_config_file.project == *name{
+               return  Some(&module_config_file.path)
+            }
+            None
+        } ).ok_or(crate::Error::custom(format!("Module {} not found", name.blue() )))
     }
 }
 
@@ -219,6 +297,14 @@ impl Module{
 
         }
     }
+    pub fn get_link_name(self : &Self) -> Option<String>{
+        match self{
+            Module::GitUrl(_) => None,
+            Module::Spec(spec) => {
+                spec.link_name.clone()
+            }
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -233,6 +319,8 @@ pub struct ModuleSpec{
     pub include_path : Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cmd : Option<Cmd>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub link_name : Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -314,8 +402,8 @@ impl<'de> Deserialize<'de> for ModuleSource{
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
         where
             D: serde::Deserializer<'de> {
-        struct modulesSourceVisitor;
-        impl <'de> Visitor<'de> for modulesSourceVisitor{
+        struct ModulesSourceVisitor;
+        impl <'de> Visitor<'de> for ModulesSourceVisitor{
             type Value = ModuleSource;
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 formatter.write_str("use git_url or curl_url(s), not both")
@@ -360,7 +448,7 @@ impl<'de> Deserialize<'de> for ModuleSource{
                 }
             }
         }
-        deserializer.deserialize_map(modulesSourceVisitor)
+        deserializer.deserialize_map(ModulesSourceVisitor)
     }
 }
     
@@ -370,15 +458,27 @@ impl<'de> Deserialize<'de> for ModuleSource{
 pub struct Config{
     pub asharis_root : PathBuf,
     pub project_paths : ProjectPaths,
-    pub project_name_flag : &'static str,
-    pub project_name_first_upper_flag : &'static str,
-    pub cmake_add_command_flag : &'static str,
-    pub cmake_modules_include_paths_flag : &'static str,
-    pub cmake_link_modules_flag : &'static str,
-    pub cmake_add_subdirectories_flag : &'static str,
-    pub cmake_sources_path_flag : &'static str,
-    pub cmake_glob_type_flag : &'static str,
-    pub cmake_compile_definitions_flag : &'static str,
+    pub cmd_path : PathBuf,
+    pub flags : Flags,
+}
+
+#[derive(Clone)]
+pub struct Flags{
+    pub project_name : &'static str,
+    pub project_name_first_upper : &'static str,
+    pub cmake : CMakeFlags,
+}
+
+#[derive(Clone)]
+pub struct CMakeFlags{
+    pub add_command : &'static str,
+    pub modules_include_paths : &'static str,
+    pub link_modules : &'static str,
+    pub add_subdirectories : &'static str,
+    pub sources_path : &'static str,
+    pub glob_type : &'static str,
+    pub compile_definitions : &'static str,
+
 }
 
 #[derive(Clone)]
@@ -394,7 +494,22 @@ pub struct ProjectPaths{
 impl Config{
     pub fn new() -> Result<Config>{
         let asharis_root : PathBuf = PathBuf::from(env::var("ASHARIS_ROOT").map_err(|e| format!("failed to find ASHARIS_ROOT in environment variables: {:?}", e))?);
-        let project_root = env::current_dir().map_err(|e| format!("environment variable pwd not set: {}", e))?;
+        let cmd_path = env::current_dir().map_err(|e| format!("environment variable pwd not set: {}", e))?;
+        let project_root = {
+            let parent_dir = {
+                let mut hold = cmd_path.clone();
+                hold.pop();
+                hold.pop();
+                hold
+            };
+            if fs::exists(parent_dir.join("config.yaml"))?{
+                parent_dir
+            }else if fs::exists(cmd_path.join("config.yaml"))?{
+                cmd_path.clone()
+            }else{
+                Err("config.yaml file couldn't be found")?
+            }
+        };
         Ok(Config {
             asharis_root,
             project_paths : ProjectPaths{
@@ -405,15 +520,20 @@ impl Config{
                 modules : project_root.join("modules"),
                 src : project_root.join("src")
             },
-            project_name_flag : "%PROJECT_NAME%",
-            project_name_first_upper_flag : "%PROJECT_NAME_FIRST_UPPER%",
-            cmake_add_command_flag : "%ADD%",
-            cmake_modules_include_paths_flag : "%MODULES_INCLUDE_PATHS%",
-            cmake_link_modules_flag : "%LINK_MODULES%",
-            cmake_add_subdirectories_flag : "%ADD_SUBDIRECTORIES%",
-            cmake_sources_path_flag : "%SOURCES_PATH%",
-            cmake_glob_type_flag : "%GLOB_TYPE%",
-            cmake_compile_definitions_flag : "%COMPILE_DEFINITIONS%"
+            cmd_path,
+            flags : Flags{
+                project_name : "%PROJECT_NAME%",
+                project_name_first_upper : "%PROJECT_NAME_FIRST_UPPER%",
+                cmake : CMakeFlags{ 
+                    add_command : "%ADD%",
+                    modules_include_paths : "%MODULES_INCLUDE_PATHS%",
+                    link_modules : "%LINK_MODULES%",
+                    add_subdirectories : "%ADD_SUBDIRECTORIES%",
+                    sources_path : "%SOURCES_PATH%",
+                    glob_type : "%GLOB_TYPE%",
+                    compile_definitions : "%COMPILE_DEFINITIONS%"
+                }
+            }
         })
     }
     pub fn get_git2_repo(self : &Self) -> Result<Repository>{

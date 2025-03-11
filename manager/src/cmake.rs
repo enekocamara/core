@@ -1,17 +1,14 @@
+use std::ops::Deref;
 use std::{fs, path::PathBuf};
 
-use tokio::io::copy_bidirectional_with_sizes;
-
+use crate::args::BinaryType;
 use crate::config::{Config, ConfigFile, Module};
 use crate::Result;
 
-/*pub struct CMakeTemplate{
-    path_to_template : PathBuf,
-}*/
 
 pub struct GeneratePattern<'a>{
     pub project_name : &'a str,
-    pub add_command : &'a str,
+    pub add_command : BinaryType,
     pub include_paths : Option<&'a Vec<String>>,
     pub link_modules : Option<&'a Vec<String>>,
     pub subdirectories : Option<&'a  Vec<String>>,
@@ -53,10 +50,31 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
                 return true;
             });
         }
-        let cmake_modules = config_file.get_all_cmake_modules(&config.project_paths.root)?
-            .iter().map(|m| m.module_name.clone()).collect::<Vec<_>>();
-        let cmake_link_modules = config_file.get_all_cmake_modules(&config.project_paths.root)?
-            .iter().map(|m| m.project_name.clone()).collect::<Vec<_>>();
+        let (cmake_modules,  cmake_link_modules) = {
+            let all_cmake_mods = config_file.get_all_cmake_modules(&config.project_paths.root)?;
+            if path_to_dir.deref() == config.project_paths.root{
+                let cmake_modules = all_cmake_mods.iter()
+                    .map(|m| m.module_name.clone()).collect::<Vec<_>>();
+                if let Some(modules) = config_file.modules{
+                    let cmake_link_modules = all_cmake_mods.iter()
+                        .filter(|module| modules.contains_key(&module.module_name)).map(|m| m.project_name.clone()).collect::<Vec<_>>();
+                    (cmake_modules, cmake_link_modules)
+                }else{
+                    (cmake_modules, Vec::new())
+                }
+            }else{
+                if let Some(modules) = config_file.modules{
+                    let cmake_modules= Vec::new();
+                    //let cmake_modules = all_cmake_mods.iter()
+                      //  .filter(|module| modules.contains_key(&module.module_name) ).map(|m| m.module_name.clone()).collect::<Vec<_>>();
+                    let cmake_link_modules = all_cmake_mods.iter()
+                        .filter(|module| modules.contains_key(&module.module_name)).map(|m| m.project_name.clone()).collect::<Vec<_>>();
+                    (cmake_modules, cmake_link_modules)
+                }else{
+                    (Vec::new(), Vec::new())
+                }
+            }
+        };
 /*    let target_link_libraries : String = cmake_modules
         .iter()
         .map(|module| module.project_name.as_str() )
@@ -65,7 +83,7 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
         let cmake_file_string = generate_to_string(config,
             &GeneratePattern{   
                 project_name : &config_file.project,
-                add_command : config_file.builds.get(&config_file.project).ok_or("library not in builds")?.as_str(),
+                add_command : config_file.targets.get(&config_file.project).ok_or("library not in builds")?.clone(),
                 include_paths: Some(&cmake_include_paths),
                 link_modules : Some(&cmake_link_modules),
                 subdirectories : Some(&cmake_modules),
@@ -82,48 +100,45 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
         let source = fs::read_to_string(get_path_to_template_cmakelists(config))?;
 
         let mut modified = source
-            .replace(&config.project_name_flag, pattern.project_name);
+            .replace(&config.flags.project_name, pattern.project_name);
         
         let add_command = match pattern.add_command{
-            "static_library" => {
+            BinaryType::StaticLibrary => {
                 format!("add_library({} STATIC ${{SOURCES}})", pattern.project_name)
             }
-            "dynamic_library" => {
+            BinaryType::DynamicLibrary => {
                 format!("add_library({} DYNAMIC ${{SOURCES}})", pattern.project_name)
             }
-            "executable" => {
+            BinaryType::Executable => {
                 format!("add_executable({} ${{SOURCES}})", pattern.project_name)
             }
-            other => {
-                return Err(format!("target type unavailable {}, use static_library, dynamic_library or executable.", other).into());
-            }
         };
-        modified = modified.replace(config.cmake_add_command_flag, add_command.as_str());
+        modified = modified.replace(config.flags.cmake.add_command, add_command.as_str());
 
         if let Some(include_paths) = pattern.include_paths{
             let include_paths = include_paths.iter()
                 .map(|path| format!("\t${{CMAKE_SOURCE_DIR}}/modules/{path}"))
                 .collect::<Vec<_>>()
                 .join("\n");
-            modified = modified.replace(config.cmake_modules_include_paths_flag, &include_paths);
+            modified = modified.replace(config.flags.cmake.modules_include_paths, &include_paths);
         }else{
-            modified = modified.replace(config.cmake_modules_include_paths_flag, "");
+            modified = modified.replace(config.flags.cmake.modules_include_paths, "");
         }
         if let Some(link_modules) = pattern.link_modules{
             let link_modules = link_modules.join(" ");
-            modified = modified.replace(config.cmake_link_modules_flag, &link_modules);
+            modified = modified.replace(config.flags.cmake.link_modules, &link_modules);
         }else{
-            modified = modified.replace(config.cmake_link_modules_flag, "");
+            modified = modified.replace(config.flags.cmake.link_modules, "");
         }
         if let Some(sources_path) = pattern.sources_path{
-            modified = modified.replace(config.cmake_sources_path_flag, sources_path);
+            modified = modified.replace(config.flags.cmake.sources_path, sources_path);
         }else{
-            modified = modified.replace(config.cmake_sources_path_flag, "src");
+            modified = modified.replace(config.flags.cmake.sources_path, "src");
         }
         if matches!(pattern.recursive_glob, None | Some(true)){
-            modified = modified.replace(config.cmake_glob_type_flag, "GLOB_RECURSE");
+            modified = modified.replace(config.flags.cmake.glob_type, "GLOB_RECURSE");
         }else{
-            modified = modified.replace(config.cmake_glob_type_flag, "GLOB");
+            modified = modified.replace(config.flags.cmake.glob_type, "GLOB");
         }
 
         if let Some(subdirectories) = pattern.subdirectories{
@@ -135,15 +150,15 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
                     .collect::<Vec<_>>()
                     .join("\n")
             );
-            modified = modified.replace(config.cmake_add_subdirectories_flag, &subdirectories);
+            modified = modified.replace(config.flags.cmake.add_subdirectories, &subdirectories);
         }else{
-            modified = modified.replace(config.cmake_add_subdirectories_flag, "");
+            modified = modified.replace(config.flags.cmake.add_subdirectories, "");
         }
 
         if let Some(cmp_defs) = &pattern.cmp_def{
-            modified = modified.replace(config.cmake_compile_definitions_flag, cmp_defs.join(" ").as_str());
+            modified = modified.replace(config.flags.cmake.compile_definitions, cmp_defs.join(" ").as_str());
         }else{
-            modified = modified.replace(config.cmake_compile_definitions_flag, "");
+            modified = modified.replace(config.flags.cmake.compile_definitions, "");
         }
 
         Ok(modified)
