@@ -6,12 +6,12 @@ use std::path::PathBuf;
 
 
 use crate::spinner::Spinner;
-use crate::config::Config;
+use crate::config::{Config, ProjectConfig};
 use crate::args::NewSyrisProject;
 use crate::{Result,utils, Error};
 use crate::tasks::{init_vs_conf, pip_glad_install, build_cmake_project};
 
-pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn init_syris(config : ProjectConfig, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("initializing syris",Some(multi));
     let syris_url = "https://github.com/enekocamara/Syris";
     let syris_folder = config.project_paths.modules.join("syris");
@@ -61,7 +61,7 @@ pub async fn init_syris(config : Config, project : NewSyrisProject, multi : Arc<
     Ok(())
 }
 
-pub async fn init_entry_point(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>)->Result<()>{
+pub async fn init_entry_point(config : ProjectConfig, project : NewSyrisProject, multi : Arc<MultiProgress>)->Result<()>{
     let spinner = Spinner::new("initializing entry point", Some(multi));
     spinner.change_message("setting entrypoint...");
     let entry_point_src = config.asharis_root.join("resources").join("EntryPoint").join("src");
@@ -77,7 +77,7 @@ pub async fn init_entry_point(config : Config, project : NewSyrisProject, multi 
     Ok(())
 }
 
-pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn init_syris_source(config : ProjectConfig, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner  = Spinner::new("setting src contents...", Some(multi.clone()));
     fs::create_dir(config.project_paths.src.join(&project.name)).map_err(|e| format!("Failed to create src dir: {e}"))?;
     let project_cmakelists_file_src = config.asharis_root.join("resources").join("Template").join("TemplateCMakeLists.txt");
@@ -108,7 +108,7 @@ pub async fn init_syris_source(config : Config, project : NewSyrisProject, multi
     fs::write(template_cpp_file_dst, modified_content).map_err(|e| format!("failed to write modified template cpp file: {e}"))?;
     Ok(())
 }
-pub async fn new_syris_project(mut config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn new_syris_project(mut config : ProjectConfig, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("Creating directory...", Some(multi.clone()));
     config.project_paths.root = config.project_paths.root.join(PathBuf::from(&project.name));
     if config.project_paths.root.exists(){

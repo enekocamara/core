@@ -14,6 +14,9 @@ pub enum Error{
     #[from]
     Custom(String),
 
+    #[display("No config.yaml found. Must be inside a project.")]
+    NoConfigFileFound,
+
     //git2
     #[from]
     Git2(git2::Error),
@@ -51,6 +54,8 @@ impl core::fmt::Debug for Error{
         write!(f, "{}: {self}", "Error".red().bold())
     }
 }
+
+
 /* 
 impl core::fmt::Display for Error{
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

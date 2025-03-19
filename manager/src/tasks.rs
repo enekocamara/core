@@ -11,14 +11,14 @@ use colored::*;
 
 
 use crate::spinner::Spinner;
-use crate::config::{Config, ConfigFile};
+use crate::config::{Config, ConfigFile, ProjectConfig};
 use crate::args::{AddTarget, BinaryType, CMakeOptions, NewProject, NewSyrisProject};
 use crate::{Result,utils};
 use crate::cmake;
 use crate::modules;
 
 
-pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn update_modules(config : ProjectConfig, config_file : Option<ConfigFile>, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("Updating modules...", Some(multi.clone()));
     defer!(spinner.finish(););
     let config_file = match config_file {
@@ -82,7 +82,7 @@ pub async fn update_modules(config : Config, config_file : Option<ConfigFile>, m
 }
 
 
-pub async fn init_vs_conf(config : Config, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn init_vs_conf(config : ProjectConfig, project : NewSyrisProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("setting vs conf...", Some(multi.clone()));
     let vs_conf_src = config.asharis_root.join(".vscode");
     utils::copy_dir_rec(&vs_conf_src, &config.project_paths.root).map_err(|e| format!("Failed to copy /.vscode config: {e}"))?;
@@ -90,7 +90,7 @@ pub async fn init_vs_conf(config : Config, project : NewSyrisProject, multi : Ar
     Ok(())
 }
 
-pub async fn init_source(config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn init_source(config : ProjectConfig, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner  = Spinner::new("setting src contents...", Some(multi.clone()));
     fs::create_dir(config.project_paths.src.join(&project.name)).map_err(|e| format!("Failed to create src dir: {e}"))?;
     let template_main_src = config.asharis_root.join("resources").join("new_project").join("TemplateMain.cpp");
@@ -106,7 +106,7 @@ pub async fn init_source(config : Config, project : NewProject, multi : Arc<Mult
     Ok(())
 }
 
-pub async fn pip_glad_install(config : &Config, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn pip_glad_install(config : &ProjectConfig, multi : Arc<MultiProgress>) -> Result<()>{
     // Step 1: Create and activate the virtual environment
     let spinner = Spinner::new("generating glad files", Some(multi));
     //println!("Creating virtual environment...");
@@ -199,6 +199,7 @@ pub fn generate_cmake_from_conf(config : &Config) -> Result<()>{
 }
 */
 pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result<()>{
+    todo!();/* 
     let name : String = if let Some(name) = config.project_paths.root.iter().last(){
         name.to_string_lossy().into_owned()
     } else {
@@ -234,16 +235,28 @@ pub async fn init_project(config : Config, multi : Arc<MultiProgress>) -> Result
     build_cmake_project(&config, multi.clone())?;
     project_spinner.finish();
     Ok(())
+    */
 }
 
-pub async fn new_project(mut config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
+pub async fn new_project(config : Config, project : NewProject, multi : Arc<MultiProgress>) -> Result<()>{
     let project_spinner = Spinner::new(format!("Creating project {}...", &project.name), Some(multi.clone()));
     let tasks_spinner = Spinner::new("Creating project dir...", Some(multi.clone()));
-    config.change_root(config.project_paths.root.join(PathBuf::from(&project.name)));
-    if config.project_paths.root.exists(){
+    //config.change_root(project_paths.root.join(PathBuf::from(&project.name)));
+    let project_root = config.cmd_path.join(&project.name);
+    if project_root.exists(){
         Err("Error already exists")?;
     }
-    fs::create_dir(&config.project_paths.root)?;
+    fs::create_dir(&project_root)?;
+
+    tasks_spinner.change_message("creating config.yaml...");
+
+    let config_src = config.asharis_root.join("resources").join("new_project").join("TemplateConfig.yaml");
+    let config_dst = project_root.join("config.yaml");
+    let contents = fs::read_to_string(config_src)?;
+    let modified_contents = contents.replace(config.flags.project_name, &project.name);
+    fs::write(config_dst, modified_contents)?;
+
+    let config = ProjectConfig::from(config, project_root)?;
     tasks_spinner.change_message("creating src dir...");
     fs::create_dir(&config.project_paths.src)?;
     
@@ -272,7 +285,7 @@ pub async fn new_project(mut config : Config, project : NewProject, multi : Arc<
     Ok(())
 }
 
-pub fn build_cmake_project(config : &Config, multi : Arc<MultiProgress>) -> Result<()>{
+pub fn build_cmake_project(config : &ProjectConfig, multi : Arc<MultiProgress>) -> Result<()>{
     let spinner = Spinner::new("Generating cmake build files", Some(multi));
     defer!(spinner.finish(););
     if !fs::exists(&config.project_paths.build)?{
@@ -297,13 +310,13 @@ pub enum BuildProjectOpts{
     WriteOutputAlways
 }
 
-pub fn build_project(config : &Config, options : &CMakeOptions, multi : Arc<MultiProgress>, config_file : &ConfigFile, output_options : BuildProjectOpts) -> Result<()>{
+pub fn build_project(config : &ProjectConfig, options : &CMakeOptions, multi : Arc<MultiProgress>, output_options : BuildProjectOpts) -> Result<()>{
     let start = Instant::now();
     if !fs::exists(&config.project_paths.build)?{
         fs::create_dir(&config.project_paths.build)?;
     }
     let build_config = options.get_config()?;
-    let target = options.get_target(config_file)?;
+    let target = options.get_target(&config.config_file)?;
     println!("{} {} [Config: {}]", "Building".green(), target.blue(), build_config);
     let mut command = Command::new("cmake");
     command
@@ -333,15 +346,14 @@ pub fn build_project(config : &Config, options : &CMakeOptions, multi : Arc<Mult
     Ok(())
 
 }
-pub fn run_project(config : &Config, options : &CMakeOptions, multi : Arc<MultiProgress>) -> Result<()>{
-    let config_file = ConfigFile::new_from_file(&config)?;
-    let target = options.get_target(&config_file)?;
-    if let Some(binary_type) = config_file.targets.get(target){
+pub fn run_project(config : &ProjectConfig, options : &CMakeOptions, multi : Arc<MultiProgress>) -> Result<()>{
+    let target = options.get_target(&config.config_file)?;
+    if let Some(binary_type) = config.config_file.targets.get(target){
         if *binary_type != BinaryType::Executable{
             Err(format!("{} is a {}: only Executable targets can be run", target.blue(), binary_type.to_string()))?
         }
     }
-    build_project(config, options, multi.clone(), &config_file, BuildProjectOpts::SilentIfOkey)?;
+    build_project(config, options, multi.clone(),  BuildProjectOpts::SilentIfOkey)?;
     let build_config = options.get_config()?;
     let executable_path = PathBuf::from("output").join("bin").join(build_config).join(&target);
     let mut command = String::from("./");
@@ -352,8 +364,8 @@ pub fn run_project(config : &Config, options : &CMakeOptions, multi : Arc<MultiP
         .status().map_err(|e| format!("failed to run 'run' command: {e}"))?;
     Ok(())
 }
-pub fn clean_project(config : &Config, config_file : &ConfigFile, multi : Arc<MultiProgress>) -> Result<()>{
-    let spinner = Spinner::new(format!("{} {}", "Cleaning".green(), config_file.project.blue()), Some(multi.clone()));
+pub fn clean_project(config : &ProjectConfig, multi : Arc<MultiProgress>) -> Result<()>{
+    let spinner = Spinner::new(format!("{} {}", "Cleaning".green(), config.config_file.project.blue()), Some(multi.clone()));
     defer!(spinner.finish(););
     if fs::exists(&config.project_paths.build)?{
         fs::remove_dir_all(&config.project_paths.build)?;
@@ -365,7 +377,7 @@ pub fn clean_project(config : &Config, config_file : &ConfigFile, multi : Arc<Mu
     Ok(())
 }
 
-pub fn add_target(config : &Config, target : &AddTarget) -> Result<()>{
+pub fn add_target(config : &ProjectConfig, target : &AddTarget) -> Result<()>{
     let mut config_file = ConfigFile::new_from_file(config)?;
     if config_file.targets.contains_key(&target.name){
         Err(format!("Target {} already defined config.yaml", target.name.blue()))?

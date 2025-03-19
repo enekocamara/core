@@ -1,5 +1,5 @@
-project : "%PROJECT_NAME%"
-build : "%PROJECT_NAME%"
+project : %PROJECT_NAME%
+current_target : %PROJECT_NAME%
 
-builds:
-  %PROJECT_NAME% : "executable"
+targets:
+  %PROJECT_NAME% : Executable

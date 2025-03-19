@@ -2,7 +2,7 @@ use std::ops::Deref;
 use std::{fs, path::PathBuf};
 
 use crate::args::BinaryType;
-use crate::config::{Config, ConfigFile, Module};
+use crate::config::{Config, ConfigFile, Module, ProjectConfig};
 use crate::Result;
 
 
@@ -16,7 +16,7 @@ pub struct GeneratePattern<'a>{
     pub recursive_glob : Option<bool>,
     pub cmp_def : Option<Vec<String>>
 }
-fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
+fn get_path_to_template_cmakelists(config : &ProjectConfig) -> PathBuf{
     config.asharis_root.join("resources").join("TemplateCMakeLists.txt")
 }
 
@@ -26,13 +26,13 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
 //            path_to_template : config.asharis_root.join("resources").join("TemplateCMakeLists.txt")
 //        }
 //    }
-    pub fn generate_to_file_from_path(config : &Config, path_to_dir : &PathBuf) -> Result<()>{
+    pub fn generate_to_file_from_path(config : &ProjectConfig, path_to_dir : &PathBuf) -> Result<()>{
         fs::write(path_to_dir.join("CMakeLists.txt"), generate_to_string_from_path(config, path_to_dir)?)?;
         Ok(())
     }
 
-    pub fn generate_to_string_from_path(config : &Config, path_to_dir : &PathBuf) -> Result<String>{
-        let config_file = ConfigFile::new_from_path(config, &path_to_dir.join("config.yaml"))?;
+    pub fn generate_to_string_from_path(config : &ProjectConfig, path_to_dir : &PathBuf) -> Result<String>{
+        let config_file = ConfigFile::new_from_path(&config.project_paths, &path_to_dir.join("config.yaml"))?;
         let mut cmake_include_paths : Vec<String>  = Vec::new();
         if let Some(modules) = &config_file.modules {
             modules.iter().all(|(name, module)| {
@@ -75,11 +75,6 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
                 }
             }
         };
-/*    let target_link_libraries : String = cmake_modules
-        .iter()
-        .map(|module| module.project_name.as_str() )
-        .collect::<Vec<_>>()
-        .join("\n");*/
         let cmake_file_string = generate_to_string(config,
             &GeneratePattern{   
                 project_name : &config_file.project,
@@ -95,7 +90,7 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
 
     }
 
-    pub fn generate_to_string(config : &Config,  pattern : &GeneratePattern)
+    pub fn generate_to_string(config : &ProjectConfig,  pattern : &GeneratePattern)
          -> Result<String>{
         let source = fs::read_to_string(get_path_to_template_cmakelists(config))?;
 
@@ -104,13 +99,13 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
         
         let add_command = match pattern.add_command{
             BinaryType::StaticLibrary => {
-                format!("add_library({} STATIC ${{SOURCES}})", pattern.project_name)
+                format!("add_library({} STATIC)", pattern.project_name)
             }
             BinaryType::DynamicLibrary => {
-                format!("add_library({} DYNAMIC ${{SOURCES}})", pattern.project_name)
+                format!("add_library({} DYNAMIC)", pattern.project_name)
             }
             BinaryType::Executable => {
-                format!("add_executable({} ${{SOURCES}})", pattern.project_name)
+                format!("add_executable({})", pattern.project_name)
             }
         };
         modified = modified.replace(config.flags.cmake.add_command, add_command.as_str());
@@ -163,7 +158,7 @@ fn get_path_to_template_cmakelists(config : &Config) -> PathBuf{
 
         Ok(modified)
     }
-    pub fn generate_to_file(config : &Config, file_path : PathBuf, pattern : &GeneratePattern)
+    pub fn generate_to_file(config : &ProjectConfig, file_path : PathBuf, pattern : &GeneratePattern)
         -> Result<()>{
         let contents = generate_to_string(config, pattern)?;
         fs::write(file_path.join("CMakeLists.txt"), contents)?;

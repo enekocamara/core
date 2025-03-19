@@ -12,7 +12,7 @@ use scopeguard::defer;
 
 use crate::Spinner;
 use crate::Result;
-use crate::config::{Config, ConfigFile, Module, ModuleSource, ModuleSourceCurl};
+use crate::config::{Config, ConfigFile, Module, ModuleSource, ModuleSourceCurl, ProjectConfig};
 use crate::utils;
 use crate::args::{AddModule,BinaryType};
 use crate::cmake::{self,GeneratePattern};
@@ -105,7 +105,7 @@ pub fn add_git_submodule<'re>(git_repo : &'re Repository, name : &str, git_path 
     git_repo.find_submodule(path.as_str()).map_err(|e| format!("Failed to find submodule {}: {e}", name.blue()).into())
 }
 
-pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repository, config : &Config,  multi : Arc<MultiProgress>)->Result<()>{
+pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repository, config : &ProjectConfig,  multi : Arc<MultiProgress>)->Result<()>{
 
     match module{
         Module::GitUrl(git_url) => {
@@ -188,7 +188,7 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
         }*/
         return Ok(())
     }
-    let module_config_file = ConfigFile::new_from_path(config, &path_to_config_file)?;
+    let module_config_file = ConfigFile::new_from_path(&config.project_paths, &path_to_config_file)?;
     cmake::generate_to_file_from_path(config, &config.project_paths.modules.join(name))?;
     //need to figure out which ones are git submodules and which are core modules
     //let git_repo = config.get_git2_repo()?;
@@ -226,7 +226,7 @@ pub fn add_module_to_modules_dir(name : &str, module : &Module, git_repo : &Repo
     Ok(())
 }
 
-pub fn get_available_modules(config : &Config) -> Result<HashMap<String, Module>>{
+pub fn get_available_modules(config : &ProjectConfig) -> Result<HashMap<String, Module>>{
     let modules_list = fs::read_to_string(config.asharis_root.join("resources").join("moduleslist.yaml"))
         .map_err(|e| format!("Failed to open moduleslist.yaml file: {e}"))?;
 
@@ -241,7 +241,7 @@ pub fn get_available_modules(config : &Config) -> Result<HashMap<String, Module>
     Ok(modules.modules)
 }
 
-pub fn add_module_to_config(config : &Config, module : &AddModule, multi : Arc<MultiProgress>) -> Result<Module>{
+pub fn add_module_to_config(config : &ProjectConfig, module : &AddModule, multi : Arc<MultiProgress>) -> Result<Module>{
     let add_module_spinner = Spinner::new(format!("{} module {}", "Adding".green(),  module.name.blue()), Some(multi.clone()));
     defer!{add_module_spinner.finish();}
     let tasks_spinner = Spinner::new(format!("Getting available modules"), Some(multi.clone()));
@@ -268,7 +268,7 @@ pub fn add_module_to_config(config : &Config, module : &AddModule, multi : Arc<M
     }
 }
 
-pub fn add_module(config : &Config, add_module : &AddModule, multi : Arc<MultiProgress>) -> Result<()>{
+pub fn add_module(config : &ProjectConfig, add_module : &AddModule, multi : Arc<MultiProgress>) -> Result<()>{
     let module = add_module_to_config(&config, &add_module, multi.clone())
         .map_err(|e| format!("Failed to add module to config: {e}"))?;
     let git_repo = Repository::open(&config.project_paths.root)?;
@@ -278,16 +278,15 @@ pub fn add_module(config : &Config, add_module : &AddModule, multi : Arc<MultiPr
     Ok(())
 }
 
-pub fn remove_module(config : &Config, name : &String, multi : Arc<MultiProgress>, config_file : &mut ConfigFile) -> Result<()>{
-    remove_module_from_dir(config, name, multi.clone(), config_file)?;
-    remove_module_from_config(name, config_file)?;
+pub fn remove_module(config : &mut ProjectConfig, name : &String, multi : Arc<MultiProgress>) -> Result<()>{
+    remove_module_from_dir(config, name, multi.clone())?;
+    remove_module_from_config(name, &mut config.config_file)?;
     cmake::generate_to_file_from_path(config, &config.project_paths.root)?;
     Ok(())
 }
 
-pub fn remove_module_from_dir(config : &Config, name : &String, multi : Arc<MultiProgress>, config_file : &ConfigFile) -> Result<()>{
-    let main_config_file = ConfigFile::new_from_file(config)?;
-    match main_config_file.get_module_reference_count(name) {
+pub fn remove_module_from_dir(config : &ProjectConfig, name : &String, multi : Arc<MultiProgress>) -> Result<()>{
+    match config.config_file.get_module_reference_count(name) {
         0 => Err(format!("Failed to find {name} in any config_file modules"))?,
         1 => {},//continue with module deletion, its not any module's dependency
         _ => {
@@ -299,15 +298,15 @@ pub fn remove_module_from_dir(config : &Config, name : &String, multi : Arc<Mult
         println!("module {name} was already removed from modules");
         return Ok(())
     }
-    if let Ok(module_config_file) = ConfigFile::new_from_path(config, &config.project_paths.modules.join(name).join("config.yaml")){
+    if let Some(module_config_file) = config.config_file.get_config_file(name){
         if let Some(modules) = module_config_file.modules.clone(){
             println!("Removing {name} dependency modules: {:?}", modules.keys());
             for module in modules.keys(){
-                remove_module_from_dir(config, module, multi.clone(), &module_config_file)?;
+                remove_module_from_dir(config, module, multi.clone())?;
             }
         }
     }
-    if let Some(modules) = &config_file.modules{
+    if let Some(modules) = &config.config_file.modules{
         if let Some(specs) = modules.get(name){
             match &specs{
                 Module::GitUrl(_) => {

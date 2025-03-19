@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.28)
 
 project(%PROJECT_NAME% CXX)
 
@@ -16,6 +16,9 @@ file(%GLOB_TYPE% SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/%SOURCES_PATH%/*.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/%SOURCES_PATH%/*.h
 )
+file(%GLOB_TYPE% CXX_MODULES
+    ${CMAKE_CURRENT_SOURCE_DIR}/%SOURCES_PATH%/*.ixx
+)
 
 # Automatically organize files in Visual Studio
 foreach(file ${SOURCES})
@@ -27,12 +30,47 @@ foreach(file ${SOURCES})
     # Create a source group for each directory
     source_group("${directory}" FILES ${file})
 endforeach()
-
+foreach(file ${CXX_MODULES})
+    # Get relative path and convert to Windows style
+    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" relative_path ${file})
+    string(REPLACE "/" "\\" relative_path ${relative_path})
+    get_filename_component(directory ${relative_path} DIRECTORY)
+    
+    # Create a source group for each directory
+    source_group("${directory}" FILES ${file})
+endforeach()
 
 %ADD_SUBDIRECTORIES%
 
+# Check if Doxygen is available
+find_package(Doxygen REQUIRED)
 
-%ADD% #add_library(%PROJECT_NAME% STATIC ${SOURCES})
+# If Doxygen is found, add the target to generate docs
+if(DOXYGEN_FOUND)
+    # Configure Doxygen with the path to your Doxyfile
+    set(DOXYGEN_IN_PATH "${CMAKE_SOURCE_DIR}/Doxyfile")  # Replace with your path if different
+
+    # Create a custom target to generate documentation
+    add_custom_target(doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN_PATH}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
+
+    # Make the doc target depend on the build target
+    add_dependencies(doc ${PROJECT_NAME})  # Replace ${PROJECT_NAME} with your target name if needed
+endif()
+
+enable_testing()
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(CTEST_BINARY_DIRECTORY "${CMAKE_SOURCE_DIR}/Testing")
+
+%ADD%
+target_sources(%PROJECT_NAME%
+    PRIVATE ${SOURCES}
+    PRIVATE FILE_SET CXX_MODULES FILES ${CXX_MODULES}
+)
 target_compile_definitions(%PROJECT_NAME% PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 target_compile_definitions(%PROJECT_NAME% PRIVATE $<$<CONFIG:Release>:RELEASE>)
 

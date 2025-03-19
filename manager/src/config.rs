@@ -13,9 +13,9 @@ use git2::Repository;
 
 use crate::args::BinaryType;
 use crate::utils;
-use crate::Result;
+use crate::{Result, Error};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ConfigFile{
     pub project : String,
     pub current_target : String,
@@ -34,7 +34,7 @@ pub struct ConfigFile{
     childs : Vec<ConfigFile>
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ClapSerdeCommand{
     program : String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -44,7 +44,7 @@ pub struct ClapSerdeCommand{
 }
 
 impl ClapSerdeCommand{
-    pub fn run(&self, config : &Config, path_to_config_file : &PathBuf, runtime_args : Option<Vec<String>>) -> Result<()>{
+    pub fn run(&self, config : &ProjectConfig, path_to_config_file : &PathBuf, runtime_args : Option<Vec<String>>) -> Result<()>{
         let mut command_str = format!("cmd C/ {}", &self.program);
         let mut command = std::process::Command::new("cmd");
         command.arg("/C")
@@ -91,7 +91,7 @@ impl Hash for CmakeModule{
 }
 
 impl ConfigFile{
-    pub fn new_from_path(config : &Config, path : &PathBuf) -> Result<ConfigFile>{
+    pub fn new_from_path(project_paths : &ProjectPaths, path : &PathBuf) -> Result<ConfigFile>{
         let file_source = fs::read_to_string(path)
             .map_err(|e| format!("Failed to read config.yaml: {e}"))?;
         let mut file = serde_yaml::from_str::<ConfigFile>(&file_source).map_err(|e| format!("Failed to parse config.yaml: {e}"))?;
@@ -99,17 +99,17 @@ impl ConfigFile{
         //check if modules have config files if so integrate
         if let Some(modules) = &file.modules{
             for name in modules.keys(){
-                let module_config_path = config.project_paths.modules.join(&name).join("config.yaml");
+                let module_config_path = project_paths.modules.join(&name).join("config.yaml");
                 if fs::exists(&module_config_path).unwrap(){
-                    file.childs.push(ConfigFile::new_from_path(config, &module_config_path)?);
+                    file.childs.push(ConfigFile::new_from_path(project_paths, &module_config_path)?);
                 }
             }
         }
         file.path = path.clone();
         Ok(file)
     }
-    pub fn new_from_file(config : &Config) -> Result<ConfigFile>{
-        ConfigFile::new_from_path(config, &config.project_paths.config_file)
+    pub fn new_from_file(config : &ProjectConfig) -> Result<ConfigFile>{
+        ConfigFile::new_from_path(&config.project_paths, &config.project_paths.config_file)
     }
     pub fn get_path(&self) -> &PathBuf{
         &self.path
@@ -250,7 +250,7 @@ impl ConfigFile{
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Build{
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rebuild : Option<Vec<String>>
@@ -457,9 +457,98 @@ impl<'de> Deserialize<'de> for ModuleSource{
 #[derive(Clone)]
 pub struct Config{
     pub asharis_root : PathBuf,
-    pub project_paths : ProjectPaths,
     pub cmd_path : PathBuf,
     pub flags : Flags,
+}
+
+#[derive(Clone)]
+pub struct ProjectConfig{
+    pub asharis_root : PathBuf,
+    pub cmd_path : PathBuf,
+    pub flags : Flags,
+    pub config_file : ConfigFile,
+    pub project_paths : ProjectPaths,
+}
+
+impl ProjectConfig{
+    pub fn from(config : Config, project_root : PathBuf) -> Result<Self>{
+        let project_paths = ProjectPaths::new(&project_root);
+        Ok(ProjectConfig{
+            asharis_root : config.asharis_root,
+            cmd_path : config.cmd_path,
+            flags : config.flags,
+            config_file : ConfigFile::new_from_path(&project_paths, &project_paths.root.join("config.yaml"))?,
+            project_paths
+        })
+    }
+}
+
+pub enum ConfigType{
+    Project(ProjectConfig),
+    StandAlone(Config)
+}
+
+impl ConfigType{
+    pub fn get_project_config(self : Self) -> Result<ProjectConfig>{
+        if let ConfigType::Project(config) = self{
+            Ok(config)
+        }else{
+            Err(Error::NoConfigFileFound)?
+        }
+    }
+}
+
+pub fn get_config() -> Result<ConfigType>{
+    let asharis_root : PathBuf = PathBuf::from(env::var("ASHARIS_ROOT").map_err(|e| format!("failed to find ASHARIS_ROOT in environment variables: {:?}", e))?);
+    let cmd_path = env::current_dir().map_err(|e| format!("environment variable pwd not set: {}", e))?;
+    let project_root = {
+        let parent_dir = {
+            let mut hold = cmd_path.clone();
+            hold.pop();
+            hold.pop();
+            hold
+        };
+        if fs::exists(parent_dir.join("config.yaml"))?{
+            Some(parent_dir)
+        }else if fs::exists(cmd_path.join("config.yaml"))?{
+            Some(cmd_path.clone())
+        }else{
+            None
+        }
+    };
+    let flags : Flags = Flags{
+        project_name : "%PROJECT_NAME%",
+        project_name_first_upper : "%PROJECT_NAME_FIRST_UPPER%",
+        cmake : CMakeFlags{ 
+            add_command : "%ADD%",
+            modules_include_paths : "%MODULES_INCLUDE_PATHS%",
+            link_modules : "%LINK_MODULES%",
+            add_subdirectories : "%ADD_SUBDIRECTORIES%",
+            sources_path : "%SOURCES_PATH%",
+            glob_type : "%GLOB_TYPE%",
+            compile_definitions : "%COMPILE_DEFINITIONS%"
+        }
+    };
+        
+    if let Some(project_root) = project_root{
+        let project_paths =  ProjectPaths::new(&project_root);
+        Ok(ConfigType::Project(
+            ProjectConfig{
+                asharis_root,
+                cmd_path,
+                flags,
+                config_file : ConfigFile::new_from_path(&project_paths, &project_root.join("config.yaml"))?,
+                project_paths,
+            }
+        ))
+    }else{
+        Ok(ConfigType::StandAlone(Config{
+            asharis_root,
+            cmd_path,
+            flags
+        }))
+
+    }
 }
 
 #[derive(Clone)]
@@ -491,51 +580,20 @@ pub struct ProjectPaths{
     pub src : PathBuf
 }
 
-impl Config{
-    pub fn new() -> Result<Config>{
-        let asharis_root : PathBuf = PathBuf::from(env::var("ASHARIS_ROOT").map_err(|e| format!("failed to find ASHARIS_ROOT in environment variables: {:?}", e))?);
-        let cmd_path = env::current_dir().map_err(|e| format!("environment variable pwd not set: {}", e))?;
-        let project_root = {
-            let parent_dir = {
-                let mut hold = cmd_path.clone();
-                hold.pop();
-                hold.pop();
-                hold
-            };
-            if fs::exists(parent_dir.join("config.yaml"))?{
-                parent_dir
-            }else if fs::exists(cmd_path.join("config.yaml"))?{
-                cmd_path.clone()
-            }else{
-                Err("config.yaml file couldn't be found")?
-            }
-        };
-        Ok(Config {
-            asharis_root,
-            project_paths : ProjectPaths{
-                root : project_root.clone(),
-                build : project_root.join("build"),
-                output : project_root.join("output"),
-                config_file : project_root.join("config.yaml"),
-                modules : project_root.join("modules"),
-                src : project_root.join("src")
-            },
-            cmd_path,
-            flags : Flags{
-                project_name : "%PROJECT_NAME%",
-                project_name_first_upper : "%PROJECT_NAME_FIRST_UPPER%",
-                cmake : CMakeFlags{ 
-                    add_command : "%ADD%",
-                    modules_include_paths : "%MODULES_INCLUDE_PATHS%",
-                    link_modules : "%LINK_MODULES%",
-                    add_subdirectories : "%ADD_SUBDIRECTORIES%",
-                    sources_path : "%SOURCES_PATH%",
-                    glob_type : "%GLOB_TYPE%",
-                    compile_definitions : "%COMPILE_DEFINITIONS%"
-                }
-            }
-        })
+impl ProjectPaths{
+    pub fn new(project_root : &PathBuf) -> Self{
+        ProjectPaths{
+            root : project_root.clone(),
+            build : project_root.join("build"),
+            output : project_root.join("output"),
+            config_file : project_root.join("config.yaml"),
+            modules : project_root.join("modules"),
+            src : project_root.join("src")
+        }
     }
+}
+
+impl ProjectConfig{
     pub fn get_git2_repo(self : &Self) -> Result<Repository>{
         Repository::open(&self.project_paths.root).map_err(|e| format!("Failed to open git repository: {e}").into())
     }
