@@ -26,7 +26,6 @@ use indicatif::MultiProgress;
 
 #[tokio::main]
 async fn main(){
-    println!("new version");
     if let Err(err) = try_main().await{
         println!("{err:?}");
         std::process::exit(1);

@@ -252,7 +252,7 @@ pub async fn new_project(config : Config, project : NewProject, multi : Arc<Mult
 
     let config_src = config.asharis_root.join("resources").join("new_project").join("TemplateConfig.yaml");
     let config_dst = project_root.join("config.yaml");
-    let contents = fs::read_to_string(config_src)?;
+    let contents = fs::read_to_string(&config_src).map_err(|e| format!("failed to read TemplateConfig.yaml: {e}, path: {}", config_src.to_str().unwrap()))?;
     let modified_contents = contents.replace(config.flags.project_name, &project.name);
     fs::write(config_dst, modified_contents)?;
 
