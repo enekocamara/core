@@ -11,9 +11,11 @@ modules:
             include_path : glad/src/include
     asio : 
         git_url : https://github.com/chriskohlhoff/asio
+        git_version : asio-1-36-0 
         include_path : asio/include
     entt :
         git_url : https://github.com/skypjack/entt
+        git_version : v3.15.0
         include_path : include
     fast_noise :
         curl_urls : 
@@ -21,15 +23,19 @@ modules:
             - https://raw.githubusercontent.com/Auburn/FastNoiseLite/refs/heads/master/LICENSE
     glfw : 
         git_url : https://github.com/glfw/glfw
+        git_version : '3.4'
         include_path : include
         link_name : glfw
-    glm : https://github.com/g-truc/glm
+    glm : 
+        git_url : https://github.com/g-truc/glm
+        git_version : '1.0.2'
     googletests : 
         git_url : https://github.com/google/googletest
+        git_version : v1.17.0
         link_name : gtest
     imgui_docking : 
         git_url: https://github.com/ocornut/imgui
-        git_branch : docking
+        git_version: v1.92.4-docking
         git_path : imgui
         cmake:
             gen : true
@@ -37,12 +43,14 @@ modules:
             sources_path : imgui
     nlohmann_json : 
         git_url : https://github.com/nlohmann/json
+        git_version : v3.12.0
         include_path : include
     spdlog : 
         git_url : https://github.com/gabime/spdlog
+        git_version : v1.16.0
         include_path : include
     stb_image:
         curl_urls:
             - https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
             - https://raw.githubusercontent.com/nothings/stb/refs/heads/master/LICENSE
-    syris : https://github.com/enekocamara/Syris
+#    syris : https://github.com/enekocamara/Syris

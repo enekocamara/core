@@ -6,7 +6,7 @@ use std::fs;
 use std::hash::{Hash, Hasher};
 
 use colored::Colorize;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize,Deserializer};
 use serde::de::{Visitor, MapAccess};
 use serde::de::Error as SerdeError;
 use git2::Repository;
@@ -111,6 +111,16 @@ impl ConfigFile{
     pub fn new_from_file(config : &ProjectConfig) -> Result<ConfigFile>{
         ConfigFile::new_from_path(&config.project_paths, &config.project_paths.config_file)
     }
+
+    pub fn get_module_id(&self, name : &str) -> Option<String>{
+        if let Some(modules) = &self.modules{
+            if let Some(module) = modules.get(name){
+                return Some(module.get_id(name));
+            }
+        }
+        return None;
+    }
+
     pub fn get_path(&self) -> &PathBuf{
         &self.path
     }
@@ -127,20 +137,20 @@ impl ConfigFile{
     pub fn get_all_git_submodules<'a>(&'a self) -> Vec<&'a str>{
         if let Some(modules) = &self.modules{
             let mut submodules = Vec::new();
-            for (name, specs) in modules{
-                match specs{
-                    Module::GitUrl(_) => {
+            for (name, module) in modules{
+                //match specs{
+                    //Module::GitUrl(_) => {
+                    //    submodules.push(name.as_str());
+                    //}
+                    //Module::Spec(specs) => {
+                match module.source {
+                    ModuleSource::Curl(_)=>{}
+                    ModuleSource::Git(_)=>{
                         submodules.push(name.as_str());
                     }
-                    Module::Spec(specs) => {
-                        match specs.source {
-                            ModuleSource::Curl(_)=>{}
-                            ModuleSource::Git(_)=>{
-                                submodules.push(name.as_str());
-                            }
-                        }
-                    }
                 }
+                    //}
+                //}
             }
             submodules
         }else {
@@ -151,17 +161,10 @@ impl ConfigFile{
         if let Some(modules) = &self.modules{
             let mut submodules = Vec::new();
             for (name, module) in modules{
-                match module{
-                    Module::GitUrl(_) => {
-                        submodules.push((name, module));
-                    }
-                    Module::Spec(specs) => {
-                        match specs.source {
-                            ModuleSource::Curl(_)=>{}
-                            ModuleSource::Git(_)=>{
-                                submodules.push((name, module))
-                            }
-                        }
+                match module.source {
+                    ModuleSource::Curl(_)=>{}
+                    ModuleSource::Git(_)=>{
+                        submodules.push((name, module))
                     }
                 }
             }
@@ -174,16 +177,16 @@ impl ConfigFile{
         let mut cmake_modules = HashSet::new();
         if let Some(modules) = &self.modules{
             for (name, module) in modules{
-                let cmake_path = project_root.join("modules").join(name).join("CMakeLists.txt");
+                let cmake_path = project_root.join("modules").join(module.get_id(name)).join("CMakeLists.txt");
                 if fs::exists(&cmake_path).map_err(|e| format!("Failed to check if cmake exists: {e}"))?{
                     
                     cmake_modules.insert(CmakeModule{
-                        module_name : name.clone(),
+                        module_name : module.get_id(name),
                         project_name : {
-                            if let Some(link_name) = module.get_link_name(){
-                                link_name
+                            if let Some(link_name) = &module.link_name{
+                                link_name.clone()
                             }else{
-                                utils::get_cmake_project_name(project_root.join("modules").join(name))
+                                utils::get_cmake_project_name(project_root.join("modules").join(module.get_id(name)))
                                     .map_err(|e| format!("Failed to get cmake project name for {name}: {e}"))?
                             }
                         }
@@ -214,6 +217,23 @@ impl ConfigFile{
             }
         }
         modules
+    }
+    pub fn get_all_submodules_id_pair(self : &Self, recurse : bool) -> HashMap<String, Module>{
+        let mut modules_id : HashMap<String, Module> = HashMap::new();
+        if let Some(modules) = &self.modules {
+            for (name, module ) in modules{
+                modules_id.insert(module.get_id(name), module.clone());
+            }
+        }
+        if recurse{
+            for child in &self.childs{
+                let child_modules = child.get_all_submodules_id_pair(true);
+                for (id, module) in child_modules{
+                    modules_id.insert(id, module);
+                }
+            }
+        }
+        modules_id
     }
 
     pub fn get_module_reference_count(self : &Self, to_find : &str) -> u32{
@@ -257,56 +277,79 @@ pub struct Build{
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(untagged)]
-pub enum Module{
-    GitUrl(String),
-    Spec(ModuleSpec)
+pub struct Module{
+    #[serde(flatten)]
+    pub source : ModuleSource,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub src_path : Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cmake : Option<Cmake>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include_path : Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cmd : Option<Cmd>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub link_name : Option<String>,
+    #[serde(skip)]
+    id : Option<String>
 }
 
 impl Module{
     pub fn get_git_path(self : &Self) -> Option<&str>{
-        match self{
-            Module::GitUrl(_) => None,
-            Module::Spec(spec) => match &spec.source {
-                ModuleSource::Curl(_) => None,
-                ModuleSource::Git(git) => git.git_path.as_deref()
-            }
+        match &self.source {
+            ModuleSource::Curl(_) => None,
+            ModuleSource::Git(git) => git.git_path.as_deref()
         }
     }
     pub fn get_git_name(self : &Self, name : &str) -> Option<String>{
-        match self{
-            Module::GitUrl(_) => Some(format!("modules/{name}")),
-            Module::Spec(spec) => match &spec.source{
-                ModuleSource::Git(git) => {
-                    if let Some(git_path) = &git.git_path{
-                        return Some(format!("modules/{name}/{git_path}"))
-                    }
-                    Some(format!("modules/{name}"))
+        match &self.source{
+            ModuleSource::Git(git) => {
+                if let Some(git_path) = &git.git_path{
+                    return Some(format!("modules/{name}_{}/{git_path}", git.git_version))
                 }
-                ModuleSource::Curl(_) => None
+                Some(format!("modules/{name}_{}", git.git_version))
             }
+            ModuleSource::Curl(_) => None
         }
     }
-    pub fn is_git(self : &Self) -> bool{
-        match self{
-            Module::GitUrl(_) => true,
-            Module::Spec(spec) => match &spec.source{
-                ModuleSource::Git(_) => true,
-                ModuleSource::Curl(_) => false
-            }
 
+    pub fn get_id(self : &Self, name : &str) -> String{
+        match &self.id{
+            None => {
+                match &self.source{
+                    ModuleSource::Git(git) => {
+                        return format!("{name}_{}",git.git_version);
+                    }
+                    ModuleSource::Curl(_) => {
+                        return name.to_string();
+                    }
+                }
+            }
+            Some(id) => return id.clone()
+        }        
+    }
+
+    pub fn get_version(self: &Self) -> Option<String>{
+
+        match &self.source{
+            ModuleSource::Git(git) => {
+                return Some(git.git_version.clone());
+            }
+            ModuleSource::Curl(_) => {
+                return None;
+            }
         }
     }
-    pub fn get_link_name(self : &Self) -> Option<String>{
-        match self{
-            Module::GitUrl(_) => None,
-            Module::Spec(spec) => {
-                spec.link_name.clone()
-            }
+
+    pub fn is_git(self : &Self) -> bool{
+        match &self.source{
+            ModuleSource::Git(_) => true,
+            ModuleSource::Curl(_) => false
         }
     }
 }
 
+/*
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ModuleSpec{
     #[serde(flatten)]
@@ -321,7 +364,7 @@ pub struct ModuleSpec{
     pub cmd : Option<Cmd>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub link_name : Option<String>,
-}
+}*/
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Cmd{
@@ -373,9 +416,10 @@ pub enum ModuleSourceCurl{
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ModuleSourceGit{
     pub git_url : String,
+    pub git_version : String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub git_branch : Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+   // pub git_branch : Option<String>,
+   // #[serde(skip_serializing_if = "Option::is_none")]
     pub git_path : Option<String>
 }
 
@@ -412,31 +456,33 @@ impl<'de> Deserialize<'de> for ModuleSource{
                 where
                     A: MapAccess<'de>, {
                 let mut git_url = None;
-                let mut git_branch = None;
+                //let mut git_branch = None;
                 let mut git_path = None;
                 let mut curl_url = None;
                 let mut curl_urls = None;
+                let mut git_version: Option<String>  = None;
 
                 while let Some(key) = map.next_key::<String>()?{
                     match key.as_str(){
                         "git_url" => git_url = Some(map.next_value()?),
-                        "git_branch" => git_branch = Some(map.next_value()?),
+                        //"git_branch" => git_branch = Some(map.next_value()?),
                         "git_path" => git_path = Some(map.next_value()?),
 
                         "curl_url" => curl_url = Some(map.next_value()?),
                         "curl_urls" => curl_urls = Some(map.next_value()?),
-                        _ => return Err(A::Error::unknown_field(&key, &["git_url", "curl_url", "curl_urls", "git_branch"])),
+                        "git_version" => git_version = Some(map.next_value()?),
+                        _ => return Err(A::Error::unknown_field(&key, &["git_url", "curl_url", "curl_urls", "git_branch", "git_version"])),
                     }
                 }
 
-                match (git_url, git_branch, git_path, curl_url, curl_urls){
-                    (Some(git_url), git_branch, git_path, None, None) => Ok(ModuleSource::Git(ModuleSourceGit{ git_url, git_branch, git_path})),
+                match (git_url, git_version, git_path, curl_url, curl_urls){
+                    (Some(git_url), Some(git_version),git_path, None, None) => Ok(ModuleSource::Git(ModuleSourceGit{ git_url, git_version, git_path})),
                     (None, None, None,Some(curl_url), None) => Ok(ModuleSource::Curl(ModuleSourceCurl::CurlUrl { curl_url })),
                     (None, None, None, None, Some(curl_urls)) => Ok(ModuleSource::Curl(ModuleSourceCurl::CurlUrls { curl_urls })),
 
                     //incorrect git_branch
-                    (None, Some(_), _, _, _) => Err(A::Error::custom("git branch without git url")),
                     (None, _, Some(_), _, _) => Err(A::Error::custom("git path without git url")),
+                    (Some(_), None, _, _, _) => Err(A::Error::custom("git version not set")),
 
                     //incorrect curl
                     (_, _,_, Some(_), Some(_)) => Err(A::Error::custom("cannot have both curl_url and curl urls")),
@@ -444,7 +490,8 @@ impl<'de> Deserialize<'de> for ModuleSource{
                     //incorrect git curl
                     (Some(_), _,_, Some(_), _) | (Some(_),_, _, _, Some(_)) => Err(A::Error::custom("cannot have both git url and curl_url(s)")),
 
-                    (None,None,None,None,None) => Err(A::Error::custom("git url or curl url(s) must be set"))
+                    (None,None,None,None,None) => Err(A::Error::custom("git url or curl url(s) must be set")),
+                    (None, Some(_), _, _, _) => Err(A::Error::custom("missing git url"))
                 }
             }
         }
@@ -612,13 +659,13 @@ impl ProjectConfig{
     pub fn get_all_installed_modules_pair(self : &Self)->Result<HashMap<String, Module>>{
         let mut modules = HashMap::new();
         let config_file = ConfigFile::new_from_file(self)?;
-        let config_tree_modules = config_file.get_all_submodules_pair(true);
+        let config_tree_modules = config_file.get_all_submodules_id_pair(true);
         for entry in fs::read_dir(&self.project_paths.modules)?{
             let entry = entry?;
             if entry.metadata()?.is_dir(){
                 if let Some(name) = entry.file_name().to_str(){
-                    if let Some((name, module)) = config_tree_modules.get_key_value(name){
-                        modules.insert(name.clone(), module.clone());
+                    if let Some((id, module)) = config_tree_modules.get_key_value(name){
+                        modules.insert(id.clone(), module.clone());
                     } 
                 }
             }

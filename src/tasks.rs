@@ -296,6 +296,7 @@ pub fn build_cmake_project(config : &ProjectConfig, multi : Arc<MultiProgress>) 
         .args(["..", "-G", "Visual Studio 17 2022", "-A", "x64"])
         .current_dir(&config.project_paths.build)
         .output()?;
+    
     if !output.status.success(){
         Err(format!("failed to to build cmake project, {}", String::from_utf8_lossy(&output.stderr)))?;
     }

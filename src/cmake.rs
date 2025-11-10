@@ -35,18 +35,18 @@ fn get_path_to_template_cmakelists(config : &ProjectConfig) -> PathBuf{
         let config_file = ConfigFile::new_from_path(&config.project_paths, &path_to_dir.join("config.yaml"))?;
         let mut cmake_include_paths : Vec<String>  = Vec::new();
         if let Some(modules) = &config_file.modules {
-            modules.iter().all(|(name, module)| {
-                match module{
-                    Module::GitUrl(_) => {
-                        cmake_include_paths.push(name.clone());
-                    }
-                    Module::Spec(spec) => 
-                        if let Some(include_path) = &spec.include_path{
-                            cmake_include_paths.push(format!("{name}/{include_path}"));
-                        }else{
-                            cmake_include_paths.push(name.clone());
-                        }
+            modules.iter().all(|(name, module) | {
+                //match module{
+                    //Module::GitUrl(_) => {
+                    //    cmake_include_paths.push(name.clone());
+                    //}
+                    //Module::Spec(spec) => 
+                if let Some(include_path) = &module.include_path{
+                    cmake_include_paths.push(format!("{}/{include_path}",module.get_id(name)));
+                }else{
+                    cmake_include_paths.push(module.get_id(name));
                 }
+                //}
                 return true;
             });
         }
